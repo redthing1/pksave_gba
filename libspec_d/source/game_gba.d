@@ -1,4 +1,6 @@
-module libspec.gba;
+module game_gba;
+
+import libspec_types;
 
 /**
  * The GBA games, Generation 3 games. These games include Ruby, Sapphire, Emerald, Fire Red and Leaf Green.
@@ -271,16 +273,16 @@ struct pk3_box_t
         }
 
         /** Pokemon's Nickname */
-        char8_t[PK3_NICKNAME_LENGTH] nickname; //18
+        ubyte[PK3_NICKNAME_LENGTH] nickname; //18
         /** Original Language */
         ushort language; //20
         /** Original Trainer's Name */
-        char8_t[PK3_OT_NAME_LENGTH] ot_name; //27
+        ubyte[PK3_OT_NAME_LENGTH] ot_name; //27
         /** Pokemon's Markings */
         pk3_marking_t markings; //28
         /** Checksum of all 4 blocks */
         ushort checksum;
-        mixin(bitfields!(ushort, "", 16)); //30
+        mixin(bitfields!(ushort, "unknown0", 16)); //30
         //32
     }
 
@@ -308,7 +310,7 @@ struct pk3_box_t
                 pk3_pp_up_t pp_up;
                 /** Friendship Value / Steps to Hatch */
                 ubyte friendship;
-                mixin(bitfields!(ushort, "", 16));
+                mixin(bitfields!(ushort, "unknown1", 16));
             }
 
             /** @brief Block B */
@@ -467,7 +469,7 @@ struct gba_pc_t
     /** @brief The individual boxes in the PC. */
     gba_pc_box_t[GBA_BOX_COUNT] box;
     /** @brief The names of each box in the PC. */
-    char8_t[GBA_BOX_NAME_LENGTH][GBA_BOX_COUNT] name;
+    ubyte[GBA_BOX_NAME_LENGTH][GBA_BOX_COUNT] name;
     /** @brief The wallpaper index for each box of the PC. */
     ubyte[GBA_BOX_COUNT] wallpaper;
 }
@@ -501,11 +503,11 @@ struct gba_trainer_t
 {
     import std.bitmanip : bitfields;
 
-    char8_t[7] name;
-    mixin(bitfields!(ubyte, "", 8));
+    ubyte[7] name;
+    mixin(bitfields!(ubyte, "padding0", 8));
     //padding
     ubyte gender;
-    mixin(bitfields!(ubyte, "", 8));
+    mixin(bitfields!(ubyte, "padding1", 8));
     //padding
     union
     {
@@ -521,8 +523,8 @@ struct gba_trainer_t
     gba_time_t time_played;
 }
 
-void gba_text_to_ucs2 (char16_t* dst, char8_t* src, size_t size);
-void ucs2_to_gba_text (char8_t* dst, char16_t* src, size_t size);
+void gba_text_to_ucs2 (ushort* dst, ubyte* src, size_t size);
+void ucs2_to_gba_text (ubyte* dst, ushort* src, size_t size);
 
 gba_save_t* gba_read_main_save (const(ubyte)*);
 gba_save_t* gba_read_backup_save (const(ubyte)*);

@@ -3,7 +3,7 @@ module libspec;
 // extern (C):
 
 public {
-    import libspec.gba;
+    import game_gba;
 }
 
 // #include "game_gb.h"
