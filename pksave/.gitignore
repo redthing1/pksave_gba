@@ -1,0 +1,15 @@
+.dub
+docs.json
+__dummy.html
+docs/
+/pksave
+pksave.so
+pksave.dylib
+pksave.dll
+pksave.a
+pksave.lib
+pksave-test-*
+*.exe
+*.o
+*.obj
+*.lst

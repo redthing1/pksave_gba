@@ -4,7 +4,7 @@ import std.file;
 import std.utf;
 
 void main(string[] args) {
-	writeln("gbapoksave");
+	writeln("PKSAVE");
 
 	auto sav_path = args[1];
 	writefln("save path: %s", sav_path);
