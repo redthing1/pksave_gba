@@ -144,22 +144,6 @@ size_t gba_get_backup_offset(const uint8_t *ptr) {
 	return 0;
 }
 
-typedef union {
-	uint32_t key;
-	struct {
-		uint16_t lower;
-		uint16_t upper;
-	};
-} gba_security_key_t;
-
-enum gba_game_detect {
-	GBA_GAME_CODE_OFFSET = 0xAC,
-	GBA_RSE_SECURITY_KEY_OFFSET = 0xAC,
-	GBA_RSE_SECURITY_KEY2_OFFSET = 0x1F4,
-	GBA_FRLG_SECURITY_KEY_OFFSET = 0xAF8,
-	GBA_FRLG_SECURITY_KEY2_OFFSET = 0xF20
-};
-
 gba_security_key_t gba_get_security_key(uint8_t *ptr) {
 	return *(gba_security_key_t *)ptr;
 }

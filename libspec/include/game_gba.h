@@ -10,6 +10,7 @@
 
 #include <stdlib.h>
 #include <stdint.h>
+#include "types.h"
 
 #ifdef __cplusplus
 extern "C" {
@@ -418,6 +419,24 @@ typedef struct {
 	gba_time_t time_played;
 } gba_trainer_t;
 #pragma pack(pop)
+
+typedef union {
+	uint32_t key;
+	struct {
+		uint16_t lower;
+		uint16_t upper;
+	};
+} gba_security_key_t;
+
+enum gba_game_detect {
+	GBA_GAME_CODE_OFFSET = 0xAC,
+	GBA_RSE_SECURITY_KEY_OFFSET = 0xAC,
+	GBA_RSE_SECURITY_KEY2_OFFSET = 0x1F4,
+	GBA_FRLG_SECURITY_KEY_OFFSET = 0xAF8,
+	GBA_FRLG_SECURITY_KEY2_OFFSET = 0xF20
+};
+
+gba_security_key_t gba_get_security_key(uint8_t *ptr);
 
 void gba_text_to_ucs2(char16_t *dst, char8_t *src, size_t size);
 void ucs2_to_gba_text(char8_t *dst, char16_t *src, size_t size);
