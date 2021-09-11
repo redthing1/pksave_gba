@@ -16,7 +16,8 @@ void main(string[] args) {
 
 	writeln("SAVE");
 	writefln("  TYPE: %s", loaded_save.type);
-	writefln("  KEY: %s", gba_get_security_key(loaded_save.data + gba_game_detect.GBA_FRLG_SECURITY_KEY_OFFSET).key);
+	writefln("  KEY1: %s", gba_get_security_key(loaded_save.data + gba_game_detect.GBA_FRLG_SECURITY_KEY_OFFSET).key);
+	writefln("  KEY2: %s", gba_get_security_key(loaded_save.data + gba_game_detect.GBA_FRLG_SECURITY_KEY2_OFFSET).key);
 
 	auto trainer = gba_get_trainer(loaded_save);
 	writeln("TRAINER");
