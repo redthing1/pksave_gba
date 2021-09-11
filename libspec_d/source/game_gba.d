@@ -523,8 +523,30 @@ struct gba_trainer_t
     gba_time_t time_played;
 }
 
+union gba_security_key_t
+{
+    uint key;
+
+    struct
+    {
+        ushort lower;
+        ushort upper;
+    }
+}
+
+enum gba_game_detect
+{
+    GBA_GAME_CODE_OFFSET = 0xAC,
+    GBA_RSE_SECURITY_KEY_OFFSET = 0xAC,
+    GBA_RSE_SECURITY_KEY2_OFFSET = 0x1F4,
+    GBA_FRLG_SECURITY_KEY_OFFSET = 0xAF8,
+    GBA_FRLG_SECURITY_KEY2_OFFSET = 0xF20
+}
+
 void gba_text_to_ucs2 (ushort* dst, ubyte* src, size_t size);
 void ucs2_to_gba_text (ubyte* dst, ushort* src, size_t size);
+
+gba_security_key_t gba_get_security_key(ubyte *ptr);
 
 gba_save_t* gba_read_main_save (const(ubyte)*);
 gba_save_t* gba_read_backup_save (const(ubyte)*);
