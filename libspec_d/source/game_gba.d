@@ -417,9 +417,9 @@ struct pk3_party_t
 
     pk3_status_t status;
 
-    mixin(bitfields!(
-        uint, "", 24,
-        uint, "", 8));
+    ubyte padding0;
+    ubyte padding1;
+    ubyte padding2;
 
     //padding?
     ubyte level;
