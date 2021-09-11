@@ -1,0 +1,15 @@
+.dub
+docs.json
+__dummy.html
+docs/
+/gbapoksave
+gbapoksave.so
+gbapoksave.dylib
+gbapoksave.dll
+gbapoksave.a
+gbapoksave.lib
+gbapoksave-test-*
+*.exe
+*.o
+*.obj
+*.lst

@@ -1,4 +1,10 @@
-extern (C):
+module libspec;
+
+// extern (C):
+
+public {
+    import libspec.gba;
+}
 
 // #include "game_gb.h"
 

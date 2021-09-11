@@ -1,0 +1,6 @@
+name "gbapoksave"
+description "A minimal D application."
+authors "xdrie"
+copyright "Copyright © 2021, xdrie"
+license "proprietary"
+dependency "libspec_d" path="../libspec_d"
