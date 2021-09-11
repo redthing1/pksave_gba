@@ -14,5 +14,5 @@ wchar[] decode_gba_text(ubyte[] gba_text) {
 }
 
 string gba_time_to_string(gba_time_t time) {
-    return format("%03d:%02d", time.hours, time.minutes);
+    return format("%02d:%02d:%02d (%d)", time.hours, time.minutes, time.seconds, time.frames);
 }

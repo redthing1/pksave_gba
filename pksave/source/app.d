@@ -29,7 +29,19 @@ void main(string[] args) {
 	writefln("  MONEY: %s", gba_get_money(loaded_save));
 
 	auto party = gba_get_party(loaded_save);
+	if (party == null) {
+		writeln("failed to get party");
+	}
 	writeln("PARTY");
-	writeln(party);
-	// writefln("  MEMBERS: %s", party.size);
+	writefln("  POKEBLOCK: %s", pk3_t.sizeof);
+	writefln("    PARTY: %s", pk3_party_t.sizeof);
+	writefln("    BOX: %s", pk3_box_t.sizeof);
+	writefln("  MEMBERS: %s", party.size);
+	// print party members
+	for (int i = 0; i < party.size; i++) {
+		auto pkmn = party.pokemon[i];
+		writefln("  NAME: %s", decode_gba_text(pkmn.box.nickname));
+		writefln("    %s", pkmn.box.species);
+		writefln("    TRAINER: %s", decode_gba_text(pkmn.box.ot_name));
+	}
 }
