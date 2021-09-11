@@ -36,7 +36,6 @@ void main(string[] args) {
 	writefln("  POKEBLOCK: %s", pk3_t.sizeof);
 	writefln("    PARTY: %s", pk3_party_t.sizeof);
 	writefln("    BOX: %s", pk3_box_t.sizeof);
-	writefln("    BOX_HEADER: %s", pk3_box_t_header.sizeof);
 	writefln("  MEMBERS: %s", party.size);
 	// print party members
 	for (int i = 0; i < party.size; i++) {
@@ -47,7 +46,6 @@ void main(string[] args) {
 		writefln("    LEVEL: %s", pkmn.party.level);
 		writefln("    STATS: %s", pkmn.party.stats);
 		// writefln("    IVS: %s", pkmn.box.iv);
-		// writefln("    EVS: %s", pkmn.box.ev);
-		
+		// writefln("    EVS: %s", pkmn.box.ev);		
 	}
 }
