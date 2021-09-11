@@ -1,0 +1,15 @@
+.dub
+docs.json
+__dummy.html
+docs/
+/libspec_d
+libspec_d.so
+libspec_d.dylib
+libspec_d.dll
+libspec_d.a
+libspec_d.lib
+libspec_d-test-*
+*.exe
+*.o
+*.obj
+*.lst
