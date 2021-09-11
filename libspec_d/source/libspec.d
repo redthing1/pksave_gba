@@ -4,6 +4,10 @@ module libspec;
 
 public {
     import game_gba;
+    import checksum;
+    import libspec_types;
+    import prng;
+    import stat;
 }
 
 // #include "game_gb.h"
