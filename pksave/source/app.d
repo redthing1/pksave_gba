@@ -1,7 +1,8 @@
 import std.stdio;
 import libspec;
 import std.file;
-import std.utf;
+
+import util;
 
 void main(string[] args) {
 	writeln("PKSAVE");
@@ -13,8 +14,6 @@ void main(string[] args) {
 	// try loading the save
 	auto loaded_save = gba_read_main_save(cast(const(ubyte)*) savfile_data);
 
-	auto trainer = gba_get_trainer(loaded_save);
-	ushort[16] trainer_name_buf;
-	gba_text_to_ucs2(cast(ushort*) trainer_name_buf, cast(ubyte*) trainer.name, 7);
-	writefln("trainer name: %s", cast(wchar[16]) trainer_name_buf);
+	auto trainer = gba_get_trainer(loaded_save);	
+	writefln("trainer name: %s", decode_gba_text(trainer.name));
 }
