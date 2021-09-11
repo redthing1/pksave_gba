@@ -114,7 +114,7 @@ struct pk3_marking_t
         ubyte, "square", 1,
         ubyte, "triangle", 1,
         ubyte, "heart", 1,
-        ubyte, "", 4));
+        ubyte, "unused", 4));
 
     //0x8
 
@@ -191,7 +191,7 @@ struct pk3_genes_t
         ubyte, "spd", 5,
         ubyte, "satk", 5,
         ubyte, "sdef", 5,
-        ubyte, "", 2));
+        ubyte, "unknown", 2));
 }
 
 //pulled from pkm, may not be accurate
@@ -368,7 +368,7 @@ struct pk3_box_t
                         import std.bitmanip : bitfields;
 
                         mixin(bitfields!(
-                            uint, "", 30,
+                            uint, "unknown2", 30,
                             ubyte, "is_egg", 1,
                             ubyte, "ability", 1));
 
