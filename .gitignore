@@ -2,6 +2,7 @@
 .cproject
 .project
 .settings/
+.vscode
 
 # DOXYGEN
 docs/
