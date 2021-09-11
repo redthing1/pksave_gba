@@ -1,6 +1,7 @@
 import std.stdio;
 import libspec;
 import std.file;
+import std.path;
 
 import util;
 
@@ -16,15 +17,17 @@ void main(string[] args) {
 
 	writeln("SAVE");
 	writefln("  TYPE: %s", loaded_save.type);
-	writefln("  KEY1: %s", gba_get_security_key(loaded_save.data + gba_game_detect.GBA_FRLG_SECURITY_KEY_OFFSET).key);
-	writefln("  KEY2: %s", gba_get_security_key(loaded_save.data + gba_game_detect.GBA_FRLG_SECURITY_KEY2_OFFSET).key);
+	writefln("  KEY1: %s", gba_get_security_key(
+			loaded_save.data + gba_game_detect.GBA_FRLG_SECURITY_KEY_OFFSET).key);
+	writefln("  KEY2: %s", gba_get_security_key(
+			loaded_save.data + gba_game_detect.GBA_FRLG_SECURITY_KEY2_OFFSET).key);
 
 	auto trainer = gba_get_trainer(loaded_save);
 	writeln("TRAINER");
 	writefln("  NAME: %s", decode_gba_text(trainer.name));
 	writefln("  GENDER: %s", trainer.gender == 0 ? "M" : "F");
 	writefln("  PLAYTIME: %s", gba_time_to_string(trainer.time_played));
-	
+
 	writeln("ITEMS");
 	writefln("  MONEY: %s", gba_get_money(loaded_save));
 
@@ -48,4 +51,18 @@ void main(string[] args) {
 		// writefln("    IVS: %s", pkmn.box.iv);
 		// writefln("    EVS: %s", pkmn.box.ev);		
 	}
+
+	// try modding it
+	gba_set_money(loaded_save, 10_000);
+
+	// now try to write the save to _pks.sav
+	auto output_sav_path = std.path.stripExtension(sav_path) ~ "_pks.sav";
+
+	writefln("writing new save to: %s", output_sav_path);
+	// copy loaded save buffer
+	auto output_sav_data = new ubyte[](savfile_data.length);
+	output_sav_data[0 .. $] = savfile_data[0 .. $]; // copy buffer
+	// now save
+	gba_write_main_save(cast(ubyte*) output_sav_data, loaded_save);
+	std.file.write(output_sav_path, output_sav_data);
 }
