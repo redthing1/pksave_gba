@@ -4,6 +4,8 @@ import libspec;
 import std.file;
 import std.stdio;
 import std.string;
+import std.conv;
+import pokegame;
 
 class PokeSave {
     public ubyte[] savfile_buf;
@@ -78,5 +80,39 @@ class PokeSave {
 
     @property money(uint value) {
         gba_set_money(loaded_save, value);
+    }
+
+    struct Personality {
+        ubyte raw_gender;
+        ubyte raw_extra_ability;
+        
+        ubyte raw_nature;
+        PkmnNature nature;
+
+        ushort raw_shiny;
+        bool shiny;
+
+        string toString() const {
+            import std.string: format;
+            return format("gender: %s, extra_ability: %s, nature: %s, shiny: %s", raw_gender, raw_extra_ability, nature, shiny);
+        }
+    }
+
+    Personality parse_personality(pk3_box_t box) {
+        Personality per;
+        
+        per.raw_gender = (box.pid & 0xff);
+        
+        per.raw_extra_ability = (box.pid & 0x01);
+
+        per.raw_nature = (box.pid % 25);
+        per.nature = per.raw_nature.to!PkmnNature();
+
+        ushort pid_high = ((box.pid >> 16) & 0xffff);
+        ushort pid_low = (box.pid & 0xffff);
+        per.raw_shiny = (box.ot_id ^ box.ot_sid ^ pid_high ^ pid_low);
+        per.shiny = per.raw_shiny < 8;
+
+        return per;
     }
 }

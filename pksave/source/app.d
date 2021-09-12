@@ -97,6 +97,8 @@ void cmd_info(ProgramArgs args) {
 		writefln("    STATS: %s", pkmn.party.stats);
 		writefln("    IVS: %s", box.iv);
 		writefln("    EVS: %s", box.ev);
+		auto personality = save.parse_personality(box);
+		writefln("    PERSONALITY: (%s)", personality);
 		// verify checksum (by recomputing)
 		ushort local_checksum = pk3_checksum(cast(const(ubyte*)) box.block,
 				pk3_encryption.PK3_DATA_SIZE);
