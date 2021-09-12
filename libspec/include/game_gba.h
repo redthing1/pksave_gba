@@ -34,7 +34,7 @@ enum {
 	/** The size in bytes of the GBA save we expect. */
 	GBA_SAVE_SIZE = 0x20000,
 	/** The unpacked size of a GBA save slot. Calculated from GBA_BLOCK_DATA_LENGTH * GBA_SAVE_BLOCK_COUNT */
-	GBA_UNPACKED_SIZE = 0xD900
+	GBA_UNPACKED_SIZE = 0xDF58
 };
 
 /**
