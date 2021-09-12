@@ -2,14 +2,37 @@ import std.stdio;
 import libspec;
 import std.file;
 import std.path;
+import commandr;
 
 import util;
 
-void main(string[] args) {
-	writeln("> PKSAVE");
+void main(string[] raw_args) {
+	// dfmt off
+	auto args = new Program("pksave", "1.0")
+		.add(new Flag("v", null, "turns on more verbose output").name("verbose").repeating)
+		.add(new Command("info")
+			.add(new Argument("sav", "save file"))
+			)
+		.add(new Command("trade")
+			.add(new Argument("source_sav", "source save file"))
+			.add(new Argument("receiver_sav", "receiver save file"))
+			)
+		.parse(raw_args);
 
-	auto sav_path = args[1];
-	// writefln("save path: %s", sav_path);
+	args
+		.on("info", (args) {
+			// args.flag("verbose") works
+			cmd_info(args);
+		})
+		.on("trade", (args) {
+			cmd_trade(args);
+		});
+	// dfmt on
+}
+
+void cmd_info(ProgramArgs args) {
+	auto sav_path = args.arg("sav");
+	writefln("> PKSAVE: %s", sav_path);
 	auto savfile_data = cast(ubyte[]) std.file.read(sav_path);
 
 	// try loading the save
@@ -17,10 +40,10 @@ void main(string[] args) {
 
 	writeln("SAVE");
 	writefln("  TYPE: %s", loaded_save.type);
-	writefln("  KEY1: %s", gba_get_security_key(
-			loaded_save.data + gba_game_detect.GBA_FRLG_SECURITY_KEY_OFFSET).key);
-	writefln("  KEY2: %s", gba_get_security_key(
-			loaded_save.data + gba_game_detect.GBA_FRLG_SECURITY_KEY2_OFFSET).key);
+	auto key1 = gba_get_security_key(loaded_save.data + gba_game_detect.GBA_FRLG_SECURITY_KEY_OFFSET).key;
+	auto key2 = gba_get_security_key(loaded_save.data + gba_game_detect.GBA_FRLG_SECURITY_KEY2_OFFSET).key;
+	auto key_match = key1 == key2 ? "VALID" : "INVALID";
+	writefln("  KEYS: %s (%s, %s)", key_match, key1, key2);
 	writefln("  POKEBLOCK: %s", pk3_t.sizeof);
 	writefln("    TRAIN: %s", gba_trainer_t.sizeof);
 	writefln("    PARTY: %s", pk3_party_t.sizeof);
@@ -56,9 +79,11 @@ void main(string[] args) {
 		writefln("    IVS: %s", box.iv);
 		writefln("    EVS: %s", box.ev);
 		// verify checksum (by recomputing)
-		ushort local_checksum = pk3_checksum(cast(const(ubyte*)) box.block, pk3_encryption.PK3_DATA_SIZE);
+		ushort local_checksum = pk3_checksum(cast(const(ubyte*)) box.block,
+				pk3_encryption.PK3_DATA_SIZE);
 		auto cksum_validity = (box_cksum == local_checksum) ? "VALID" : "INVALID";
-		writefln("    CKSUM: 0x%04X (%s) (orig: 0x%04X)", local_checksum, cksum_validity, box_cksum);
+		writefln("    CKSUM: 0x%04X (%s) (orig: 0x%04X)", local_checksum,
+				cksum_validity, box_cksum);
 	}
 
 	// try modding the save
@@ -82,4 +107,7 @@ void main(string[] args) {
 	// now save
 	gba_write_main_save(cast(ubyte*) output_sav_data, loaded_save);
 	std.file.write(output_sav_path, output_sav_data);
+}
+
+void cmd_trade(ProgramArgs args) {
 }
