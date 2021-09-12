@@ -27,13 +27,6 @@ void main(string[] args) {
 	writefln("  NAME: %s", decode_gba_text(trainer.name));
 	writefln("  GENDER: %s", trainer.gender == 0 ? "M" : "F");
 	writefln("  PLAYTIME: %s", gba_time_to_string(trainer.time_played));
-	auto hours = trainer.time_played.hours;
-	auto mins = trainer.time_played.minutes;
-	writefln("  HOURS: %02x %02x", (hours & 0xff), ((hours >> 8) & 0xff));
-	writefln("  MINS: %02x", mins);
-	writefln("  PAD0: %s", trainer.padding0);
-	writefln("  PAD1: %s", trainer.padding1);
-	writefln("  INTSIZE: %s", uint.sizeof);
 
 	writeln("ITEMS");
 	writefln("  MONEY: %s", gba_get_money(loaded_save));
