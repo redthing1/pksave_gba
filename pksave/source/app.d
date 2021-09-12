@@ -49,13 +49,16 @@ void main(string[] args) {
 		auto box_cksum = box.checksum;
 		pk3_decrypt(&box);
 		writefln("  NAME: %s (raw:%s)", decode_gba_text(box.nickname), format_hex(box.nickname));
-		writefln("    CKSUM: 0x%04X", box_cksum);
 		writefln("    SPECIES: 0x%04X", box.species);
 		// writefln("    TRAINER: %s", decode_gba_text(box.ot_name));
 		writefln("    LEVEL: %s", pkmn.party.level);
 		writefln("    STATS: %s", pkmn.party.stats);
 		writefln("    IVS: %s", box.iv);
 		writefln("    EVS: %s", box.ev);
+		// verify checksum (by recomputing)
+		ushort local_checksum = pk3_checksum(cast(const(ubyte*)) box.block, pk3_encryption.PK3_DATA_SIZE);
+		auto cksum_validity = (box_cksum == local_checksum) ? "VALID" : "INVALID";
+		writefln("    CKSUM: 0x%04X (%s) (orig: 0x%04X)", local_checksum, cksum_validity, box_cksum);
 	}
 
 	// try modding it

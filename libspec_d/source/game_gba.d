@@ -35,6 +35,16 @@ enum gba_checksum {
     GBA_CODEPAGE_SIZE = 0x100
 }
 
+enum pk3_encryption {
+	PK3_SHUFFLE_MOD = 24,
+	PK3_SHUFFLE_SHIFT = 0x2,
+	PK3_DATA_SIZE = 0x30,
+	PK3_BLOCK0_START = 0x00,
+	PK3_BLOCK1_START = 0x0C,
+	PK3_BLOCK2_START = 0x18,
+	PK3_BLOCK3_START = 0x24
+};
+
 enum {
     /** The size in bytes of the GBA save we expect. */
     GBA_SAVE_SIZE = 0x20000,
