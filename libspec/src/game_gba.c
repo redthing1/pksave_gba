@@ -102,8 +102,8 @@ typedef struct {
 #pragma pack(pop)
 
 typedef struct {
-	uint8_t order[GBA_SAVE_BLOCK_COUNT];
-	uint32_t save_index;
+	uint8_t order[GBA_SAVE_BLOCK_COUNT]; // mapping of which section id is in each physical sector
+	uint32_t save_index; // counts nuber of times saved
 } gba_internal_save_t;
 
 static inline gba_footer_t *get_block_footer(const uint8_t *ptr) {
