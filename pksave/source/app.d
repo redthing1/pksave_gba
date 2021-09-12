@@ -28,7 +28,7 @@ void main(string[] args) {
 
 	auto trainer = gba_get_trainer(loaded_save);
 	writeln("TRAINER");
-	writefln("  NAME: %s", decode_gba_text(trainer.name));
+	writefln("  NAME: %s (raw:%s)", decode_gba_text(trainer.name), format_hex(trainer.name));
 	writefln("  GENDER: %s", trainer.gender == 0 ? "M" : "F");
 	writefln("  PLAYTIME: %s", gba_time_to_string(trainer.time_played));
 
