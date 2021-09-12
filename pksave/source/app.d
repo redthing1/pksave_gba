@@ -20,6 +20,9 @@ void main(string[] raw_args) {
 			.add(new Argument("money", "money to add"))
 			.add(new Argument("out_sav", "output save file"))
 			)
+		.add(new Command("verify")
+			.add(new Argument("sav", "save file"))
+			)
 		.add(new Command("trade")
 			.add(new Argument("source_sav", "source save file"))
 			.add(new Argument("source_slot", "pokemon party slot"))
@@ -33,6 +36,9 @@ void main(string[] raw_args) {
 		.on("info", (args) {
 			// args.flag("verbose") works
 			cmd_info(args);
+		})
+		.on("verify", (args) {
+			cmd_verify(args);
 		})
 		.on("addmoney", (args) {
 			cmd_addmoney(args);
@@ -98,6 +104,19 @@ void cmd_info(ProgramArgs args) {
 		writefln("    CKSUM: 0x%04X (%s) (orig: 0x%04X)", local_checksum,
 				cksum_validity, box_cksum);
 	}
+}
+
+void cmd_verify(ProgramArgs args) {
+	auto in_sav = args.arg("sav");
+
+	writefln("loading save: %s", in_sav);
+	auto save = new PokeSave();
+	save.read_from(in_sav);
+	writefln("verifying save headers");
+	save.verify();
+	writefln("verifying pkmn in party");
+	save.verify_party();
+	writefln("save is VALID!");
 }
 
 void cmd_addmoney(ProgramArgs args) {

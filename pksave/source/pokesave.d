@@ -23,12 +23,12 @@ class PokeSave {
         std.file.write(path, output_sav_buf);
     }
 
-    bool verify() {
+    bool verify(bool forgive = false) {
         // verify main save validity
         // check savtype
         if (loaded_save.type != gba_savetype_t.GBA_TYPE_FRLG) {
-            assert(0, "save was not FRLG!");
-            // return false;
+            if (!forgive) assert(0, "save was not FRLG!");
+            return false;
         }
         // check keys
         auto key1 = gba_get_security_key(
@@ -36,15 +36,15 @@ class PokeSave {
         auto key2 = gba_get_security_key(
                 loaded_save.data + gba_game_detect.GBA_FRLG_SECURITY_KEY2_OFFSET).key;
         if (key1 != key2) {
-            assert(0, "FRLG keys did not match!");
-            // return false;
+            if (!forgive) assert(0, "FRLG keys did not match!");
+            return false;
         }
 
         // done
         return true;
     }
 
-    bool verify_party() {
+    bool verify_party(bool forgive = false) {
         bool all_valid = true;
         for (int i = 0; i < party.size; i++) {
             auto pkmn = party.pokemon[i];
@@ -56,7 +56,10 @@ class PokeSave {
             ushort local_checksum = pk3_checksum(cast(const(ubyte*)) box.block,
                     pk3_encryption.PK3_DATA_SIZE);
             auto is_valid = original_cksum == local_checksum;
-            assert(is_valid, format("party pkmn %s is corrupted", i));
+            if (!is_valid) {
+                all_valid = false;
+                if (!forgive) assert(0, format("party pkmn %s is corrupted", i));
+            }
         }
         return all_valid;
     }
