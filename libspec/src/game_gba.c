@@ -49,16 +49,6 @@ static const uint16_t GBA_TO_CODEPAGE[] = {
 	0xffff, 0xffff, 0xffff, 0x2192, 0xffff, 0xffff, 0x000a, 0x0000
 };
 
-enum gba_checksum {
-	GBA_SAVE_SECTION = 0xE000,
-	GBA_SAVE_BLOCK_COUNT = 14,
-	GBA_BLOCK_LENGTH = 0x1000,
-	GBA_BLOCK_DATA_LENGTH = 0xFF4,
-	GBA_BLOCK_FOOTER_LENGTH = 0xC,
-	GBA_BLOCK_FOOTER_MARK = 0x08012025,
-	GBA_CODEPAGE_SIZE = 0x100
-};
-
 /**
  * @brief Converts GBA encoded text into UCS2 encoded text.
  * @param dst Pointer to destination.

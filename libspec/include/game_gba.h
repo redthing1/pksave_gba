@@ -30,11 +30,22 @@ typedef enum {
 	GBA_TYPE_FRLG
 } gba_savetype_t;
 
+
+enum gba_checksum {
+	GBA_SAVE_SECTION = 0xE000,
+	GBA_SAVE_BLOCK_COUNT = 14,
+	GBA_BLOCK_LENGTH = 0x1000,
+	GBA_BLOCK_DATA_LENGTH = 0xFF4,
+	GBA_BLOCK_FOOTER_LENGTH = 0xC,
+	GBA_BLOCK_FOOTER_MARK = 0x08012025,
+	GBA_CODEPAGE_SIZE = 0x100
+};
+
 enum {
 	/** The size in bytes of the GBA save we expect. */
 	GBA_SAVE_SIZE = 0x20000,
-	/** The unpacked size of a GBA save slot. Calculated from GBA_BLOCK_DATA_LENGTH * GBA_SAVE_BLOCK_COUNT */
-	GBA_UNPACKED_SIZE = 0xDF58
+	/** The unpacked size of a GBA save slot. Represents all the actual data content (as opposed to checksum/control values) of our saves */
+	GBA_UNPACKED_SIZE = GBA_BLOCK_DATA_LENGTH * GBA_SAVE_BLOCK_COUNT
 };
 
 /**
