@@ -22,7 +22,10 @@ void main(string[] raw_args) {
 			)
 		.add(new Command("trade")
 			.add(new Argument("source_sav", "source save file"))
+			.add(new Argument("source_slot", "pokemon party slot"))
 			.add(new Argument("receiver_sav", "receiver save file"))
+			.add(new Argument("receiver_slot", "pokemon party slot"))
+			.add(new Argument("out_sav", "output save file"))
 			)
 		.parse(raw_args);
 
@@ -114,4 +117,27 @@ void cmd_addmoney(ProgramArgs args) {
 }
 
 void cmd_trade(ProgramArgs args) {
+	auto source_sav = args.arg("source_sav");
+	auto receiver_sav = args.arg("receiver_sav");
+	auto source_slot = args.arg("source_slot").to!uint;
+	auto receiver_slot = args.arg("receiver_slot").to!uint;
+	auto out_sav = args.arg("out_sav");
+
+	writefln("loading source save: %s", source_sav);
+	auto source_save = new PokeSave();
+	source_save.read_from(source_sav);
+	source_save.verify();
+	writefln("loading receiver save: %s", receiver_sav);
+	auto receiver_save = new PokeSave();
+	receiver_save.read_from(receiver_sav);
+	receiver_save.verify();
+
+	writefln("transferring pokemon from source slot %s to receiver slot %s", source_slot, receiver_slot);
+	// decrypt boxes
+
+	// TODO: verify party integrity
+	writefln("verifying party integrity: %s", "UNKNOWN");
+
+	writefln("writing save: %s", out_sav);
+	receiver_save.write_to(out_sav);
 }
