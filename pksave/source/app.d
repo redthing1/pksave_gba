@@ -86,23 +86,6 @@ void cmd_info(ProgramArgs args) {
 		writefln("    CKSUM: 0x%04X (%s) (orig: 0x%04X)", local_checksum,
 				cksum_validity, box_cksum);
 	}
-
-	// try modding the save
-
-	// set money to value
-	save.money = 10_000;
-
-	// change 2nd pokemon to a squirtle
-	auto pkmn1 = &party.pokemon[1];
-	pk3_decrypt(&pkmn1.box);
-	pkmn1.box.species = 0x0007; // squirtle
-	pk3_encrypt(&pkmn1.box);
-
-	// now try to write the save to _pks.sav
-	auto output_sav_path = std.path.stripExtension(sav_path) ~ "_pks.sav";
-
-	writefln("writing new save to: %s", output_sav_path);
-	save.write_to(output_sav_path);
 }
 
 void cmd_trade(ProgramArgs args) {
