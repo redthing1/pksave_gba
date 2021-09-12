@@ -5,6 +5,7 @@ import std.path;
 import commandr;
 
 import util;
+import pokesave;
 
 void main(string[] raw_args) {
 	// dfmt off
@@ -33,15 +34,15 @@ void main(string[] raw_args) {
 void cmd_info(ProgramArgs args) {
 	auto sav_path = args.arg("sav");
 	writefln("> PKSAVE: %s", sav_path);
-	auto savfile_data = cast(ubyte[]) std.file.read(sav_path);
-
-	// try loading the save
-	auto loaded_save = gba_read_main_save(cast(const(ubyte)*) savfile_data);
+	
+	auto save = new PokeSave();
+	save.read_from(sav_path);
+	save.verify();
 
 	writeln("SAVE");
-	writefln("  TYPE: %s", loaded_save.type);
-	auto key1 = gba_get_security_key(loaded_save.data + gba_game_detect.GBA_FRLG_SECURITY_KEY_OFFSET).key;
-	auto key2 = gba_get_security_key(loaded_save.data + gba_game_detect.GBA_FRLG_SECURITY_KEY2_OFFSET).key;
+	writefln("  TYPE: %s", save.loaded_save.type);
+	auto key1 = gba_get_security_key(save.loaded_save.data + gba_game_detect.GBA_FRLG_SECURITY_KEY_OFFSET).key;
+	auto key2 = gba_get_security_key(save.loaded_save.data + gba_game_detect.GBA_FRLG_SECURITY_KEY2_OFFSET).key;
 	auto key_match = key1 == key2 ? "VALID" : "INVALID";
 	writefln("  KEYS: %s (%s, %s)", key_match, key1, key2);
 	writefln("  POKEBLOCK: %s", pk3_t.sizeof);
@@ -49,16 +50,16 @@ void cmd_info(ProgramArgs args) {
 	writefln("    PARTY: %s", pk3_party_t.sizeof);
 	writefln("    BOX: %s", pk3_box_t.sizeof);
 
-	auto trainer = gba_get_trainer(loaded_save);
+	auto trainer = gba_get_trainer(save.loaded_save);
 	writeln("TRAINER");
 	writefln("  NAME: %s (raw:%s)", decode_gba_text(trainer.name), format_hex(trainer.name));
 	writefln("  GENDER: %s", trainer.gender == 0 ? "M" : "F");
 	writefln("  PLAYTIME: %s", gba_time_to_string(trainer.time_played));
 
 	writeln("ITEMS");
-	writefln("  MONEY: %s", gba_get_money(loaded_save));
+	writefln("  MONEY: %s", gba_get_money(save.loaded_save));
 
-	auto party = gba_get_party(loaded_save);
+	auto party = gba_get_party(save.loaded_save);
 	if (party == null) {
 		writeln("failed to get party");
 	}
@@ -89,7 +90,7 @@ void cmd_info(ProgramArgs args) {
 	// try modding the save
 
 	// set money to value
-	gba_set_money(loaded_save, 10_000);
+	gba_set_money(save.loaded_save, 10_000);
 
 	// change 2nd pokemon to a squirtle
 	auto pkmn1 = &party.pokemon[1];
@@ -101,12 +102,7 @@ void cmd_info(ProgramArgs args) {
 	auto output_sav_path = std.path.stripExtension(sav_path) ~ "_pks.sav";
 
 	writefln("writing new save to: %s", output_sav_path);
-	// copy loaded save buffer
-	auto output_sav_data = new ubyte[](savfile_data.length);
-	output_sav_data[0 .. $] = savfile_data[0 .. $]; // copy buffer
-	// now save
-	gba_write_main_save(cast(ubyte*) output_sav_data, loaded_save);
-	std.file.write(output_sav_path, output_sav_data);
+	save.write_to(output_sav_path);
 }
 
 void cmd_trade(ProgramArgs args) {
