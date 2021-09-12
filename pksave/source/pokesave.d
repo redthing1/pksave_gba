@@ -74,7 +74,7 @@ class PokeSave {
     }
 
     @property rom_loaded() {
-        return rom != null;
+        return rom !is null;
     }
 
     @property trainer() {

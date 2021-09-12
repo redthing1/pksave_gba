@@ -1,5 +1,11 @@
 module pokegame;
 
+import std.file;
+import std.stdio;
+import std.string;
+import std.conv;
+import std.algorithm.comparison;
+
 enum PkmnNature {
     Hardy = 0,
     Lonely = 1,
@@ -34,7 +40,7 @@ enum ubyte[] BULBASAUR_SPECIES_DATA = [
         0x00, 0x00, 0x03, 0x00, 0x00
     ];
 
-enum PkmnROMSpeciesData {
+enum PkmnROMSpeciesData : uint {
     /*
         bulbasaur (ID: 0x01) offset
         data looks like:
@@ -44,6 +50,13 @@ enum PkmnROMSpeciesData {
     OFFSET_BULBASAUR_SGS_138 = 0xA6BCEC,
 }
 
+enum PkmnROMDetect {
+    UNKNOWN,
+    FR,
+    LG,
+    SGS_138,
+}
+
 class PkmnROM {
     public ubyte[] rom_buf;
 
@@ -51,8 +64,33 @@ class PkmnROM {
         rom_buf = cast(ubyte[]) std.file.read(path);
     }
 
+    uint get_specdata_offset_for_rom(PkmnROMDetect rom_type) {
+        switch (rom_type) {
+            case PkmnROMDetect.FR:
+                return PkmnROMSpeciesData.OFFSET_BULBASAUR_FR;
+            case PkmnROMDetect.SGS_138:
+                return PkmnROMSpeciesData.OFFSET_BULBASAUR_SGS_138;
+            default:
+                return 0;
+        }
+    }
+
     bool verify() {
         // ensure that bulbasaur data is found at offset
+        writefln("verifying rom");
+
+        // read 28 bytes from ROM at address
+        auto offset = get_specdata_offset_for_rom(PkmnROMDetect.FR);
+        // auto offset = get_specdata_offset_for_rom(PkmnROMDetect.SGS_138);
+
+        auto offset_end = offset + 28;
+        auto rom_slice = rom_buf[offset..offset_end];
+        writefln("rom slice (0x%06x-0x%06x): %s", offset, offset_end, rom_slice);
+
+        // compare with bulbasaur seq
+        auto is_equal = equal(rom_slice, BULBASAUR_SPECIES_DATA);
+
+        writefln("match: %s", is_equal);
 
         return false;
     }

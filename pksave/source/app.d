@@ -14,6 +14,7 @@ void main(string[] raw_args) {
 		.add(new Flag("v", null, "turns on more verbose output").name("verbose").repeating)
 		.add(new Command("info")
 			.add(new Argument("sav", "save file"))
+			.add(new Argument("rom", "rom file").optional.defaultValue("NONE"))
 			)
 		.add(new Command("addmoney")
 			.add(new Argument("in_sav", "input save file"))
@@ -51,11 +52,18 @@ void main(string[] raw_args) {
 
 void cmd_info(ProgramArgs args) {
 	auto sav_path = args.arg("sav");
+	auto rom_path = args.arg("rom");
+
 	writefln("> PKSAVE INFO: %s", sav_path);
 	
 	auto save = new PokeSave();
 	save.read_from(sav_path);
 	save.verify();
+
+	if (rom_path != "NONE") {
+		writefln("> ROM: %s", rom_path);
+		save.load_companion_rom(rom_path);
+	}
 
 	writeln("SAVE");
 	writefln("  TYPE: %s", save.loaded_save.type);
