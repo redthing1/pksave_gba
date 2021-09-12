@@ -26,12 +26,23 @@ enum gba_savetype_t
     GBA_TYPE_FRLG = 3
 }
 
+enum gba_checksum
+{
+    GBA_SAVE_SECTION = 0xE000,
+    GBA_SAVE_BLOCK_COUNT = 14,
+    GBA_BLOCK_LENGTH = 0x1000,
+    GBA_BLOCK_DATA_LENGTH = 0xFF4,
+    GBA_BLOCK_FOOTER_LENGTH = 0xC,
+    GBA_BLOCK_FOOTER_MARK = 0x08012025,
+    GBA_CODEPAGE_SIZE = 0x100
+}
+
 enum
 {
     /** The size in bytes of the GBA save we expect. */
     GBA_SAVE_SIZE = 0x20000,
-    /** The unpacked size of a GBA save slot. */
-    GBA_UNPACKED_SIZE = 0xD900
+    /** The unpacked size of a GBA save slot. Represents all the actual data content (as opposed to checksum/control values) of our saves */
+    GBA_UNPACKED_SIZE = gba_checksum.GBA_BLOCK_DATA_LENGTH * gba_checksum.GBA_SAVE_BLOCK_COUNT
 }
 
 /**
