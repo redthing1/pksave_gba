@@ -44,7 +44,7 @@ void main(string[] args) {
 	// print party members
 	for (int i = 0; i < party.size; i++) {
 		auto pkmn = party.pokemon[i];
-		writefln("  NAME: %s", decode_gba_text(pkmn.box.nickname));
+		writefln("  NAME: %s (raw:%s)", decode_gba_text(pkmn.box.nickname), format_hex(pkmn.box.nickname));
 		writefln("    SPECIES: 0x%04x", pkmn.box.species);
 		// writefln("    TRAINER: %s", decode_gba_text(pkmn.box.ot_name));
 		writefln("    LEVEL: %s", pkmn.party.level);

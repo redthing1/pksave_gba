@@ -2,6 +2,7 @@ module util;
 
 import std.utf;
 import std.string;
+import std.array;
 import libspec;
 
 wchar[] decode_gba_text(ubyte[] gba_text) {
@@ -15,4 +16,12 @@ wchar[] decode_gba_text(ubyte[] gba_text) {
 
 string gba_time_to_string(gba_time_t time) {
     return format("%02d:%02d:%02d (%d)", time.hours, time.minutes, time.seconds, time.frames);
+}
+
+string format_hex(ubyte[] data) {
+    auto sb = appender!string;
+    foreach (ch; data) {
+        sb ~= format(" %02X", ch);
+    }
+    return sb[];
 }
