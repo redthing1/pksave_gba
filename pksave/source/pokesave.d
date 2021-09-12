@@ -10,6 +10,7 @@ import pokegame;
 class PokeSave {
     public ubyte[] savfile_buf;
     public gba_save_t* loaded_save;
+    public PkmnROM rom;
 
     void read_from(string path) {
         savfile_buf = cast(ubyte[]) std.file.read(path);
@@ -23,6 +24,12 @@ class PokeSave {
         // now save
         gba_write_main_save(cast(ubyte*) output_sav_buf, loaded_save);
         std.file.write(path, output_sav_buf);
+    }
+
+    void load_companion_rom(string path) {
+        rom = new PkmnROM();
+        rom.read_from(path);
+        rom.verify();
     }
 
     bool verify(bool forgive = false) {
@@ -64,6 +71,10 @@ class PokeSave {
             }
         }
         return all_valid;
+    }
+
+    @property rom_loaded() {
+        return rom != null;
     }
 
     @property trainer() {

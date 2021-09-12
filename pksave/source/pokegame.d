@@ -27,3 +27,33 @@ enum PkmnNature {
     Careful = 23,
     Quirky = 24,
 }
+
+enum ubyte[] BULBASAUR_SPECIES_DATA = [
+        0x2D, 0x31, 0x31, 0x2D, 0x41, 0x41, 0x0C, 0x03, 0x2D, 0x40, 0x00, 0x01,
+        0x00, 0x00, 0x00, 0x00, 0x1F, 0x14, 0x46, 0x03, 0x01, 0x07, 0x41,
+        0x00, 0x00, 0x03, 0x00, 0x00
+    ];
+
+enum PkmnROMSpeciesData {
+    /*
+        bulbasaur (ID: 0x01) offset
+        data looks like:
+        2D 31 31 2D 41 41 0C 03 2D 40 00 01 00 00 00 00 1F 14 46 03 01 07 41 00 00 03 00 00  // BULBASAUR
+    */
+    OFFSET_BULBASAUR_FR = 0x2547A0,
+    OFFSET_BULBASAUR_SGS_138 = 0xA6BCEC,
+}
+
+class PkmnROM {
+    public ubyte[] rom_buf;
+
+    void read_from(string path) {
+        rom_buf = cast(ubyte[]) std.file.read(path);
+    }
+
+    bool verify() {
+        // ensure that bulbasaur data is found at offset
+
+        return false;
+    }
+}
