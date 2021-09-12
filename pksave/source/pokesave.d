@@ -26,4 +26,20 @@ class PokeSave {
         // verify validity
         // check savtype and keys
     }
+
+    @property trainer() {
+        return gba_get_trainer(loaded_save);
+    }
+
+    @property party() {
+        return gba_get_party(loaded_save);
+    }
+
+    @property money() {
+        return gba_get_money(loaded_save);
+    }
+
+    @property money(uint value) {
+        gba_set_money(loaded_save, value);
+    }
 }

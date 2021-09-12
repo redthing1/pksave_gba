@@ -33,7 +33,7 @@ void main(string[] raw_args) {
 
 void cmd_info(ProgramArgs args) {
 	auto sav_path = args.arg("sav");
-	writefln("> PKSAVE: %s", sav_path);
+	writefln("> PKSAVE INFO: %s", sav_path);
 	
 	auto save = new PokeSave();
 	save.read_from(sav_path);
@@ -50,7 +50,7 @@ void cmd_info(ProgramArgs args) {
 	writefln("    PARTY: %s", pk3_party_t.sizeof);
 	writefln("    BOX: %s", pk3_box_t.sizeof);
 
-	auto trainer = gba_get_trainer(save.loaded_save);
+	auto trainer = save.trainer;
 	writeln("TRAINER");
 	writefln("  NAME: %s (raw:%s)", decode_gba_text(trainer.name), format_hex(trainer.name));
 	writefln("  GENDER: %s", trainer.gender == 0 ? "M" : "F");
@@ -59,7 +59,7 @@ void cmd_info(ProgramArgs args) {
 	writeln("ITEMS");
 	writefln("  MONEY: %s", gba_get_money(save.loaded_save));
 
-	auto party = gba_get_party(save.loaded_save);
+	auto party = save.party;
 	if (party == null) {
 		writeln("failed to get party");
 	}
@@ -90,7 +90,7 @@ void cmd_info(ProgramArgs args) {
 	// try modding the save
 
 	// set money to value
-	gba_set_money(save.loaded_save, 10_000);
+	save.money = 10_000;
 
 	// change 2nd pokemon to a squirtle
 	auto pkmn1 = &party.pokemon[1];
