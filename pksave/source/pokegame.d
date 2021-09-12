@@ -67,17 +67,28 @@ class PkmnROM {
 
     uint get_specdata_offset_for_rom(PkmnROMDetect rom_type) {
         switch (rom_type) {
-            case PkmnROMDetect.FR:
-                return PkmnROMSpeciesData.OFFSET_BULBASAUR_FR;
-            case PkmnROMDetect.SGS_138:
-                return PkmnROMSpeciesData.OFFSET_BULBASAUR_SGS_138;
-            default:
-                return 0;
+        case PkmnROMDetect.FR:
+            return PkmnROMSpeciesData.OFFSET_BULBASAUR_FR;
+        case PkmnROMDetect.SGS_138:
+            return PkmnROMSpeciesData.OFFSET_BULBASAUR_SGS_138;
+        default:
+            return 0;
         }
     }
 
-    void detect_rom_type() {
-        rom_type = PkmnROMDetect.FR;
+    bool detect_rom_type() {
+        // check third byte of species data
+        if (rom_buf[PkmnROMSpeciesData.OFFSET_BULBASAUR_FR + 2] == 0x31) {
+            rom_type = PkmnROMDetect.FR;
+            return true;
+        }
+        if (rom_buf[PkmnROMSpeciesData.OFFSET_BULBASAUR_SGS_138 + 2] == 0x31) {
+            rom_type = PkmnROMDetect.SGS_138;
+            return true;
+        }
+
+        rom_type = PkmnROMDetect.UNKNOWN;
+        return false;
     }
 
     bool verify() {
@@ -92,7 +103,7 @@ class PkmnROM {
         // auto offset = get_specdata_offset_for_rom(PkmnROMDetect.SGS_138);
 
         auto offset_end = offset + 28;
-        auto rom_slice = rom_buf[offset..offset_end];
+        auto rom_slice = rom_buf[offset .. offset_end];
         // writefln("rom slice (0x%06x-0x%06x): %s", offset, offset_end, rom_slice);
 
         // compare with bulbasaur seq
@@ -101,7 +112,8 @@ class PkmnROM {
         // writefln("rom slice specdata match: %s", is_equal);
 
         if (!is_equal) {
-            assert(0, format("rom (detected %s) slice (0x%06x-0x%06x) did not match BULBASAUR seq: %s", rom_type, offset, offset_end, rom_slice));
+            assert(0, format("rom (detected %s) slice (0x%06x-0x%06x) did not match BULBASAUR seq: %s",
+                    rom_type, offset, offset_end, rom_slice));
         }
 
         return is_equal;
