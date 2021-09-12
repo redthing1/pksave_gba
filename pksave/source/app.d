@@ -67,6 +67,9 @@ void cmd_info(ProgramArgs args) {
 
 	writeln("SAVE");
 	writefln("  TYPE: %s", save.loaded_save.type);
+	if (save.rom_loaded) {
+		writefln("  ROM: %s", save.rom.rom_type);
+	}
 	auto key1 = gba_get_security_key(save.loaded_save.data + gba_game_detect.GBA_FRLG_SECURITY_KEY_OFFSET).key;
 	auto key2 = gba_get_security_key(save.loaded_save.data + gba_game_detect.GBA_FRLG_SECURITY_KEY2_OFFSET).key;
 	auto key_match = key1 == key2 ? "VALID" : "INVALID";

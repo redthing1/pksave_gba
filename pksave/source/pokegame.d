@@ -59,6 +59,7 @@ enum PkmnROMDetect {
 
 class PkmnROM {
     public ubyte[] rom_buf;
+    public PkmnROMDetect rom_type;
 
     void read_from(string path) {
         rom_buf = cast(ubyte[]) std.file.read(path);
@@ -75,23 +76,34 @@ class PkmnROM {
         }
     }
 
+    void detect_rom_type() {
+        rom_type = PkmnROMDetect.FR;
+    }
+
     bool verify() {
+        // detect
+        detect_rom_type();
+
         // ensure that bulbasaur data is found at offset
-        writefln("verifying rom");
+        // writefln("verifying rom");
 
         // read 28 bytes from ROM at address
-        auto offset = get_specdata_offset_for_rom(PkmnROMDetect.FR);
+        auto offset = get_specdata_offset_for_rom(rom_type);
         // auto offset = get_specdata_offset_for_rom(PkmnROMDetect.SGS_138);
 
         auto offset_end = offset + 28;
         auto rom_slice = rom_buf[offset..offset_end];
-        writefln("rom slice (0x%06x-0x%06x): %s", offset, offset_end, rom_slice);
+        // writefln("rom slice (0x%06x-0x%06x): %s", offset, offset_end, rom_slice);
 
         // compare with bulbasaur seq
         auto is_equal = equal(rom_slice, BULBASAUR_SPECIES_DATA);
 
-        writefln("match: %s", is_equal);
+        // writefln("rom slice specdata match: %s", is_equal);
 
-        return false;
+        if (!is_equal) {
+            assert(0, format("rom (detected %s) slice (0x%06x-0x%06x) did not match BULBASAUR seq: %s", rom_type, offset, offset_end, rom_slice));
+        }
+
+        return is_equal;
     }
 }
