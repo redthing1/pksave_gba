@@ -1,9 +1,10 @@
 import std.stdio;
-import libspec;
 import std.file;
 import std.path;
+import std.conv;
 import commandr;
 
+import libspec;
 import util;
 import pokesave;
 
@@ -13,6 +14,11 @@ void main(string[] raw_args) {
 		.add(new Flag("v", null, "turns on more verbose output").name("verbose").repeating)
 		.add(new Command("info")
 			.add(new Argument("sav", "save file"))
+			)
+		.add(new Command("addmoney")
+			.add(new Argument("in_sav", "input save file"))
+			.add(new Argument("money", "money to add"))
+			.add(new Argument("out_sav", "output save file"))
 			)
 		.add(new Command("trade")
 			.add(new Argument("source_sav", "source save file"))
@@ -24,6 +30,9 @@ void main(string[] raw_args) {
 		.on("info", (args) {
 			// args.flag("verbose") works
 			cmd_info(args);
+		})
+		.on("addmoney", (args) {
+			cmd_addmoney(args);
 		})
 		.on("trade", (args) {
 			cmd_trade(args);
@@ -86,6 +95,22 @@ void cmd_info(ProgramArgs args) {
 		writefln("    CKSUM: 0x%04X (%s) (orig: 0x%04X)", local_checksum,
 				cksum_validity, box_cksum);
 	}
+}
+
+void cmd_addmoney(ProgramArgs args) {
+	auto in_sav = args.arg("in_sav");
+	auto out_sav = args.arg("out_sav");
+	auto add_money = args.arg("money").to!uint;
+
+	writefln("loading save: %s", in_sav);
+	auto save = new PokeSave();
+	save.read_from(in_sav);
+	save.verify();
+	writefln("adding money: %s", add_money);
+	save.money = save.money + add_money;
+	writefln("total money: %s", save.money);
+	writefln("writing save: %s", out_sav);
+	save.write_to(out_sav);
 }
 
 void cmd_trade(ProgramArgs args) {
