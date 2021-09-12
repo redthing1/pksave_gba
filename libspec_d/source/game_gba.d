@@ -512,14 +512,13 @@ struct gba_time_t
  */
 struct gba_trainer_t
 {
-    import std.bitmanip : bitfields;
-
-    ubyte[7] name;
-    mixin(bitfields!(ubyte, "padding0", 8));
+    ubyte[7] name; // (0x0)
+    ubyte padding0; // (0x7)
     //padding
-    ubyte gender;
-    mixin(bitfields!(ubyte, "padding1", 8));
-    //padding
+    ubyte gender; // (0x8)
+    ubyte padding1; // (0x9)
+    
+    // trainer (0xA)
     union
     {
         uint fid;
@@ -531,7 +530,7 @@ struct gba_trainer_t
         }
     }
 
-    gba_time_t time_played;
+    gba_time_t time_played; // time (0xE)
 }
 
 union gba_security_key_t

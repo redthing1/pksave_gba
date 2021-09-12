@@ -37,6 +37,7 @@ void main(string[] args) {
 	}
 	writeln("PARTY");
 	writefln("  POKEBLOCK: %s", pk3_t.sizeof);
+	writefln("    TRAIN: %s", gba_trainer_t.sizeof);
 	writefln("    PARTY: %s", pk3_party_t.sizeof);
 	writefln("    BOX: %s", pk3_box_t.sizeof);
 	writefln("  MEMBERS: %s", party.size);
