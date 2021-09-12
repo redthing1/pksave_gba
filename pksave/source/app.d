@@ -21,6 +21,10 @@ void main(string[] args) {
 			loaded_save.data + gba_game_detect.GBA_FRLG_SECURITY_KEY_OFFSET).key);
 	writefln("  KEY2: %s", gba_get_security_key(
 			loaded_save.data + gba_game_detect.GBA_FRLG_SECURITY_KEY2_OFFSET).key);
+	writefln("  POKEBLOCK: %s", pk3_t.sizeof);
+	writefln("    TRAIN: %s", gba_trainer_t.sizeof);
+	writefln("    PARTY: %s", pk3_party_t.sizeof);
+	writefln("    BOX: %s", pk3_box_t.sizeof);
 
 	auto trainer = gba_get_trainer(loaded_save);
 	writeln("TRAINER");
@@ -36,10 +40,6 @@ void main(string[] args) {
 		writeln("failed to get party");
 	}
 	writeln("PARTY");
-	writefln("  POKEBLOCK: %s", pk3_t.sizeof);
-	writefln("    TRAIN: %s", gba_trainer_t.sizeof);
-	writefln("    PARTY: %s", pk3_party_t.sizeof);
-	writefln("    BOX: %s", pk3_box_t.sizeof);
 	writefln("  MEMBERS: %s", party.size);
 	// print party members
 	for (int i = 0; i < party.size; i++) {
