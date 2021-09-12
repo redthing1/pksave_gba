@@ -10,6 +10,8 @@ supports games:
 
 provides a modified version of [libspec](https://github.com/Chase-san/libspec) and a command line tool, `pksave`, for advanced editing of FRLG/SGS save files.
 
+yes, this is the first save editor for ultra shiny gold sigma!
+
 pksave features:
 + dump save info
 + modify money
