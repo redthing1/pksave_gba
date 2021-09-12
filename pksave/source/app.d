@@ -61,14 +61,16 @@ void main(string[] args) {
 		writefln("    CKSUM: 0x%04X (%s) (orig: 0x%04X)", local_checksum, cksum_validity, box_cksum);
 	}
 
-	// try modding it
+	// try modding the save
+
+	// set money to value
 	gba_set_money(loaded_save, 10_000);
-	auto pkmn1 = &party.pokemon[2];
-	// auto pkmn1_box = pkmn1.box;
+
+	// change 2nd pokemon to a squirtle
+	auto pkmn1 = &party.pokemon[1];
 	pk3_decrypt(&pkmn1.box);
 	pkmn1.box.species = 0x0007; // squirtle
 	pk3_encrypt(&pkmn1.box);
-	// pkmn1.box = pkmn1_box;
 
 	// now try to write the save to _pks.sav
 	auto output_sav_path = std.path.stripExtension(sav_path) ~ "_pks.sav";
