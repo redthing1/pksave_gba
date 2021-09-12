@@ -6,7 +6,7 @@ advanced gen iii save editing research tools. specifically, fire red/leaf green 
 
 supports games:
 + fire red/leaf green (FRLG)
-+ ultra shiny gold sigma (SGS)
++ ultra shiny gold sigma (SGS) (tested on `v1.3.8` rom)
 
 provides a modified version of [libspec](https://github.com/Chase-san/libspec) and a command line tool, `pksave`, for advanced editing of FRLG/SGS save files.
 
