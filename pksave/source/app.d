@@ -63,6 +63,12 @@ void main(string[] args) {
 
 	// try modding it
 	gba_set_money(loaded_save, 10_000);
+	auto pkmn1 = &party.pokemon[2];
+	// auto pkmn1_box = pkmn1.box;
+	pk3_decrypt(&pkmn1.box);
+	pkmn1.box.species = 0x0007; // squirtle
+	pk3_encrypt(&pkmn1.box);
+	// pkmn1.box = pkmn1_box;
 
 	// now try to write the save to _pks.sav
 	auto output_sav_path = std.path.stripExtension(sav_path) ~ "_pks.sav";
