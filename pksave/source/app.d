@@ -23,8 +23,8 @@ void main(string[] raw_args) {
 		.add(new Command("trade")
 			.add(new Argument("source_sav", "source save file"))
 			.add(new Argument("source_slot", "pokemon party slot"))
-			.add(new Argument("receiver_sav", "receiver save file"))
-			.add(new Argument("receiver_slot", "pokemon party slot"))
+			.add(new Argument("recv_sav", "receiver save file"))
+			.add(new Argument("recv_slot", "pokemon party slot"))
 			.add(new Argument("out_sav", "output save file"))
 			)
 		.parse(raw_args);
@@ -118,27 +118,37 @@ void cmd_addmoney(ProgramArgs args) {
 
 void cmd_trade(ProgramArgs args) {
 	auto source_sav = args.arg("source_sav");
-	auto receiver_sav = args.arg("receiver_sav");
+	auto recv_sav = args.arg("recv_sav");
 	auto source_slot = args.arg("source_slot").to!uint;
-	auto receiver_slot = args.arg("receiver_slot").to!uint;
+	auto recv_slot = args.arg("recv_slot").to!uint;
 	auto out_sav = args.arg("out_sav");
 
 	writefln("loading source save: %s", source_sav);
 	auto source_save = new PokeSave();
 	source_save.read_from(source_sav);
 	source_save.verify();
-	writefln("loading receiver save: %s", receiver_sav);
-	auto receiver_save = new PokeSave();
-	receiver_save.read_from(receiver_sav);
-	receiver_save.verify();
+	writefln("loading receiver save: %s", recv_sav);
+	auto recv_save = new PokeSave();
+	recv_save.read_from(recv_sav);
+	recv_save.verify();
 
-	writefln("transferring pokemon from source slot %s to receiver slot %s", source_slot, receiver_slot);
+	writefln("transferring pokemon from source slot %s to receiver slot %s", source_slot, recv_slot);
 	// decrypt boxes
+	auto source_pkmn = &source_save.party.pokemon[source_slot];
+	auto source_box_copy = source_pkmn.box;
+	pk3_decrypt(&source_box_copy);
+	auto recv_pkmn = &recv_save.party.pokemon[recv_slot];
+	pk3_decrypt(&recv_pkmn.box);
+	writefln("%s (L. %s) is being transformed into data and uploaded!", decode_gba_text(source_box_copy.nickname), source_pkmn.party.level);
+	recv_pkmn.party = source_pkmn.party;
+	recv_pkmn.box = source_box_copy;
+	writefln("On the other end, it's %s (L. %s)!", decode_gba_text(recv_pkmn.box.nickname), recv_pkmn.party.level);
+	pk3_encrypt(&recv_pkmn.box);
 
-	// TODO: verify party integrity
-	auto validity = receiver_save.verify_party();
-	writefln("verifying party integrity: %s", validity ? "VALID" : "INVALID");
+	// verify party integrity
+	auto validity = recv_save.verify_party();
+	writefln("verifying recv party integrity: %s", validity ? "VALID" : "INVALID");
 
 	writefln("writing save: %s", out_sav);
-	receiver_save.write_to(out_sav);
+	recv_save.write_to(out_sav);
 }
