@@ -136,7 +136,8 @@ void cmd_trade(ProgramArgs args) {
 	// decrypt boxes
 
 	// TODO: verify party integrity
-	writefln("verifying party integrity: %s", "UNKNOWN");
+	auto validity = receiver_save.verify_party();
+	writefln("verifying party integrity: %s", validity ? "VALID" : "INVALID");
 
 	writefln("writing save: %s", out_sav);
 	receiver_save.write_to(out_sav);

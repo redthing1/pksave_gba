@@ -3,6 +3,7 @@ module pokesave;
 import libspec;
 import std.file;
 import std.stdio;
+import std.string;
 
 class PokeSave {
     public ubyte[] savfile_buf;
@@ -22,9 +23,42 @@ class PokeSave {
         std.file.write(path, output_sav_buf);
     }
 
-    void verify() {
-        // verify validity
-        // check savtype and keys
+    bool verify() {
+        // verify main save validity
+        // check savtype
+        if (loaded_save.type != gba_savetype_t.GBA_TYPE_FRLG) {
+            assert(0, "save was not FRLG!");
+            // return false;
+        }
+        // check keys
+        auto key1 = gba_get_security_key(
+                loaded_save.data + gba_game_detect.GBA_FRLG_SECURITY_KEY_OFFSET).key;
+        auto key2 = gba_get_security_key(
+                loaded_save.data + gba_game_detect.GBA_FRLG_SECURITY_KEY2_OFFSET).key;
+        if (key1 != key2) {
+            assert(0, "FRLG keys did not match!");
+            // return false;
+        }
+
+        // done
+        return true;
+    }
+
+    bool verify_party() {
+        bool all_valid = true;
+        for (int i = 0; i < party.size; i++) {
+            auto pkmn = party.pokemon[i];
+            ushort original_cksum = pkmn.box.checksum;
+            // create a local copy and decrypt
+            auto box = pkmn.box;
+            pk3_decrypt(&box);
+            // verify checksum (by recomputing)
+            ushort local_checksum = pk3_checksum(cast(const(ubyte*)) box.block,
+                    pk3_encryption.PK3_DATA_SIZE);
+            auto is_valid = original_cksum == local_checksum;
+            assert(is_valid, format("party pkmn %s is corrupted", i));
+        }
+        return all_valid;
     }
 
     @property trainer() {
