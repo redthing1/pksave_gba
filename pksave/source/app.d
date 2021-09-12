@@ -44,13 +44,18 @@ void main(string[] args) {
 	// print party members
 	for (int i = 0; i < party.size; i++) {
 		auto pkmn = party.pokemon[i];
-		writefln("  NAME: %s (raw:%s)", decode_gba_text(pkmn.box.nickname), format_hex(pkmn.box.nickname));
-		writefln("    SPECIES: 0x%04x", pkmn.box.species);
-		// writefln("    TRAINER: %s", decode_gba_text(pkmn.box.ot_name));
+		// decrypt local copy of box
+		auto box = pkmn.box;
+		auto box_cksum = box.checksum;
+		pk3_decrypt(&box);
+		writefln("  NAME: %s (raw:%s)", decode_gba_text(box.nickname), format_hex(box.nickname));
+		writefln("    CKSUM: 0x%04X", box_cksum);
+		writefln("    SPECIES: 0x%04X", box.species);
+		// writefln("    TRAINER: %s", decode_gba_text(box.ot_name));
 		writefln("    LEVEL: %s", pkmn.party.level);
 		writefln("    STATS: %s", pkmn.party.stats);
-		// writefln("    IVS: %s", pkmn.box.iv);
-		// writefln("    EVS: %s", pkmn.box.ev);		
+		writefln("    IVS: %s", box.iv);
+		writefln("    EVS: %s", box.ev);
 	}
 
 	// try modding it
