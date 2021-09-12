@@ -184,7 +184,7 @@ gba_save_t *gba_read_save_internal(const uint8_t *ptr) {
 	internal->save_index = get_block_footer(ptr)->save_index;
 	memset(save->data, 0, GBA_UNPACKED_SIZE); //not sure if it is 0 or 0xFF
 	for(size_t i = 0; i < GBA_SAVE_BLOCK_COUNT; ++i) {
-		const uint8_t *block_ptr = ptr + i * GBA_BLOCK_LENGTH;
+		const uint8_t *block_ptr = ptr + i * GBA_BLOCK_LENGTH; // sector/block start address
 		//get footer
 		gba_footer_t *footer = get_block_footer(block_ptr);
 		internal->order[i] = footer->section_id;
@@ -380,7 +380,7 @@ void pk3_encrypt(pk3_box_t *pk3) {
 }
 
 enum gba_team_data {
-	GBA_TEAM_DATA_OFFSET = GBA_BLOCK_DATA_LENGTH,
+	GBA_TEAM_DATA_OFFSET = GBA_BLOCK_DATA_LENGTH, // start of 2nd block
 	GBA_RSE_TEAM_OFFSET = GBA_TEAM_DATA_OFFSET + 0x234,
 	GBA_FRLG_TEAM_OFFSET = GBA_TEAM_DATA_OFFSET + 0x034
 };
@@ -401,7 +401,7 @@ gba_party_t *gba_get_party(gba_save_t *save) {
 };
 
 enum gba_box_data {
-	GBA_BOX_DATA_OFFSET = GBA_BLOCK_DATA_LENGTH * 5
+	GBA_BOX_DATA_OFFSET = GBA_BLOCK_DATA_LENGTH * 5 // start of 6th block
 };
 
 /**
@@ -415,7 +415,7 @@ gba_pc_t *gba_get_pc(gba_save_t *save) {
 
 enum {
 	GBA_RSE_STORAGE_OFFSET = GBA_BLOCK_DATA_LENGTH + 0x490,
-	GBA_FRLG_STORAGE_OFFSET = GBA_BLOCK_DATA_LENGTH + 0x290,
+	GBA_FRLG_STORAGE_OFFSET = GBA_BLOCK_DATA_LENGTH + 0x290, // second block, money offset
 };
 
 uint8_t *gba_get_storage_ptr(gba_save_t *save) {
