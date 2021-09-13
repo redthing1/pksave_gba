@@ -8,6 +8,8 @@ import std.algorithm.comparison;
 import std.bitmanip;
 import std.range;
 
+import util;
+
 alias read_bin = std.bitmanip.read;
 
 enum Gender {
@@ -117,7 +119,7 @@ enum ubyte[] MASTERBALL_ITEM_DATA_MATCH = [
         0x08, 0x00, 0x00, 0x03, 0x00
     ];
 
-enum int ITEMTBL_ENTRY_LENGTH = 28;
+enum int ITEMTBL_ENTRY_LENGTH = 44;
 
 enum PkmnROMItemTblOffsets : uint {
     /*
@@ -231,6 +233,12 @@ align(1) {
         uint battle_usage;
         uint battle_usage_ptr;
         uint parameter1;
+
+        string toString() const {
+            import std.string : format;
+
+            return format("id: %s, name: %s, price: %s", index, decode_gba_text(name.dup).strip(), price);
+        }
     }
 }
 
@@ -335,6 +343,10 @@ class PkmnROM {
     }
 
     PkmnROMItem* get_item_info(uint item) {
-        return null;
+        auto offset = get_itemtbl_offset_for_rom(rom_type) + (ITEMTBL_ENTRY_LENGTH * (item - 0x01));
+
+        // writefln("data (0x%06x): %s", offset, rom_buf[offset .. (offset + 44)]);
+
+        return cast(PkmnROMItem*)&rom_buf[offset];
     }
 }

@@ -2,6 +2,7 @@ import std.stdio;
 import std.file;
 import std.path;
 import std.conv;
+import std.string;
 import std.traits;
 import commandr;
 
@@ -133,9 +134,6 @@ void cmd_info(ProgramArgs args) {
 				cksum_validity, box_cksum);
 	}
 	writeln("ITEMS");
-	if (save.rom_loaded) {
-		// try to load item table
-	}
 	auto num_pockets = EnumMembers!gba_item_pocket_t.length;
 	writefln("  POCKETS: %s", num_pockets);
 	// print party members
@@ -150,7 +148,9 @@ void cmd_info(ProgramArgs args) {
 				continue;
 			if (save.rom_loaded) {
 				// detailed item info
-				writefln("    ID: %s, COUNT: %s", item.index, item.amount);
+				auto item_info = *save.rom.get_item_info(item.index);
+				// writefln(item_info.toString());
+				writefln("    NAME: %s, ID: %s, COUNT: %s", decode_gba_text(item_info.name.dup).strip(), item.index, item.amount);
 			} else {
 				writefln("    ID: %s, COUNT: %s", item.index, item.amount);
 			}
