@@ -43,26 +43,47 @@ enum PkmnNature {
     Quirky = 24,
 }
 
-enum PkmnTypeFRLG {
-    Normal,
-    Fighting,
-    Flying,
-    Poison,
-    Ground,
-    Rock,
-    Bug,
-    Ghost,
-    Steel,
-    Fire,
-    Water,
-    Grass,
-    Electric,
-    Psychic,
-    Ice,
-    Dragon,
-    Dark,
-    Fairy,
-    Question,
+enum PkmnTypeGen3 {
+    Normal = 0,
+    Fighting = 1,
+    Flying = 2,
+    Poison = 3,
+    Ground = 4,
+    Rock = 5,
+    Bug = 6,
+    Ghost = 7,
+    Steel = 8,
+    Fairy = 9, // SGS only
+    Fire = 10,
+    Water = 11,
+    Grass = 12,
+    Electric = 13,
+    Psychic = 14,
+    Ice = 15,
+    Dragon = 16,
+    Dark = 17,
+}
+
+enum PkmnTypeGeneral {
+    Normal = 0,
+    Fighting = 1,
+    Flying = 2,
+    Poison = 3,
+    Ground = 4,
+    Rock = 5,
+    Bug = 6,
+    Ghost = 7,
+    Steel = 8,
+    Fire = 9,
+    Water = 10,
+    Grass = 11,
+    Electric = 12,
+    Psychic = 13,
+    Ice = 14,
+    Dragon = 15,
+    Dark = 16,
+    Fairy = 17,
+    Question = 18,
 }
 
 enum ubyte[] BULBASAUR_SPECIES_DATA = [
@@ -157,7 +178,7 @@ align(1) struct PkmnROMSpecies {
         import std.string : format;
 
         return format("hp: %s, atk: %s, def: %s, spd: %s, spatk: %s, spdef: %s, type1: %s, type2: %s",
-                hp, atk, def, spd, spatk, spdef, type1.to, type2) ~ format(", gender: %s", gender);
+                hp, atk, def, spd, spatk, spdef, type1.to!PkmnTypeGen3, type2.to!PkmnTypeGen3) ~ format(", gender: %s", gender);
     }
 }
 
