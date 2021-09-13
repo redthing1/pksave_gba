@@ -142,6 +142,10 @@ void cmd_info(ProgramArgs args) {
 		writefln("shin3: %0b", shine3);
 		auto shine_res = shine01 ^ shine2 ^ shine3;
 		writefln("shinres: %s (%0b)", shine_res, shine_res);
+		// solve shiny
+		auto shiny_solve_high = (shine01 ^ shine3) ^ 0b1100_0000_0000_0000;
+		auto shine_res2 = shine01 ^ shiny_solve_high ^ shine3;
+		writefln("shinres2: %s (%0b)", shine_res2, shine_res2);
 
 		// personality info
 		auto personality = save.parse_personality(box);
