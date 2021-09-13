@@ -136,8 +136,12 @@ void cmd_info(ProgramArgs args) {
 		// make it shine
 		auto shine01 = (box.ot_id ^ box.ot_sid);
 		writefln("shin01: %0b", shine01);
-		// writefln("shin2: %0b", shine1);
-		// writefln("shin3: %0b", shine1);
+		auto shine2 = box.pid_high;
+		auto shine3 = box.pid_low;
+		writefln("shin2: %0b", shine2);
+		writefln("shin3: %0b", shine3);
+		auto shine_res = shine01 ^ shine2 ^ shine3;
+		writefln("shinres: %s (%0b)", shine_res, shine_res);
 
 		// personality info
 		auto personality = save.parse_personality(box);

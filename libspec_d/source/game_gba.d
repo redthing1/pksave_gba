@@ -241,8 +241,15 @@ align(1) {
             import std.bitmanip : bitfields;
 
             //32 bytes
-            /** Personality Value */
-            uint pid; //4
+            /** Personality Value */ //4
+            union {
+                uint pid;
+                struct {
+                    ushort pid_low;
+                    ushort pid_high;
+                }
+            }
+
             union {
                 /** Original Trainer Full ID */
                 uint ot_fid; //full id

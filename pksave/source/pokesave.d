@@ -110,6 +110,7 @@ class PokeSave {
         ushort pid_low = (box.pid & 0xffff);
         per.raw_shiny = (box.ot_id ^ box.ot_sid ^ pid_high ^ pid_low);
         per.shiny = per.raw_shiny < 8;
+        writefln("rawshine: %s", per.raw_shiny);
 
         return per;
     }
