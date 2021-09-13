@@ -150,6 +150,8 @@ void cmd_info(ProgramArgs args) {
 				// detailed item info
 				auto item_info = *save.rom.get_item_info(item.index);
 				// writefln(item_info.toString());
+				// assert(item.index == item_info.index,
+				// 		"item index in save did not match item index in rom item table");
 				writefln("    [%s] NAME: %s, ID: %s (%s), COUNT: %s", j + 1,
 						decode_gba_text(item_info.name.dup).strip(),
 						item.index, item_info.index, item.amount);
