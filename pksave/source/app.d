@@ -137,9 +137,11 @@ void cmd_info(ProgramArgs args) {
 		writefln("    IVS: %s", box.iv);
 		writefln("    EVS: %s", box.ev);
 
-		// species info
-		auto species_info = save.rom.get_species_info(box.species);
-		writefln("    SPECIES: (%s)", species_info.toString());
+		if (save.rom) {
+			// species info
+			auto species_info = save.rom.get_species_info(box.species);
+			writefln("    SPECIES: (%s)", species_info.toString());
+		}
 
 		// personality info
 		auto personality = save.parse_personality(box);
