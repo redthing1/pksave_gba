@@ -100,14 +100,15 @@ enum PkmnROMSpeciesDataOffsets : uint {
         data looks like:
         2D 31 31 2D 41 41 0C 03 2D 40 00 01 00 00 00 00 1F 14 46 03 01 07 41 00 00 03 00 00  // BULBASAUR
     */
-    OFFSET_BULBASAUR_FR = 0x2547A0,
+    OFFSET_BULBASAUR_FR_U = 0x2547A0, // fire red en-us
+    OFFSET_BULBASAUR_LG_U = 0x25477C, // leaf green en-us
     OFFSET_BULBASAUR_SGS_138 = 0xA6BCEC,
 }
 
 enum PkmnROMDetect {
     UNKNOWN,
-    FR,
-    LG,
+    FIRE_RED_U,
+    LEAF_GREEN_U,
     SGS_138,
 }
 
@@ -192,8 +193,10 @@ class PkmnROM {
 
     uint get_specdata_offset_for_rom(PkmnROMDetect rom_type) {
         switch (rom_type) {
-        case PkmnROMDetect.FR:
-            return PkmnROMSpeciesDataOffsets.OFFSET_BULBASAUR_FR;
+        case PkmnROMDetect.FIRE_RED_U:
+            return PkmnROMSpeciesDataOffsets.OFFSET_BULBASAUR_FR_U;
+        case PkmnROMDetect.LEAF_GREEN_U:
+            return PkmnROMSpeciesDataOffsets.OFFSET_BULBASAUR_LG_U;
         case PkmnROMDetect.SGS_138:
             return PkmnROMSpeciesDataOffsets.OFFSET_BULBASAUR_SGS_138;
         default:
@@ -203,8 +206,12 @@ class PkmnROM {
 
     bool detect_rom_type() {
         // check third byte of species data
-        if (rom_buf[PkmnROMSpeciesDataOffsets.OFFSET_BULBASAUR_FR + 2] == 0x31) {
-            rom_type = PkmnROMDetect.FR;
+        if (rom_buf[PkmnROMSpeciesDataOffsets.OFFSET_BULBASAUR_FR_U + 2] == 0x31) {
+            rom_type = PkmnROMDetect.FIRE_RED_U;
+            return true;
+        }
+        if (rom_buf[PkmnROMSpeciesDataOffsets.OFFSET_BULBASAUR_LG_U + 2] == 0x31) {
+            rom_type = PkmnROMDetect.LEAF_GREEN_U;
             return true;
         }
         if (rom_buf[PkmnROMSpeciesDataOffsets.OFFSET_BULBASAUR_SGS_138 + 2] == 0x31) {
