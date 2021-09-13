@@ -14,7 +14,6 @@ public import data;
 
 alias read_bin = std.bitmanip.read;
 
-
 enum ubyte[] BULBASAUR_SPECIES_DATA = [
         0x2D, 0x31, 0x31, 0x2D, 0x41, 0x41, 0x0C, 0x03, 0x2D, 0x40, 0x00, 0x01,
         0x00, 0x00, 0x00, 0x00, 0x1F, 0x14, 0x46, 0x03, 0x01, 0x07, 0x41,
@@ -88,6 +87,17 @@ class PkmnROM {
             PkmnROMDetect.FIRE_RED_U: 375,
             PkmnROMDetect.SGS_138: 375,
         ];
+        PkmnROMTables.OFFSET_BULBASAUR = [
+            PkmnROMDetect.UNKNOWN: 0,
+            PkmnROMDetect.FIRE_RED_U: PkmnROMSpeciesDataInfo.OFFSET_BULBASAUR_FR_U,
+            PkmnROMDetect.LEAF_GREEN_U: PkmnROMSpeciesDataInfo.OFFSET_BULBASAUR_LG_U,
+            PkmnROMDetect.SGS_138: PkmnROMSpeciesDataInfo.OFFSET_BULBASAUR_SGS_138,
+        ];
+        PkmnROMTables.OFFSET_MASTERBALL = [
+            PkmnROMDetect.UNKNOWN: 0,
+            PkmnROMDetect.FIRE_RED_U: PkmnROMItemTblInfo.OFFSET_MASTERBALL_FR_U,
+            PkmnROMDetect.SGS_138: PkmnROMItemTblInfo.OFFSET_MASTERBALL_SGS_138,
+        ];
     }
 
     void read_from(string path) {
@@ -95,27 +105,11 @@ class PkmnROM {
     }
 
     uint get_specdata_offset_for_rom(PkmnROMDetect rom_type) {
-        switch (rom_type) {
-        case PkmnROMDetect.FIRE_RED_U:
-            return PkmnROMSpeciesDataInfo.OFFSET_BULBASAUR_FR_U;
-        case PkmnROMDetect.LEAF_GREEN_U:
-            return PkmnROMSpeciesDataInfo.OFFSET_BULBASAUR_LG_U;
-        case PkmnROMDetect.SGS_138:
-            return PkmnROMSpeciesDataInfo.OFFSET_BULBASAUR_SGS_138;
-        default:
-            return 0;
-        }
+        return PkmnROMTables.OFFSET_BULBASAUR[rom_type];
     }
 
     uint get_itemtbl_offset_for_rom(PkmnROMDetect rom_type) {
-        switch (rom_type) {
-        case PkmnROMDetect.FIRE_RED_U:
-            return PkmnROMItemTblInfo.OFFSET_MASTERBALL_FR_U;
-        case PkmnROMDetect.SGS_138:
-            return PkmnROMItemTblInfo.OFFSET_MASTERBALL_SGS_138;
-        default:
-            assert(0, "Unknown");
-        }
+        return PkmnROMTables.OFFSET_MASTERBALL[rom_type];
     }
 
     bool detect_rom_type() {
