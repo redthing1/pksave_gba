@@ -72,6 +72,7 @@ enum PkmnROMDetect : uint {
 
 class PkmnROMTables {
     public static uint[uint] ITEMTBL_SIZE;
+    public static uint[uint] SPECIESTBL_SIZE;
     public static uint[uint] OFFSET_BULBASAUR;
     public static uint[uint] OFFSET_MASTERBALL;
 }
@@ -86,6 +87,11 @@ class PkmnROM {
             PkmnROMDetect.UNKNOWN: 0,
             PkmnROMDetect.FIRE_RED_U: 375,
             PkmnROMDetect.SGS_138: 375,
+        ];
+        PkmnROMTables.SPECIESTBL_SIZE = [
+            PkmnROMDetect.UNKNOWN: 0,
+            PkmnROMDetect.FIRE_RED_U: 412,
+            PkmnROMDetect.SGS_138: 923,
         ];
         PkmnROMTables.OFFSET_BULBASAUR = [
             PkmnROMDetect.UNKNOWN: 0,
@@ -186,6 +192,18 @@ class PkmnROM {
         // writefln("data (0x%06x): %s", offset, rom_buf[offset .. (offset + 44)]);
 
         return cast(PkmnROMItem*)&rom_buf[offset];
+    }
+
+    PkmnROMSpecies[] get_species_info_table() {
+        PkmnROMSpecies[] list;
+
+        for (int i = 0; i < PkmnROMTables.SPECIESTBL_SIZE[rom_type]; i++) {
+            // dereference and copy
+            PkmnROMSpecies item = *get_species_info(i);
+            list ~= item;
+        }
+
+        return list;
     }
 
     PkmnROMItem[] get_item_info_table() {

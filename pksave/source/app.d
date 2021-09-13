@@ -206,6 +206,11 @@ void cmd_dumprom(ProgramArgs args) {
 		auto item = &item_tbl[i];
 		writefln(" [%03d] ITEM: %s", i, decode_gba_text(item.name).strip());
 	}
+	auto spec_tbl = rom.get_species_info_table();
+	for (int i = 0; i < spec_tbl.length; i++) {
+		auto species = spec_tbl[i];
+		writefln(" [%03d] SPECIES: %s", i, species);
+	}
 }
 
 void cmd_verify(ProgramArgs args) {
