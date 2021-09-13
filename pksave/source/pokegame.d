@@ -163,6 +163,7 @@ struct Personality {
 
 align(1) {
     struct PkmnROMSpecies {
+    align(1):
         struct {
             ubyte hp;
             ubyte atk;
@@ -216,6 +217,7 @@ align(1) {
     }
 
     struct PkmnROMItem {
+    align(1):
         ubyte[14] name;
         ushort index;
         ushort price;
@@ -309,15 +311,17 @@ class PkmnROM {
         // auto offset = get_itemtbl_offset_for_rom(PkmnROMDetect.SGS_138);
 
         auto itemtbl_offset_end = itemtbl_offset + MASTERBALL_ITEM_DATA_MATCH.length;
-        auto itemtbl_rom_slice = rom_buf[itemtbl_offset.. itemtbl_offset_end];
+        auto itemtbl_rom_slice = rom_buf[itemtbl_offset .. itemtbl_offset_end];
         // writefln("rom slice (0x%06x-0x%06x): %s", offset, offset_end, rom_slice);
 
         // compare with masterball seq
         auto is_itemtbl_equal = equal(itemtbl_rom_slice, MASTERBALL_ITEM_DATA_MATCH);
 
         if (!is_itemtbl_equal) {
-            assert(0, format("rom (detected %s) itemtbl slice (0x%06x-0x%06x) did not match MASTERBALL match seq: %s (target: %s)",
-                    rom_type, itemtbl_offset, itemtbl_offset_end, itemtbl_rom_slice, MASTERBALL_ITEM_DATA_MATCH));
+            assert(0, format(
+                    "rom (detected %s) itemtbl slice (0x%06x-0x%06x) did not match MASTERBALL match seq: %s (target: %s)",
+                    rom_type, itemtbl_offset, itemtbl_offset_end,
+                    itemtbl_rom_slice, MASTERBALL_ITEM_DATA_MATCH));
         }
 
         return is_specdata_equal && is_itemtbl_equal;
