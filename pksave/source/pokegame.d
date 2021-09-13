@@ -256,7 +256,8 @@ class PkmnROM {
         // populate table
         PkmnROMTables.ITEMTBL_SIZE = [
             PkmnROMDetect.UNKNOWN: 0,
-            PkmnROMDetect.FIRE_RED_U: 256,
+            PkmnROMDetect.FIRE_RED_U: 375,
+            PkmnROMDetect.SGS_138: 375,
         ];
     }
 
