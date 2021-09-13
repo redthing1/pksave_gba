@@ -218,6 +218,8 @@ void cmd_shine(ProgramArgs args) {
 	auto slot = args.arg("slot").to!uint;
 	auto out_sav = args.arg("out_sav");
 
+	import std.random : choice;
+
 	writefln("loading save: %s", in_sav);
 	auto save = new PokeSave();
 	save.read_from(in_sav);
@@ -230,7 +232,10 @@ void cmd_shine(ProgramArgs args) {
 	// make it shine
 	auto shine1 = (pkmn.box.ot_id ^ pkmn.box.ot_sid);
 	auto shine3 = pkmn.box.pid_low;
-	ushort shiny_target = 0b0000_0000_0000_0011;
+	// pick target
+	ushort shiny_target = cast(ushort)(0b0000_0000_0000_0000) + cast(ubyte)([
+			0, 1, 2, 3, 4, 5, 6, 7
+			].choice());
 	auto shine_high_solve = (shine1 ^ shine3) ^ shiny_target;
 	writefln("solved shiny equation: (%016b)", shine_high_solve);
 	pkmn.box.pid_high = cast(ushort) shine_high_solve;
