@@ -204,6 +204,8 @@ void cmd_addmoney(ProgramArgs args) {
 }
 
 void cmd_transfer(ProgramArgs args) {
+	writefln("> PKSAVE TRANSFER");
+
 	auto source_sav = args.arg("source_sav");
 	auto recv_sav = args.arg("recv_sav");
 	auto source_slot = args.arg("source_slot").to!uint;
@@ -243,6 +245,8 @@ void cmd_transfer(ProgramArgs args) {
 }
 
 void cmd_trade(ProgramArgs args) {
+	writefln("> PKSAVE TRADE");
+
 	auto sav1_in = args.arg("sav1_in");
 	auto sav1_slot = args.arg("sav1_slot").to!uint;
 	auto sav1_out = args.arg("sav1_out");
@@ -268,20 +272,24 @@ void cmd_trade(ProgramArgs args) {
 	// dereference and store copy of pkmn data
 	auto pkmn1_copy = *pkmn1;
 	auto pkmn2_copy = *pkmn2;
-	writefln("%s (L. %s) is being transformed into data and uploaded!",
+	writefln("%s (L. %s) (from save 1) is being transformed into data and uploaded!",
 			decode_gba_text(pkmn1_copy.box.nickname), pkmn1_copy.party.level);
 	pkmn2.box = pkmn1_copy.box;
 	pkmn2.party = pkmn1_copy.party;
-	writefln("On the other end, it's %s (L. %s)!",
+	writefln("On the other end (save 2), it's %s (L. %s)!",
 			decode_gba_text(pkmn2.box.nickname), pkmn2.party.level);
-	writefln("%s (L. %s) is being transformed into data and uploaded!",
+	writefln("%s (L. %s) (from save 2) is being transformed into data and uploaded!",
 			decode_gba_text(pkmn2_copy.box.nickname), pkmn2_copy.party.level);
 	pkmn1.box = pkmn2_copy.box;
 	pkmn1.party = pkmn2_copy.party;
-	writefln("On the other end, it's %s (L. %s)!",
+	writefln("On the other end (save 1), it's %s (L. %s)!",
 			decode_gba_text(pkmn1.box.nickname), pkmn1.party.level);
 	pk3_encrypt(&pkmn2.box);
 	pk3_encrypt(&pkmn1.box);
+
+	writefln("Traded %s's '%s' (L. %s) for %s's '%s' (L. %s)! Take care of them!", decode_gba_text(save1.trainer.name),
+			decode_gba_text(pkmn1_copy.box.nickname), pkmn1_copy.party.level, decode_gba_text(save2.trainer.name),
+			decode_gba_text(pkmn2_copy.box.nickname), pkmn2_copy.party.level);
 
 	// verify party integrity
 	auto validity1 = save1.verify_party();
