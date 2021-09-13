@@ -27,7 +27,7 @@ void main(string[] raw_args) {
 		.add(new Command("verify")
 			.add(new Argument("sav", "save file"))
 			)
-		.add(new Command("trade")
+		.add(new Command("transfer")
 			.add(new Argument("source_sav", "source save file"))
 			.add(new Argument("source_slot", "pokemon party slot"))
 			.add(new Argument("recv_sav", "receiver save file"))
@@ -47,8 +47,8 @@ void main(string[] raw_args) {
 		.on("addmoney", (args) {
 			cmd_addmoney(args);
 		})
-		.on("trade", (args) {
-			cmd_trade(args);
+		.on("transfer", (args) {
+			cmd_transfer(args);
 		});
 	// dfmt on
 }
@@ -188,7 +188,7 @@ void cmd_addmoney(ProgramArgs args) {
 	save.write_to(out_sav);
 }
 
-void cmd_trade(ProgramArgs args) {
+void cmd_transfer(ProgramArgs args) {
 	auto source_sav = args.arg("source_sav");
 	auto recv_sav = args.arg("recv_sav");
 	auto source_slot = args.arg("source_slot").to!uint;
