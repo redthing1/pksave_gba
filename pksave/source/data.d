@@ -1,5 +1,10 @@
 module data;
 
+import std.string;
+import std.conv;
+
+import util;
+
 enum Gender {
     Unknown,
     Male,
