@@ -141,7 +141,7 @@ void cmd_info(ProgramArgs args) {
 		auto pocket_id = i.to!gba_item_pocket_t;
 
 		auto pock_sz = gba_get_pocket_size(save.loaded_save, pocket_id);
-		writefln("  POCKET: %s (size: %s)", pocket_id, pock_sz);
+		writefln("  POCKET: %s (max: %s)", pocket_id, pock_sz);
 		for (int j = 0; j < pock_sz; j++) {
 			auto item = gba_get_pocket_item(save.loaded_save, pocket_id, j);
 			if (item.amount == 0)
@@ -152,7 +152,7 @@ void cmd_info(ProgramArgs args) {
 				// writefln(item_info.toString());
 				// assert(item.index == item_info.index,
 				// 		"item index in save did not match item index in rom item table");
-				writefln("    [%s] NAME: %s, ID: %s (%s), COUNT: %s", j + 1,
+				writefln("    [%02d] NAME: %s, ID: %s (%s), COUNT: %s", j + 1,
 						decode_gba_text(item_info.name.dup).strip(),
 						item.index, item_info.index, item.amount);
 			} else {
