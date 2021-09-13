@@ -230,13 +230,13 @@ void cmd_shine(ProgramArgs args) {
 	// make it shine
 	auto shine1 = (pkmn.box.ot_id ^ pkmn.box.ot_sid);
 	auto shine3 = pkmn.box.pid_low;
-	ushort shiny_target = 0b1100_0000_0000_0000;
+	ushort shiny_target = 0b0000_0000_0000_0011;
 	auto shine_high_solve = (shine1 ^ shine3) ^ shiny_target;
 	writefln("solved shiny equation: (%016b)", shine_high_solve);
 	pkmn.box.pid_high = cast(ushort) shine_high_solve;
 
-	// auto per = save.parse_personality(pkmn.box);
-	// writefln("shiny: %s", per.shiny);
+	auto per = save.parse_personality(pkmn.box);
+	writefln("shiny: %s", per.shiny);
 
 	pk3_encrypt(&pkmn.box);
 	writefln("writing save: %s", out_sav);
