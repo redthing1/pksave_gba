@@ -326,18 +326,8 @@ class PkmnROM {
     PkmnROMSpecies* get_species_info(uint species) {
         auto offset = get_specdata_offset_for_rom(rom_type) + (
                 SPECDATA_ENTRY_LENGTH * (species - 0x01));
-        auto offset_end = offset + SPECDATA_ENTRY_LENGTH;
 
-        auto species_info_slice = rom_buf[offset .. offset_end];
-
-        // return read_raw_species!(PkmnROMSpecies)(raw_data);
-        // return read_raw_species!(PkmnROMSpecies, Endian.littleEndian
-        // alias read_bin = std.bitmanip.read;
-        // return std.bitmanip.read!(PkmnROMSpecies, Endian.littleEndian)(raw_data);
-
-        // writefln("species: %s, offset: 0x%06x", species, offset);
         return cast(PkmnROMSpecies*)&rom_buf[offset];
-        // return cast(PkmnROMSpecies*) &species_info_slice;
     }
 
     PkmnROMItem* get_item_info(uint item) {
