@@ -200,6 +200,12 @@ void cmd_dumprom(ProgramArgs args) {
 	writefln("ROM");
 	writefln("INFO");
 	writefln(" TYPE: %s", rom.rom_type);
+	writefln("ITEMS");
+	auto item_tbl = rom.get_item_info_table();
+	for (int i = 0; i < item_tbl.length; i++) {
+		auto item = &item_tbl[i];
+		writefln(" [%03d] ITEM: %s", i, decode_gba_text(item.name).strip());
+	}
 }
 
 void cmd_verify(ProgramArgs args) {

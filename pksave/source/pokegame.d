@@ -97,7 +97,7 @@ enum ubyte[] BULBASAUR_SPECIES_DATA = [
 
 enum int SPECDATA_ENTRY_LENGTH = 28;
 
-enum PkmnROMSpeciesDataOffsets : uint {
+enum PkmnROMSpeciesDataInfo : uint {
     /*
         bulbasaur (ID: 0x01) offset
         data looks like:
@@ -122,7 +122,7 @@ enum ubyte[] MASTERBALL_ITEM_DATA_MATCH = [
 
 enum int ITEMTBL_ENTRY_LENGTH = 44;
 
-enum PkmnROMItemTblOffsets : uint {
+enum PkmnROMItemTblInfo : uint {
     /*
         masterball (ID: 0x01) offset
         in FRLG, data looks like:
@@ -138,11 +138,15 @@ enum PkmnROMItemTblOffsets : uint {
     OFFSET_MASTERBALL_SGS_138 = 0x3DB054,
 }
 
-enum PkmnROMDetect {
+enum PkmnROMDetect : uint {
     UNKNOWN,
     FIRE_RED_U,
     LEAF_GREEN_U,
     SGS_138,
+}
+
+class PkmnROMTables {
+    public static uint[uint] ITEMTBL_SIZE;
 }
 
 struct Personality {
@@ -248,6 +252,14 @@ class PkmnROM {
     public ubyte[] rom_buf;
     public PkmnROMDetect rom_type;
 
+    this() {
+        // populate table
+        PkmnROMTables.ITEMTBL_SIZE = [
+            PkmnROMDetect.UNKNOWN: 0,
+            PkmnROMDetect.FIRE_RED_U: 256,
+        ];
+    }
+
     void read_from(string path) {
         rom_buf = cast(ubyte[]) std.file.read(path);
     }
@@ -255,11 +267,11 @@ class PkmnROM {
     uint get_specdata_offset_for_rom(PkmnROMDetect rom_type) {
         switch (rom_type) {
         case PkmnROMDetect.FIRE_RED_U:
-            return PkmnROMSpeciesDataOffsets.OFFSET_BULBASAUR_FR_U;
+            return PkmnROMSpeciesDataInfo.OFFSET_BULBASAUR_FR_U;
         case PkmnROMDetect.LEAF_GREEN_U:
-            return PkmnROMSpeciesDataOffsets.OFFSET_BULBASAUR_LG_U;
+            return PkmnROMSpeciesDataInfo.OFFSET_BULBASAUR_LG_U;
         case PkmnROMDetect.SGS_138:
-            return PkmnROMSpeciesDataOffsets.OFFSET_BULBASAUR_SGS_138;
+            return PkmnROMSpeciesDataInfo.OFFSET_BULBASAUR_SGS_138;
         default:
             return 0;
         }
@@ -268,9 +280,9 @@ class PkmnROM {
     uint get_itemtbl_offset_for_rom(PkmnROMDetect rom_type) {
         switch (rom_type) {
         case PkmnROMDetect.FIRE_RED_U:
-            return PkmnROMItemTblOffsets.OFFSET_MASTERBALL_FR_U;
+            return PkmnROMItemTblInfo.OFFSET_MASTERBALL_FR_U;
         case PkmnROMDetect.SGS_138:
-            return PkmnROMItemTblOffsets.OFFSET_MASTERBALL_SGS_138;
+            return PkmnROMItemTblInfo.OFFSET_MASTERBALL_SGS_138;
         default:
             assert(0, "Unknown");
         }
@@ -278,15 +290,15 @@ class PkmnROM {
 
     bool detect_rom_type() {
         // check third byte of species data
-        if (rom_buf[PkmnROMSpeciesDataOffsets.OFFSET_BULBASAUR_FR_U + 2] == 0x31) {
+        if (rom_buf[PkmnROMSpeciesDataInfo.OFFSET_BULBASAUR_FR_U + 2] == 0x31) {
             rom_type = PkmnROMDetect.FIRE_RED_U;
             return true;
         }
-        if (rom_buf[PkmnROMSpeciesDataOffsets.OFFSET_BULBASAUR_LG_U + 2] == 0x31) {
+        if (rom_buf[PkmnROMSpeciesDataInfo.OFFSET_BULBASAUR_LG_U + 2] == 0x31) {
             rom_type = PkmnROMDetect.LEAF_GREEN_U;
             return true;
         }
-        if (rom_buf[PkmnROMSpeciesDataOffsets.OFFSET_BULBASAUR_SGS_138 + 2] == 0x31) {
+        if (rom_buf[PkmnROMSpeciesDataInfo.OFFSET_BULBASAUR_SGS_138 + 2] == 0x31) {
             rom_type = PkmnROMDetect.SGS_138;
             return true;
         }
@@ -350,5 +362,17 @@ class PkmnROM {
         // writefln("data (0x%06x): %s", offset, rom_buf[offset .. (offset + 44)]);
 
         return cast(PkmnROMItem*)&rom_buf[offset];
+    }
+
+    PkmnROMItem[] get_item_info_table() {
+        PkmnROMItem[] list;
+
+        for (int i = 0; i < PkmnROMTables.ITEMTBL_SIZE[rom_type]; i++) {
+            // dereference and copy
+            PkmnROMItem item = *get_item_info(i);
+            list ~= item;
+        }
+
+        return list;
     }
 }
