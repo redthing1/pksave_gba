@@ -140,8 +140,8 @@ void cmd_info(ProgramArgs args) {
 	for (int i = 0; i < num_pockets; i++) {
 		auto pocket_id = i.to!gba_item_pocket_t;
 
-		writefln("  POCKET: %s", pocket_id);
 		auto pock_sz = gba_get_pocket_size(save.loaded_save, pocket_id);
+		writefln("  POCKET: %s (size: %s)", pocket_id, pock_sz);
 		for (int j = 0; j < pock_sz; j++) {
 			auto item = gba_get_pocket_item(save.loaded_save, pocket_id, j);
 			if (item.amount == 0)
@@ -150,9 +150,11 @@ void cmd_info(ProgramArgs args) {
 				// detailed item info
 				auto item_info = *save.rom.get_item_info(item.index);
 				// writefln(item_info.toString());
-				writefln("    NAME: %s, ID: %s (%s), COUNT: %s", decode_gba_text(item_info.name.dup).strip(), item.index, item_info.index, item.amount);
+				writefln("    [%s] NAME: %s, ID: %s (%s), COUNT: %s", j + 1,
+						decode_gba_text(item_info.name.dup).strip(),
+						item.index, item_info.index, item.amount);
 			} else {
-				writefln("    ID: %s, COUNT: %s", item.index, item.amount);
+				writefln("    [%s] ID: %s, COUNT: %s", j + 1, item.index, item.amount);
 			}
 		}
 	}
