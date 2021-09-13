@@ -133,6 +133,12 @@ void cmd_info(ProgramArgs args) {
 		auto species_info = save.rom.get_species_info(box.species);
 		writefln("    SPECIES: (%s)", species_info.toString());
 
+		// make it shine
+		auto shine01 = (box.ot_id ^ box.ot_sid);
+		writefln("shin01: %0b", shine01);
+		// writefln("shin2: %0b", shine1);
+		// writefln("shin3: %0b", shine1);
+
 		// personality info
 		auto personality = save.parse_personality(box);
 		writefln("    PERSONALITY: (%s)", personality);

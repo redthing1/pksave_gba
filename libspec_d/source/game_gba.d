@@ -233,9 +233,11 @@ align(1) {
  * @brief A GBA pokemon's box data. 80 bytes in size.
  */
     struct pk3_box_t {
+    align(1):
         //80 bytes for box data
         /** @brief Header */
         struct {
+        align(1):
             import std.bitmanip : bitfields;
 
             //32 bytes
@@ -273,8 +275,10 @@ align(1) {
             ubyte[PK3_BLOCK_SIZE][4] block;
 
             struct {
+            align(1):
                 /** @brief Block A */
                 struct {
+                align(1):
                     import std.bitmanip : bitfields;
 
                     /** Pokemon Species */
@@ -292,6 +296,7 @@ align(1) {
 
                 /** @brief Block B */
                 struct {
+                align(1):
                     /** Move ID (4) */
                     ushort[4] move;
                     /** Move PP Remaining (4) */
@@ -300,6 +305,7 @@ align(1) {
 
                 /** @brief Block C */
                 struct {
+                align(1):
                     /** Effort Values */
                     pk3_effort_t ev;
                     /** Contest Stats */
@@ -308,12 +314,14 @@ align(1) {
 
                 /** @brief Block D */
                 struct {
+                align(1):
                     /** Poke'R US Virus */
                     pk3_pokerus_t pokerus;
                     /** Location Met */
                     ubyte met_loc;
 
                     struct {
+                    align(1):
                         import std.bitmanip : bitfields;
 
                         mixin(bitfields!(ubyte, "level_met", 7, ubyte, "game",
