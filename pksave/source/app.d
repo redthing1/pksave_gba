@@ -7,6 +7,7 @@ import commandr;
 import libspec;
 import util;
 import pokesave;
+import pokegame;
 
 void main(string[] raw_args) {
 	// dfmt off
@@ -78,6 +79,7 @@ void cmd_info(ProgramArgs args) {
 	writefln("    TRAIN: %s", gba_trainer_t.sizeof);
 	writefln("    PARTY: %s", pk3_party_t.sizeof);
 	writefln("    BOX: %s", pk3_box_t.sizeof);
+	writefln("    SPECIES: %s", PkmnROMSpecies.sizeof);
 
 	auto trainer = save.trainer;
 	writeln("TRAINER");
@@ -101,6 +103,8 @@ void cmd_info(ProgramArgs args) {
 		auto box = pkmn.box;
 		auto box_cksum = box.checksum;
 		pk3_decrypt(&box);
+		
+		// main info
 		writefln("  NAME: %s (raw:%s)", decode_gba_text(box.nickname), format_hex(box.nickname));
 		writefln("    SPECIES: 0x%04X", box.species);
 		// writefln("    TRAINER: %s", decode_gba_text(box.ot_name));
@@ -108,8 +112,15 @@ void cmd_info(ProgramArgs args) {
 		writefln("    STATS: %s", pkmn.party.stats);
 		writefln("    IVS: %s", box.iv);
 		writefln("    EVS: %s", box.ev);
+
+		// personality info
+
 		auto personality = save.parse_personality(box);
 		writefln("    PERSONALITY: (%s)", personality);
+
+		// species info
+		auto specdata = save.rom.get_species_info(box.species);
+		
 		// verify checksum (by recomputing)
 		ushort local_checksum = pk3_checksum(cast(const(ubyte*)) box.block,
 				pk3_encryption.PK3_DATA_SIZE);
