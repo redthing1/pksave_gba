@@ -150,7 +150,7 @@ void cmd_info(ProgramArgs args) {
 				// detailed item info
 				auto item_info = *save.rom.get_item_info(item.index);
 				// writefln(item_info.toString());
-				writefln("    NAME: %s, ID: %s, COUNT: %s", decode_gba_text(item_info.name.dup).strip(), item.index, item.amount);
+				writefln("    NAME: %s, ID: %s (%s), COUNT: %s", decode_gba_text(item_info.name.dup).strip(), item.index, item_info.index, item.amount);
 			} else {
 				writefln("    ID: %s, COUNT: %s", item.index, item.amount);
 			}
