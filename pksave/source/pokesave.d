@@ -93,26 +93,13 @@ class PokeSave {
         gba_set_money(loaded_save, value);
     }
 
-    struct Personality {
-        ubyte raw_gender;
-        ubyte raw_extra_ability;
-        
-        ubyte raw_nature;
-        PkmnNature nature;
-
-        ushort raw_shiny;
-        bool shiny;
-
-        string toString() const {
-            import std.string: format;
-            return format("gender: %s, extra_ability: %s, nature: %s, shiny: %s", raw_gender, raw_extra_ability, nature, shiny);
-        }
-    }
-
     Personality parse_personality(pk3_box_t box) {
         Personality per;
+
+        auto species_data = *rom.get_species_info(box.species);
         
         per.raw_gender = (box.pid & 0xff);
+        per.gender = (per.raw_gender < species_data.gender) ? Gender.Female : Gender.Male;
         
         per.raw_extra_ability = (box.pid & 0x01);
 

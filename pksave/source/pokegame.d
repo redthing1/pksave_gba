@@ -10,6 +10,11 @@ import std.range;
 
 alias read_bin = std.bitmanip.read;
 
+enum Gender {
+    Male,
+    Female
+}
+
 enum PkmnNature {
     Hardy = 0,
     Lonely = 1,
@@ -63,6 +68,26 @@ enum PkmnROMDetect {
     SGS_138,
 }
 
+struct Personality {
+    ubyte raw_gender;
+    Gender gender;
+
+    ubyte raw_extra_ability;
+
+    ubyte raw_nature;
+    PkmnNature nature;
+
+    ushort raw_shiny;
+    bool shiny;
+
+    string toString() const {
+        import std.string : format;
+
+        return format("gender: %s, nature: %s, shiny: %s",
+                gender, nature, shiny);
+    }
+}
+
 align(1) struct PkmnROMSpecies {
     struct {
         ubyte hp;
@@ -111,7 +136,7 @@ align(1) struct PkmnROMSpecies {
         import std.string : format;
 
         return format("hp: %s, atk: %s, def: %s, spd: %s, spatk: %s, spdef: %s, type1: %s, type2: %s",
-                hp, atk, def, spd, spatk, spdef, type1, type2);
+                hp, atk, def, spd, spatk, spdef, type1, type2) ~ format(", gender: %s", gender);
     }
 }
 
