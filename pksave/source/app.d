@@ -19,6 +19,9 @@ void main(string[] raw_args) {
 			.add(new Argument("sav", "save file"))
 			.add(new Argument("rom", "rom file").optional.defaultValue("NONE"))
 			)
+		.add(new Command("dumprom")
+			.add(new Argument("rom", "rom file"))
+			)
 		.add(new Command("addmoney")
 			.add(new Argument("in_sav", "input save file"))
 			.add(new Argument("money", "money to add"))
@@ -53,6 +56,9 @@ void main(string[] raw_args) {
 		.on("info", (args) {
 			// args.flag("verbose") works
 			cmd_info(args);
+		})
+		.on("dumprom", (args) {
+			cmd_dumprom(args);
 		})
 		.on("verify", (args) {
 			cmd_verify(args);
@@ -182,6 +188,18 @@ void cmd_info(ProgramArgs args) {
 		}
 	}
 
+}
+
+void cmd_dumprom(ProgramArgs args) {
+	auto in_rom = args.arg("rom");
+
+	writefln("loading rom: %s", in_rom);
+	auto rom = new PkmnROM();
+	rom.read_from(in_rom);
+	rom.verify();
+	writefln("ROM");
+	writefln("INFO");
+	writefln(" TYPE: %s", rom.rom_type);
 }
 
 void cmd_verify(ProgramArgs args) {
