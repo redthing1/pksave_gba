@@ -115,6 +115,13 @@ class PokeSave {
         if (rom) {
             auto species_data = *rom.get_species_info(box.species);
             per.gender = (per.raw_gender < species_data.gender) ? Gender.Female : Gender.Male;
+            // special cases for gender
+            if (species_data.gender == 255)
+                per.gender = Gender.Unknown;
+            if (species_data.gender == 254)
+                per.gender = Gender.Female;
+            if (species_data.gender == 0)
+                per.gender = Gender.Male;
         }
 
         return per;
