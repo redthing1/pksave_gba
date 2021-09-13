@@ -27,6 +27,11 @@ void main(string[] raw_args) {
 		.add(new Command("verify")
 			.add(new Argument("sav", "save file"))
 			)
+		.add(new Command("shine")
+			.add(new Argument("in_sav", "input save file"))
+			.add(new Argument("slot", "party slot"))
+			.add(new Argument("out_sav", "output save file"))
+			)
 		.add(new Command("transfer")
 			.add(new Argument("source_sav", "source save file"))
 			.add(new Argument("source_slot", "pokemon party slot"))
@@ -54,6 +59,9 @@ void main(string[] raw_args) {
 		})
 		.on("addmoney", (args) {
 			cmd_addmoney(args);
+		})
+		.on("shine", (args) {
+			cmd_shine(args);
 		})
 		.on("transfer", (args) {
 			cmd_transfer(args);
@@ -133,20 +141,6 @@ void cmd_info(ProgramArgs args) {
 		auto species_info = save.rom.get_species_info(box.species);
 		writefln("    SPECIES: (%s)", species_info.toString());
 
-		// make it shine
-		auto shine01 = (box.ot_id ^ box.ot_sid);
-		writefln("shin01: %0b", shine01);
-		auto shine2 = box.pid_high;
-		auto shine3 = box.pid_low;
-		writefln("shin2: %0b", shine2);
-		writefln("shin3: %0b", shine3);
-		auto shine_res = shine01 ^ shine2 ^ shine3;
-		writefln("shinres: %s (%0b)", shine_res, shine_res);
-		// solve shiny
-		auto shiny_solve_high = (shine01 ^ shine3) ^ 0b1100_0000_0000_0000;
-		auto shine_res2 = shine01 ^ shiny_solve_high ^ shine3;
-		writefln("shinres2: %s (%0b)", shine_res2, shine_res2);
-
 		// personality info
 		auto personality = save.parse_personality(box);
 		writefln("    PERSONALITY: (%s)", personality);
@@ -213,6 +207,36 @@ void cmd_addmoney(ProgramArgs args) {
 	writefln("adding money: %s", add_money);
 	save.money = save.money + add_money;
 	writefln("total money: %s", save.money);
+	writefln("writing save: %s", out_sav);
+	save.write_to(out_sav);
+}
+
+void cmd_shine(ProgramArgs args) {
+	auto in_sav = args.arg("in_sav");
+	auto slot = args.arg("slot").to!uint;
+	auto out_sav = args.arg("out_sav");
+
+	writefln("loading save: %s", in_sav);
+	auto save = new PokeSave();
+	save.read_from(in_sav);
+	save.verify();
+
+	writefln("selecting pkmn: %s", slot);
+	auto pkmn = &save.party.pokemon[slot];
+	pk3_decrypt(&pkmn.box);
+
+	// make it shine
+	auto shine1 = (pkmn.box.ot_id ^ pkmn.box.ot_sid);
+	auto shine3 = pkmn.box.pid_low;
+	ushort shiny_target = 0b1100_0000_0000_0000;
+	auto shine_high_solve = (shine1 ^ shine3) ^ shiny_target;
+	writefln("solved shiny equation: (%016b)", shine_high_solve);
+	pkmn.box.pid_high = cast(ushort) shine_high_solve;
+
+	// auto per = save.parse_personality(pkmn.box);
+	// writefln("shiny: %s", per.shiny);
+
+	pk3_encrypt(&pkmn.box);
 	writefln("writing save: %s", out_sav);
 	save.write_to(out_sav);
 }
@@ -305,7 +329,8 @@ void cmd_trade(ProgramArgs args) {
 	pk3_encrypt(&pkmn1.box);
 
 	writeln("TRADE SUMMARY:");
-	writefln("  Traded %s's '%s' (L. %s) for %s's '%s' (L. %s)! Take care of them!", decode_gba_text(save1.trainer.name),
+	writefln("  Traded %s's '%s' (L. %s) for %s's '%s' (L. %s)! Take care of them!",
+			decode_gba_text(save1.trainer.name),
 			decode_gba_text(pkmn1_copy.box.nickname), pkmn1_copy.party.level, decode_gba_text(save2.trainer.name),
 			decode_gba_text(pkmn2_copy.box.nickname), pkmn2_copy.party.level);
 

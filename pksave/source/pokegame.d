@@ -13,6 +13,7 @@ import util;
 alias read_bin = std.bitmanip.read;
 
 enum Gender {
+    Unknown,
     Male,
     Female
 }
@@ -237,7 +238,8 @@ align(1) {
         string toString() const {
             import std.string : format;
 
-            return format("id: %s, name: %s, price: %s", index, decode_gba_text(name.dup).strip(), price);
+            return format("id: %s, name: %s, price: %s", index,
+                    decode_gba_text(name.dup).strip(), price);
         }
     }
 }

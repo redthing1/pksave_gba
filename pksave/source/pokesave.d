@@ -36,7 +36,8 @@ class PokeSave {
         // verify main save validity
         // check savtype
         if (loaded_save.type != gba_savetype_t.GBA_TYPE_FRLG) {
-            if (!forgive) assert(0, "save was not FRLG!");
+            if (!forgive)
+                assert(0, "save was not FRLG!");
             return false;
         }
         // check keys
@@ -45,7 +46,8 @@ class PokeSave {
         auto key2 = gba_get_security_key(
                 loaded_save.data + gba_game_detect.GBA_FRLG_SECURITY_KEY2_OFFSET).key;
         if (key1 != key2) {
-            if (!forgive) assert(0, "FRLG keys did not match!");
+            if (!forgive)
+                assert(0, "FRLG keys did not match!");
             return false;
         }
 
@@ -67,7 +69,8 @@ class PokeSave {
             auto is_valid = original_cksum == local_checksum;
             if (!is_valid) {
                 all_valid = false;
-                if (!forgive) assert(0, format("party pkmn %s is corrupted", i));
+                if (!forgive)
+                    assert(0, format("party pkmn %s is corrupted", i));
             }
         }
         return all_valid;
@@ -96,11 +99,8 @@ class PokeSave {
     Personality parse_personality(pk3_box_t box) {
         Personality per;
 
-        auto species_data = *rom.get_species_info(box.species);
-        
         per.raw_gender = (box.pid & 0xff);
-        per.gender = (per.raw_gender < species_data.gender) ? Gender.Female : Gender.Male;
-        
+
         per.raw_extra_ability = (box.pid & 0x01);
 
         per.raw_nature = (box.pid % 25);
@@ -110,7 +110,12 @@ class PokeSave {
         ushort pid_low = (box.pid & 0xffff);
         per.raw_shiny = (box.ot_id ^ box.ot_sid ^ pid_high ^ pid_low);
         per.shiny = per.raw_shiny < 8;
-        writefln("rawshine: %s", per.raw_shiny);
+
+        // rom data
+        if (rom) {
+            auto species_data = *rom.get_species_info(box.species);
+            per.gender = (per.raw_gender < species_data.gender) ? Gender.Female : Gender.Male;
+        }
 
         return per;
     }
