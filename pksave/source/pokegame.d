@@ -136,8 +136,8 @@ align(1) struct PkmnROMSpecies {
         ubyte atk;
         ubyte def;
         ubyte spd;
-        ubyte spatk;
-        ubyte spdef;
+        ubyte satk;
+        ubyte sdef;
     }
 
     struct {
@@ -177,8 +177,8 @@ align(1) struct PkmnROMSpecies {
     string toString() const {
         import std.string : format;
 
-        return format("hp: %s, atk: %s, def: %s, spd: %s, spatk: %s, spdef: %s, type1: %s, type2: %s",
-                hp, atk, def, spd, spatk, spdef, type1.to!PkmnTypeGen3, type2.to!PkmnTypeGen3) ~ format(", gender: %s", gender);
+        return format("hp: %s, atk: %s, def: %s, spd: %s, satk: %s, sdef: %s, type1: %s, type2: %s",
+                hp, atk, def, spd, satk, sdef, type1.to!PkmnTypeGen3, type2.to!PkmnTypeGen3) ~ format(", gender: %s", gender);
     }
 }
 

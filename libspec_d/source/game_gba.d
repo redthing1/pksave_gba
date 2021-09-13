@@ -36,13 +36,13 @@ enum gba_checksum {
 }
 
 enum pk3_encryption {
-	PK3_SHUFFLE_MOD = 24,
-	PK3_SHUFFLE_SHIFT = 0x2,
-	PK3_DATA_SIZE = 0x30,
-	PK3_BLOCK0_START = 0x00,
-	PK3_BLOCK1_START = 0x0C,
-	PK3_BLOCK2_START = 0x18,
-	PK3_BLOCK3_START = 0x24
+    PK3_SHUFFLE_MOD = 24,
+    PK3_SHUFFLE_SHIFT = 0x2,
+    PK3_DATA_SIZE = 0x30,
+    PK3_BLOCK0_START = 0x00,
+    PK3_BLOCK1_START = 0x0C,
+    PK3_BLOCK2_START = 0x18,
+    PK3_BLOCK3_START = 0x24
 };
 
 enum {
@@ -141,6 +141,12 @@ align(1) {
         ubyte spd;
         ubyte satk;
         ubyte sdef;
+
+        string toString() const {
+            import std.string : format;
+
+            return format("(%s, %s, %s, %s, %s, %s)", hp, atk, def, spd, satk, sdef);
+        }
     }
 
     /**
@@ -186,6 +192,12 @@ align(1) {
 
         mixin(bitfields!(ubyte, "hp", 5, ubyte, "atk", 5, ubyte, "def", 5,
                 ubyte, "spd", 5, ubyte, "satk", 5, ubyte, "sdef", 5, ubyte, "unknown", 2));
+
+        string toString() const {
+            import std.string : format;
+
+            return format("(%s, %s, %s, %s, %s, %s)", hp, atk, def, spd, satk, sdef);
+        }
     }
 
     //pulled from pkm, may not be accurate
