@@ -34,6 +34,14 @@ void main(string[] raw_args) {
 			.add(new Argument("recv_slot", "pokemon party slot"))
 			.add(new Argument("out_sav", "output save file"))
 			)
+		.add(new Command("trade")
+			.add(new Argument("sav1_in", "save 1 input"))
+			.add(new Argument("sav1_slot", "save 1 party slot"))
+			.add(new Argument("sav2_in", "save 2 input"))
+			.add(new Argument("sav2_slot", "save 2 party slot"))
+			.add(new Argument("sav1_out", "save 1 output"))
+			.add(new Argument("sav2_out", "save 2 output"))
+			)
 		.parse(raw_args);
 
 	args
@@ -49,6 +57,9 @@ void main(string[] raw_args) {
 		})
 		.on("transfer", (args) {
 			cmd_transfer(args);
+		})
+		.on("trade", (args) {
+			cmd_trade(args);
 		});
 	// dfmt on
 }
@@ -229,4 +240,52 @@ void cmd_transfer(ProgramArgs args) {
 
 	writefln("writing save: %s", out_sav);
 	recv_save.write_to(out_sav);
+}
+
+void cmd_trade(ProgramArgs args) {
+	auto sav1_in = args.arg("sav1_in");
+	auto sav1_slot = args.arg("sav1_slot").to!uint;
+	auto sav1_out = args.arg("sav1_out");
+	auto sav2_in = args.arg("sav2_in");
+	auto sav2_slot = args.arg("sav2_slot").to!uint;
+	auto sav2_out = args.arg("sav2_out");
+
+	writefln("loading save 1: %s", sav1_in);
+	auto save1 = new PokeSave();
+	save1.read_from(sav1_in);
+	save1.verify();
+	writefln("loading save 2: %s", sav2_in);
+	auto save2 = new PokeSave();
+	save2.read_from(sav2_in);
+	save2.verify();
+
+	writefln("trading pokemon between sav1 slot %s and sav2 slot %s", sav1_slot, sav2_slot);
+	// decrypt boxes
+	auto pkmn1 = &save1.party.pokemon[sav1_slot];
+	auto pkmn2 = &save2.party.pokemon[sav2_slot];
+	pk3_decrypt(&pkmn1.box);
+	pk3_decrypt(&pkmn2.box);
+	auto pkmn1_copy = pkmn1;
+	auto pkmn2_copy = pkmn2;
+	writefln("%s (L. %s) is being transformed into data and uploaded!",
+			decode_gba_text(pkmn1_copy.box.nickname), pkmn1_copy.party.level);
+	writefln("%s (L. %s) is being transformed into data and uploaded!",
+			decode_gba_text(pkmn2_copy.box.nickname), pkmn2_copy.party.level);
+	writefln("On the other end, it's %s (L. %s)!",
+			decode_gba_text(pkmn2.box.nickname), pkmn2.party.level);
+	writefln("On the other end, it's %s (L. %s)!",
+			decode_gba_text(pkmn1.box.nickname), pkmn1.party.level);
+	pk3_encrypt(&pkmn2.box);
+	pk3_encrypt(&pkmn1.box);
+
+	// verify party integrity
+	auto validity1 = save1.verify_party();
+	writefln("verifying sav1 party integrity: %s", validity1 ? "VALID" : "INVALID");
+	auto validity2 = save2.verify_party();
+	writefln("verifying sav2 party integrity: %s", validity2 ? "VALID" : "INVALID");
+
+	writefln("writing save 1: %s", sav1_out);
+	save2.write_to(sav1_out);
+	writefln("writing save 2: %s", sav2_out);
+	save2.write_to(sav2_out);
 }
