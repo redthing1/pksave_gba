@@ -272,30 +272,35 @@ void cmd_trade(ProgramArgs args) {
 	// dereference and store copy of pkmn data
 	auto pkmn1_copy = *pkmn1;
 	auto pkmn2_copy = *pkmn2;
-	writefln("%s (L. %s) (from save 1) is being transformed into data and uploaded!",
+	writeln("TRANSACTION");
+	writeln("  UPLOAD 1->2:");
+	writefln("    %s (L. %s) (from save 1) is being transformed into data and uploaded!",
 			decode_gba_text(pkmn1_copy.box.nickname), pkmn1_copy.party.level);
 	pkmn2.box = pkmn1_copy.box;
 	pkmn2.party = pkmn1_copy.party;
-	writefln("On the other end (save 2), it's %s (L. %s)!",
+	writefln("    On the other end (save 2), it's %s (L. %s)!",
 			decode_gba_text(pkmn2.box.nickname), pkmn2.party.level);
-	writefln("%s (L. %s) (from save 2) is being transformed into data and uploaded!",
+	writeln("  UPLOAD 2->1:");
+	writefln("    %s (L. %s) (from save 2) is being transformed into data and uploaded!",
 			decode_gba_text(pkmn2_copy.box.nickname), pkmn2_copy.party.level);
 	pkmn1.box = pkmn2_copy.box;
 	pkmn1.party = pkmn2_copy.party;
-	writefln("On the other end (save 1), it's %s (L. %s)!",
+	writefln("    On the other end (save 1), it's %s (L. %s)!",
 			decode_gba_text(pkmn1.box.nickname), pkmn1.party.level);
 	pk3_encrypt(&pkmn2.box);
 	pk3_encrypt(&pkmn1.box);
 
-	writefln("Traded %s's '%s' (L. %s) for %s's '%s' (L. %s)! Take care of them!", decode_gba_text(save1.trainer.name),
+	writeln("TRADE SUMMARY:");
+	writefln("  Traded %s's '%s' (L. %s) for %s's '%s' (L. %s)! Take care of them!", decode_gba_text(save1.trainer.name),
 			decode_gba_text(pkmn1_copy.box.nickname), pkmn1_copy.party.level, decode_gba_text(save2.trainer.name),
 			decode_gba_text(pkmn2_copy.box.nickname), pkmn2_copy.party.level);
 
 	// verify party integrity
+	writeln("VERIFY:");
 	auto validity1 = save1.verify_party();
-	writefln("verifying sav1 party integrity: %s", validity1 ? "VALID" : "INVALID");
+	writefln("  SAV1 INTEGRITY: %s", validity1 ? "VALID" : "INVALID");
 	auto validity2 = save2.verify_party();
-	writefln("verifying sav2 party integrity: %s", validity2 ? "VALID" : "INVALID");
+	writefln("  SAV2 INTEGRITY: %s", validity2 ? "VALID" : "INVALID");
 
 	writefln("writing save 1: %s", sav1_out);
 	save1.write_to(sav1_out);
