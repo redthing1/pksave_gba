@@ -131,55 +131,74 @@ struct Personality {
     }
 }
 
-align(1) struct PkmnROMSpecies {
-    struct {
-        ubyte hp;
-        ubyte atk;
-        ubyte def;
-        ubyte spd;
-        ubyte satk;
-        ubyte sdef;
+align(1) {
+    struct PkmnROMSpecies {
+        struct {
+            ubyte hp;
+            ubyte atk;
+            ubyte def;
+            ubyte spd;
+            ubyte satk;
+            ubyte sdef;
+        }
+
+        struct {
+            ubyte type1;
+            ubyte type2;
+        }
+
+        struct {
+            ubyte catch_rate;
+            ubyte exp_yield;
+            ushort effort_yield;
+        }
+
+        struct {
+            ushort item1;
+            ushort item2;
+            ubyte gender;
+        }
+
+        ubyte egg_cycles;
+        ubyte friendship;
+        ubyte lvl_up_type;
+        struct {
+            ubyte egg_group_1;
+            ubyte egg_group_2;
+        }
+
+        struct {
+            ubyte ability1;
+            ubyte ability2;
+        }
+
+        ubyte safari_zone_rate;
+        ubyte color_flip;
+        ushort unknown0;
+
+        string toString() const {
+            import std.string : format;
+
+            return format("hp: %s, atk: %s, def: %s, spd: %s, satk: %s, sdef: %s, type1: %s, type2: %s", hp, atk,
+                    def, spd, satk, sdef, type1.to!PkmnTypeGen3, type2.to!PkmnTypeGen3) ~ format(", gender: %s",
+                    gender);
+        }
     }
 
-    struct {
-        ubyte type1;
-        ubyte type2;
-    }
-
-    struct {
-        ubyte catch_rate;
-        ubyte exp_yield;
-        ushort effort_yield;
-    }
-
-    struct {
-        ushort item1;
-        ushort item2;
-        ubyte gender;
-    }
-
-    ubyte egg_cycles;
-    ubyte friendship;
-    ubyte lvl_up_type;
-    struct {
-        ubyte egg_group_1;
-        ubyte egg_group_2;
-    }
-
-    struct {
-        ubyte ability1;
-        ubyte ability2;
-    }
-
-    ubyte safari_zone_rate;
-    ubyte color_flip;
-    ushort unknown0;
-
-    string toString() const {
-        import std.string : format;
-
-        return format("hp: %s, atk: %s, def: %s, spd: %s, satk: %s, sdef: %s, type1: %s, type2: %s",
-                hp, atk, def, spd, satk, sdef, type1.to!PkmnTypeGen3, type2.to!PkmnTypeGen3) ~ format(", gender: %s", gender);
+    struct PkmnROMItem {
+        ubyte[14] name;
+        ushort index;
+        ushort price;
+        ubyte hold_effect;
+        ubyte parameter0;
+        uint description_ptr;
+        ushort mystery0;
+        ubyte pocket;
+        ubyte type;
+        uint field_usage_ptr;
+        uint battle_usage;
+        uint battle_usage_ptr;
+        uint parameter1;
     }
 }
 
@@ -266,5 +285,9 @@ class PkmnROM {
         // writefln("species: %s, offset: 0x%06x", species, offset);
         return cast(PkmnROMSpecies*)&rom_buf[offset];
         // return cast(PkmnROMSpecies*) &species_info_slice;
+    }
+
+    PkmnROMItem* get_item_info(uint item) {
+        return null;
     }
 }

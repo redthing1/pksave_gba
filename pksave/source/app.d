@@ -83,6 +83,7 @@ void cmd_info(ProgramArgs args) {
 	writefln("    PARTY: %s", pk3_party_t.sizeof);
 	writefln("    BOX: %s", pk3_box_t.sizeof);
 	writefln("    SPECIES: %s", PkmnROMSpecies.sizeof);
+	writefln("    ITEM: %s", PkmnROMItem.sizeof);
 
 	auto trainer = save.trainer;
 	writeln("TRAINER");
@@ -132,6 +133,9 @@ void cmd_info(ProgramArgs args) {
 				cksum_validity, box_cksum);
 	}
 	writeln("ITEMS");
+	if (save.rom_loaded) {
+		// try to load item table
+	}
 	auto num_pockets = EnumMembers!gba_item_pocket_t.length;
 	writefln("  POCKETS: %s", num_pockets);
 	// print party members
@@ -142,8 +146,14 @@ void cmd_info(ProgramArgs args) {
 		auto pock_sz = gba_get_pocket_size(save.loaded_save, pocket_id);
 		for (int j = 0; j < pock_sz; j++) {
 			auto item = gba_get_pocket_item(save.loaded_save, pocket_id, j);
-			if (item.amount == 0) continue;
-			writefln("    ID: %s, COUNT: %s", item.index, item.amount);
+			if (item.amount == 0)
+				continue;
+			if (save.rom_loaded) {
+				// detailed item info
+				writefln("    ID: %s, COUNT: %s", item.index, item.amount);
+			} else {
+				writefln("    ID: %s, COUNT: %s", item.index, item.amount);
+			}
 		}
 	}
 
