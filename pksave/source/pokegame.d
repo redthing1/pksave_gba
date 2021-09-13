@@ -7,6 +7,7 @@ import std.conv;
 import std.algorithm.comparison;
 import std.bitmanip;
 import std.range;
+
 alias read_bin = std.bitmanip.read;
 
 enum PkmnNature {
@@ -63,54 +64,56 @@ enum PkmnROMDetect {
 }
 
 align(1) struct PkmnROMSpecies {
-    ubyte test0;
-    ubyte test1;
+    struct {
+        ubyte hp;
+        ubyte atk;
+        ubyte def;
+        ubyte spd;
+        ubyte spatk;
+        ubyte spdef;
+    }
+
+    struct {
+        ubyte type1;
+        ubyte type2;
+    }
+
+    struct {
+        ubyte catch_rate;
+        ubyte exp_yield;
+        ushort effort_yield;
+    }
+
+    struct {
+        ushort item1;
+        ushort item2;
+        ubyte gender;
+    }
+
+    ubyte egg_cycles;
+    ubyte friendship;
+    ubyte lvl_up_type;
+    struct {
+        ubyte egg_group_1;
+        ubyte egg_group_2;
+    }
+
+    struct {
+        ubyte ability1;
+        ubyte ability2;
+    }
+
+    ubyte safari_zone_rate;
+    ubyte color_flip;
+    ushort unknown0;
+
+    string toString() const {
+        import std.string : format;
+
+        return format("hp: %s, atk: %s, def: %s, spd: %s, spatk: %s, spdef: %s, type1: %s, type2: %s",
+                hp, atk, def, spd, spatk, spdef, type1, type2);
+    }
 }
-
-// align(1) struct PkmnROMSpecies {
-//     struct {
-//         ubyte hp;
-//         ubyte atk;
-//         ubyte def;
-//         ubyte spd;
-//         ubyte spatk;
-//         ubyte spdef;
-//     }
-
-//     struct {
-//         ubyte type1;
-//         ubyte type2;
-//     }
-
-//     struct {
-//         ubyte catch_rate;
-//         ubyte exp_yield;
-//         ushort effort_yield;
-//     }
-
-//     struct {
-//         ushort item1;
-//         ushort item2;
-//         ubyte gender;
-//     }
-
-//     ubyte egg_cycles;
-//     ubyte friendship;
-//     ubyte lvl_up_type;
-//     struct {
-//         ubyte egg_group_1;
-//         ubyte egg_group_2;
-//     }
-
-//     struct {
-//         ubyte ability1;
-//         ubyte ability2;
-//     }
-
-//     ubyte safari_zone_rate;
-//     ubyte color_flip;
-//     ushort unknown0;
-// }
 
 class PkmnROM {
     public ubyte[] rom_buf;
@@ -174,29 +177,20 @@ class PkmnROM {
         return is_equal;
     }
 
-    ubyte[] get_raw_species_info(uint species) {
+    PkmnROMSpecies* get_species_info(uint species) {
         auto offset = get_specdata_offset_for_rom(rom_type) + (
                 SPECDATA_ENTRY_LENGTH * (species - 0x01));
         auto offset_end = offset + SPECDATA_ENTRY_LENGTH;
 
         auto species_info_slice = rom_buf[offset .. offset_end];
-        // writefln("raw species data for pkmn: %d (0x%04x): %s", species, species, species_info_slice);
-
-        return species_info_slice;
-    }
-
-    // // magic
-    // T read_raw_species(T : PkmnROMSpecies, R)(auto ref R range)
-    //         if (isInputRange!R && is(ElementType!R : const(ubyte))) {
-    //     return PkmnROMSpecies(range);
-    // }
-
-    PkmnROMSpecies get_species_info(uint species) {
-        auto raw_data = get_raw_species_info(species);
 
         // return read_raw_species!(PkmnROMSpecies)(raw_data);
         // return read_raw_species!(PkmnROMSpecies, Endian.littleEndian
         // alias read_bin = std.bitmanip.read;
-        return std.bitmanip.read!(PkmnROMSpecies, Endian.littleEndian)(raw_data);
+        // return std.bitmanip.read!(PkmnROMSpecies, Endian.littleEndian)(raw_data);
+
+        // writefln("species: %s, offset: 0x%06x", species, offset);
+        return cast(PkmnROMSpecies*)&rom_buf[offset];
+        // return cast(PkmnROMSpecies*) &species_info_slice;
     }
 }
