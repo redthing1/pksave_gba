@@ -43,7 +43,7 @@ enum PkmnNature {
     Quirky = 24,
 }
 
-enum PkmnType {
+enum PkmnTypeFRLG {
     Normal,
     Fighting,
     Flying,
@@ -157,7 +157,7 @@ align(1) struct PkmnROMSpecies {
         import std.string : format;
 
         return format("hp: %s, atk: %s, def: %s, spd: %s, spatk: %s, spdef: %s, type1: %s, type2: %s",
-                hp, atk, def, spd, spatk, spdef, type1.to!PkmnType, type2.to!PkmnType ~ format(", gender: %s", gender);
+                hp, atk, def, spd, spatk, spdef, type1.to, type2) ~ format(", gender: %s", gender);
     }
 }
 
