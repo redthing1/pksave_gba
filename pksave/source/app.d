@@ -17,7 +17,7 @@ void main(string[] raw_args) {
 		.add(new Flag("v", null, "turns on more verbose output").name("verbose").repeating)
 		.add(new Command("info")
 			.add(new Argument("sav", "save file"))
-			.add(new Argument("rom", "rom file").optional.defaultValue("NONE"))
+			.add(new Argument("rom", "rom file").optional.defaultValue(""))
 			)
 		.add(new Command("dumprom")
 			.add(new Argument("rom", "rom file"))
@@ -47,8 +47,8 @@ void main(string[] raw_args) {
 			.add(new Argument("sav1_slot", "save 1 party slot"))
 			.add(new Argument("sav2_in", "save 2 input"))
 			.add(new Argument("sav2_slot", "save 2 party slot"))
-			.add(new Argument("sav1_out", "save 1 output"))
-			.add(new Argument("sav2_out", "save 2 output"))
+			.add(new Argument("sav1_out", "save 1 output").optional.defaultValue(""))
+			.add(new Argument("sav2_out", "save 2 output").optional.defaultValue(""))
 			)
 		.parse(raw_args);
 
@@ -88,7 +88,7 @@ void cmd_info(ProgramArgs args) {
 	save.read_from(sav_path);
 	save.verify();
 
-	if (rom_path != "NONE") {
+	if (rom_path != "") {
 		writefln("> ROM: %s", rom_path);
 		save.load_companion_rom(rom_path);
 	}
@@ -328,6 +328,9 @@ void cmd_trade(ProgramArgs args) {
 	auto sav2_slot = args.arg("sav2_slot").to!uint;
 	auto sav2_out = args.arg("sav2_out");
 
+	if (sav1_out == "") sav1_out = sav1_in;
+	if (sav2_out == "") sav2_out = sav2_in;
+
 	writefln("loading save 1: %s", sav1_in);
 	auto save1 = new PokeSave();
 	save1.read_from(sav1_in);
@@ -346,6 +349,21 @@ void cmd_trade(ProgramArgs args) {
 	// dereference and store copy of pkmn data
 	auto pkmn1_copy = *pkmn1;
 	auto pkmn2_copy = *pkmn2;
+	
+	writeln("CHECK");
+	// ensure neither slot is empty
+	if (pkmn1.party.level == 0 || pkmn1.box.nickname[0] == 0 || sav1_slot >= save1.party.size) {
+		// invalid
+		writefln("  save 1 slot %s is INVALID", sav1_slot);
+		return;
+	}
+	if (pkmn2.party.level == 0 || pkmn2.box.nickname[0] == 0 || sav2_slot >= save2.party.size) {
+		// invalid
+		writefln("  save 2 slot %s is INVALID", sav2_slot);
+		return;
+	}
+	writeln("  SLOTS ARE VALID");
+
 	writeln("TRANSACTION");
 	writeln("  UPLOAD 1->2:");
 	writefln("    %s (L. %s) (from save 1) is being transformed into data and uploaded!",
