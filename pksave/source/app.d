@@ -265,14 +265,19 @@ void cmd_trade(ProgramArgs args) {
 	auto pkmn2 = &save2.party.pokemon[sav2_slot];
 	pk3_decrypt(&pkmn1.box);
 	pk3_decrypt(&pkmn2.box);
-	auto pkmn1_copy = pkmn1;
-	auto pkmn2_copy = pkmn2;
+	// dereference and store copy of pkmn data
+	auto pkmn1_copy = *pkmn1;
+	auto pkmn2_copy = *pkmn2;
 	writefln("%s (L. %s) is being transformed into data and uploaded!",
 			decode_gba_text(pkmn1_copy.box.nickname), pkmn1_copy.party.level);
-	writefln("%s (L. %s) is being transformed into data and uploaded!",
-			decode_gba_text(pkmn2_copy.box.nickname), pkmn2_copy.party.level);
+	pkmn2.box = pkmn1_copy.box;
+	pkmn2.party = pkmn1_copy.party;
 	writefln("On the other end, it's %s (L. %s)!",
 			decode_gba_text(pkmn2.box.nickname), pkmn2.party.level);
+	writefln("%s (L. %s) is being transformed into data and uploaded!",
+			decode_gba_text(pkmn2_copy.box.nickname), pkmn2_copy.party.level);
+	pkmn1.box = pkmn2_copy.box;
+	pkmn1.party = pkmn2_copy.party;
 	writefln("On the other end, it's %s (L. %s)!",
 			decode_gba_text(pkmn1.box.nickname), pkmn1.party.level);
 	pk3_encrypt(&pkmn2.box);
@@ -285,7 +290,7 @@ void cmd_trade(ProgramArgs args) {
 	writefln("verifying sav2 party integrity: %s", validity2 ? "VALID" : "INVALID");
 
 	writefln("writing save 1: %s", sav1_out);
-	save2.write_to(sav1_out);
+	save1.write_to(sav1_out);
 	writefln("writing save 2: %s", sav2_out);
 	save2.write_to(sav2_out);
 }
