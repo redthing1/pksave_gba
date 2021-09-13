@@ -2,6 +2,7 @@ import std.stdio;
 import std.file;
 import std.path;
 import std.conv;
+import std.traits;
 import commandr;
 
 import libspec;
@@ -56,7 +57,7 @@ void cmd_info(ProgramArgs args) {
 	auto rom_path = args.arg("rom");
 
 	writefln("> PKSAVE INFO: %s", sav_path);
-	
+
 	auto save = new PokeSave();
 	save.read_from(sav_path);
 	save.verify();
@@ -71,8 +72,10 @@ void cmd_info(ProgramArgs args) {
 	if (save.rom_loaded) {
 		writefln("  ROM: %s", save.rom.rom_type);
 	}
-	auto key1 = gba_get_security_key(save.loaded_save.data + gba_game_detect.GBA_FRLG_SECURITY_KEY_OFFSET).key;
-	auto key2 = gba_get_security_key(save.loaded_save.data + gba_game_detect.GBA_FRLG_SECURITY_KEY2_OFFSET).key;
+	auto key1 = gba_get_security_key(
+			save.loaded_save.data + gba_game_detect.GBA_FRLG_SECURITY_KEY_OFFSET).key;
+	auto key2 = gba_get_security_key(
+			save.loaded_save.data + gba_game_detect.GBA_FRLG_SECURITY_KEY2_OFFSET).key;
 	auto key_match = key1 == key2 ? "VALID" : "INVALID";
 	writefln("  KEYS: %s (%s, %s)", key_match, key1, key2);
 	writefln("  POKEBLOCK: %s", pk3_t.sizeof);
@@ -103,7 +106,7 @@ void cmd_info(ProgramArgs args) {
 		auto box = pkmn.box;
 		auto box_cksum = box.checksum;
 		pk3_decrypt(&box);
-		
+
 		// main info
 		writefln("  NAME: %s (raw:%s)", decode_gba_text(box.nickname), format_hex(box.nickname));
 		writefln("    SPECIES: 0x%04X", box.species);
@@ -120,7 +123,7 @@ void cmd_info(ProgramArgs args) {
 		// personality info
 		auto personality = save.parse_personality(box);
 		writefln("    PERSONALITY: (%s)", personality);
-		
+
 		// verify checksum (by recomputing)
 		ushort local_checksum = pk3_checksum(cast(const(ubyte*)) box.block,
 				pk3_encryption.PK3_DATA_SIZE);
@@ -128,6 +131,22 @@ void cmd_info(ProgramArgs args) {
 		writefln("    CKSUM: 0x%04X (%s) (orig: 0x%04X)", local_checksum,
 				cksum_validity, box_cksum);
 	}
+	writeln("ITEMS");
+	auto num_pockets = EnumMembers!gba_item_pocket_t.length;
+	writefln("  POCKETS: %s", num_pockets);
+	// print party members
+	for (int i = 0; i < num_pockets; i++) {
+		auto pocket_id = i.to!gba_item_pocket_t;
+
+		writefln("  POCKET: %s", pocket_id);
+		auto pock_sz = gba_get_pocket_size(save.loaded_save, pocket_id);
+		for (int j = 0; j < pock_sz; j++) {
+			auto item = gba_get_pocket_item(save.loaded_save, pocket_id, j);
+			if (item.amount == 0) continue;
+			writefln("    ID: %s, COUNT: %s", item.index, item.amount);
+		}
+	}
+
 }
 
 void cmd_verify(ProgramArgs args) {
@@ -182,10 +201,12 @@ void cmd_trade(ProgramArgs args) {
 	pk3_decrypt(&source_box_copy);
 	auto recv_pkmn = &recv_save.party.pokemon[recv_slot];
 	pk3_decrypt(&recv_pkmn.box);
-	writefln("%s (L. %s) is being transformed into data and uploaded!", decode_gba_text(source_box_copy.nickname), source_pkmn.party.level);
+	writefln("%s (L. %s) is being transformed into data and uploaded!",
+			decode_gba_text(source_box_copy.nickname), source_pkmn.party.level);
 	recv_pkmn.party = source_pkmn.party;
 	recv_pkmn.box = source_box_copy;
-	writefln("On the other end, it's %s (L. %s)!", decode_gba_text(recv_pkmn.box.nickname), recv_pkmn.party.level);
+	writefln("On the other end, it's %s (L. %s)!",
+			decode_gba_text(recv_pkmn.box.nickname), recv_pkmn.party.level);
 	pk3_encrypt(&recv_pkmn.box);
 
 	// verify party integrity
