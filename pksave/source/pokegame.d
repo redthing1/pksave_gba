@@ -43,6 +43,28 @@ enum PkmnNature {
     Quirky = 24,
 }
 
+enum PkmnType {
+    Normal,
+    Fighting,
+    Flying,
+    Poison,
+    Ground,
+    Rock,
+    Bug,
+    Ghost,
+    Steel,
+    Fire,
+    Water,
+    Grass,
+    Electric,
+    Psychic,
+    Ice,
+    Dragon,
+    Dark,
+    Fairy,
+    Question,
+}
+
 enum ubyte[] BULBASAUR_SPECIES_DATA = [
         0x2D, 0x31, 0x31, 0x2D, 0x41, 0x41, 0x0C, 0x03, 0x2D, 0x40, 0x00, 0x01,
         0x00, 0x00, 0x00, 0x00, 0x1F, 0x14, 0x46, 0x03, 0x01, 0x07, 0x41,
@@ -83,8 +105,7 @@ struct Personality {
     string toString() const {
         import std.string : format;
 
-        return format("gender: %s, nature: %s, shiny: %s",
-                gender, nature, shiny);
+        return format("gender: %s, nature: %s, shiny: %s", gender, nature, shiny);
     }
 }
 
@@ -136,7 +157,7 @@ align(1) struct PkmnROMSpecies {
         import std.string : format;
 
         return format("hp: %s, atk: %s, def: %s, spd: %s, spatk: %s, spdef: %s, type1: %s, type2: %s",
-                hp, atk, def, spd, spatk, spdef, type1, type2) ~ format(", gender: %s", gender);
+                hp, atk, def, spd, spatk, spdef, type1.to!PkmnType, type2.to!PkmnType ~ format(", gender: %s", gender);
     }
 }
 
