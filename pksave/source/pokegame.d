@@ -247,27 +247,23 @@ class PkmnROM {
         detect_rom_type();
 
         // ensure that bulbasaur data is found at offset
-        // writefln("verifying rom");
-
         // read 28 bytes from ROM at address
-        auto offset = get_specdata_offset_for_rom(rom_type);
+        auto specdata_offset = get_specdata_offset_for_rom(rom_type);
         // auto offset = get_specdata_offset_for_rom(PkmnROMDetect.SGS_138);
 
-        auto offset_end = offset + SPECDATA_ENTRY_LENGTH;
-        auto rom_slice = rom_buf[offset .. offset_end];
+        auto specdata_offset_end = specdata_offset + SPECDATA_ENTRY_LENGTH;
+        auto specdata_rom_slice = rom_buf[specdata_offset .. specdata_offset_end];
         // writefln("rom slice (0x%06x-0x%06x): %s", offset, offset_end, rom_slice);
 
         // compare with bulbasaur seq
-        auto is_equal = equal(rom_slice, BULBASAUR_SPECIES_DATA);
+        auto is_specdata_equal = equal(specdata_rom_slice, BULBASAUR_SPECIES_DATA);
 
-        // writefln("rom slice specdata match: %s", is_equal);
-
-        if (!is_equal) {
-            assert(0, format("rom (detected %s) slice (0x%06x-0x%06x) did not match BULBASAUR seq: %s",
-                    rom_type, offset, offset_end, rom_slice));
+        if (!is_specdata_equal) {
+            assert(0, format("rom (detected %s) specdata slice (0x%06x-0x%06x) did not match BULBASAUR seq: %s",
+                    rom_type, specdata_offset, specdata_offset_end, specdata_rom_slice));
         }
 
-        return is_equal;
+        return is_specdata_equal;
     }
 
     PkmnROMSpecies* get_species_info(uint species) {
