@@ -142,6 +142,7 @@ void cmd_info(ProgramArgs args) {
 		writefln("    STATS: %s", pkmn.party.stats);
 		writefln("    IVS: %s", box.iv);
 		writefln("    EVS: %s", box.ev);
+		writefln("    FRIENDSHIP: %.0f%%", (box.friendship / 255.0) * 100.0);
 
 		if (save.rom) {
 			// species info
