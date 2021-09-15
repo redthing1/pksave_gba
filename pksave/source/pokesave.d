@@ -35,9 +35,9 @@ class PokeSave {
     bool verify(bool forgive = false) {
         // verify main save validity
         // check savtype
-        if (loaded_save.type != gba_savetype_t.GBA_TYPE_FRLG) {
+        if (loaded_save.type == gba_savetype_t.GBA_TYPE_UNKNOWN) {
             if (!forgive)
-                assert(0, "save was not FRLG!");
+                assert(0, "save was not detected as a valid gen iii rom!");
             return false;
         }
         // check keys
