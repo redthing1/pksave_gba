@@ -150,8 +150,17 @@ align(1) {
         string toString() const {
             import std.string : format;
 
-            return format("hp: %s, atk: %s, def: %s, spd: %s, satk: %s, sdef: %s, type1: %s, type2: %s", hp, atk,
-                    def, spd, satk, sdef, type1.to!PkmnTypeGen3, type2.to!PkmnTypeGen3) ~ format(", gender: %s",
+            string type1_s, type2_s;
+            try {
+                type1_s = format("%s", type1.to!PkmnTypeGen3);
+                type2_s = format("%s", type2.to!PkmnTypeGen3);
+            } catch (ConvException e) {
+                type1_s = format("%s", type1);
+                type2_s = format("%s", type2);
+            }
+
+            return format("hp: %s, atk: %s, def: %s, spd: %s, satk: %s, sdef: %s, type1: %s, type2: %s",
+                    hp, atk, def, spd, satk, sdef, type1_s, type2_s)~format(", gender: %s",
                     gender);
         }
     }

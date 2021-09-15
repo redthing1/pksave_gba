@@ -14,16 +14,16 @@ public import data;
 
 alias read_bin = std.bitmanip.read;
 
-enum ubyte[] BULBASAUR_SPECIES_DATA = [
-        0x2D, 0x31, 0x31, 0x2D, 0x41, 0x41, 0x0C, 0x03, 0x2D, 0x40, 0x00, 0x01,
-        0x00, 0x00, 0x00, 0x00, 0x1F, 0x14, 0x46, 0x03, 0x01, 0x07, 0x41,
-        0x00, 0x00, 0x03, 0x00, 0x00
+enum ubyte[] BULBASAUR_SPECIES_DATA_MATCH = [
+        0x2D, 0x31, 0x31, 0x2D, 0x41, 0x41, 0x0C, 0x03, 0x2D
     ];
 
 enum int SPECDATA_ENTRY_LENGTH = 28;
 
 enum PkmnROMSpeciesDataInfo : uint {
     /*
+        the "gBaseStats" symbol
+
         bulbasaur (ID: 0x01) offset
         data looks like:
         2D 31 31 2D 41 41 0C 03 2D 40 00 01 00 00 00 00 1F 14 46 03 01 07 41 00 00 03 00 00  // BULBASAUR
@@ -32,14 +32,8 @@ enum PkmnROMSpeciesDataInfo : uint {
     OFFSET_BULBASAUR_LG_U = 0x25477C, // leaf green en-us
     OFFSET_BULBASAUR_SGS_138 = 0xA6BCEC,
     OFFSET_BULBASAUR_EMERALD_U = 0x3203E8,
+    OFFSET_BULBASAUR_EMERALD_MOD = 0x3717C4,
 }
-
-enum ubyte[] MASTERBALL_ITEM_DATA_FR = [
-        0xC7, 0xBB, 0xCD, 0xCE, 0xBF, 0xCC, 0x00, 0xBC, 0xBB, 0xC6, 0xC6, 0xFF,
-        0x00, 0x00, 0x01, 0x00, 0x00, 0x00, 0x00, 0x00, 0xCC, 0x4E, 0x3D,
-        0x08, 0x00, 0x00, 0x03, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0x00, 0x00,
-        0x00, 0x1D, 0x1E, 0x0A, 0x08, 0x00, 0x00, 0x00, 0x00
-    ];
 
 enum ubyte[] MASTERBALL_ITEM_DATA_MATCH = [
         0xFF, 0x00, 0x00, 0x01, 0x00, 0x00
@@ -49,6 +43,8 @@ enum int ITEMTBL_ENTRY_LENGTH = 44;
 
 enum PkmnROMItemTblInfo : uint {
     /*
+        the "gItems" symbol
+
         masterball (ID: 0x01) offset
         in FRLG, data looks like:
         C7 BB CD CE BF CC 00 BC BB C6 C6 FF 00 00 01 00 00 00 00 00 CC 4E 3D 08 00 00 03 00 00 00 00 00 02 00 00 00 1D 1E 0A 08 00 00 00 00
@@ -62,6 +58,7 @@ enum PkmnROMItemTblInfo : uint {
     // OFFSET_MASTERBALL_LG_U = 0x3DAE64, // leaf green en-us THIS IS WRONG
     OFFSET_MASTERBALL_SGS_138 = 0x3DB054,
     OFFSET_MASTERBALL_EMERALD_U = 0x5839CC,
+    OFFSET_MASTERBALL_EMERALD_MOD = 0x6293F0,
 }
 
 enum PkmnROMDetect : uint {
@@ -69,7 +66,8 @@ enum PkmnROMDetect : uint {
     FIRE_RED_U,
     LEAF_GREEN_U,
     SGS_138,
-    EMERALD_U
+    EMERALD_U,
+    EMERALD_MOD,
 }
 
 class PkmnROMTables {
@@ -101,12 +99,14 @@ class PkmnROM {
             PkmnROMDetect.LEAF_GREEN_U: PkmnROMSpeciesDataInfo.OFFSET_BULBASAUR_LG_U,
             PkmnROMDetect.SGS_138: PkmnROMSpeciesDataInfo.OFFSET_BULBASAUR_SGS_138,
             PkmnROMDetect.EMERALD_U: PkmnROMSpeciesDataInfo.OFFSET_BULBASAUR_EMERALD_U,
+            PkmnROMDetect.EMERALD_MOD: PkmnROMSpeciesDataInfo.OFFSET_BULBASAUR_EMERALD_MOD,
         ];
         PkmnROMTables.OFFSET_MASTERBALL = [
             PkmnROMDetect.UNKNOWN: 0,
             PkmnROMDetect.FIRE_RED_U: PkmnROMItemTblInfo.OFFSET_MASTERBALL_FR_U,
             PkmnROMDetect.SGS_138: PkmnROMItemTblInfo.OFFSET_MASTERBALL_SGS_138,
             PkmnROMDetect.EMERALD_U: PkmnROMItemTblInfo.OFFSET_MASTERBALL_EMERALD_U,
+            PkmnROMDetect.EMERALD_MOD: PkmnROMItemTblInfo.OFFSET_MASTERBALL_EMERALD_MOD,
         ];
     }
 
@@ -136,6 +136,10 @@ class PkmnROM {
             rom_type = PkmnROMDetect.EMERALD_U;
             return true;
         }
+        if (rom_buf[PkmnROMSpeciesDataInfo.OFFSET_BULBASAUR_EMERALD_MOD + 2] == 0x31) {
+            rom_type = PkmnROMDetect.EMERALD_MOD;
+            return true;
+        }
         if (rom_buf[PkmnROMSpeciesDataInfo.OFFSET_BULBASAUR_SGS_138 + 2] == 0x31) {
             rom_type = PkmnROMDetect.SGS_138;
             return true;
@@ -154,16 +158,16 @@ class PkmnROM {
         auto specdata_offset = get_specdata_offset_for_rom(rom_type);
         // auto offset = get_specdata_offset_for_rom(PkmnROMDetect.SGS_138);
 
-        auto specdata_offset_end = specdata_offset + SPECDATA_ENTRY_LENGTH;
+        auto specdata_offset_end = specdata_offset + BULBASAUR_SPECIES_DATA_MATCH.length;
         auto specdata_rom_slice = rom_buf[specdata_offset .. specdata_offset_end];
         // writefln("rom slice (0x%06x-0x%06x): %s", offset, offset_end, rom_slice);
 
         // compare with bulbasaur seq
-        auto is_specdata_equal = equal(specdata_rom_slice, BULBASAUR_SPECIES_DATA);
+        auto is_specdata_equal = equal(specdata_rom_slice, BULBASAUR_SPECIES_DATA_MATCH);
 
         if (!is_specdata_equal) {
-            assert(0, format("rom (detected %s) specdata slice (0x%06x-0x%06x) did not match BULBASAUR seq: %s",
-                    rom_type, specdata_offset, specdata_offset_end, specdata_rom_slice));
+            assert(0, format("rom (detected %s) specdata slice (0x%06x-0x%06x) did not match BULBASAUR seq: %s (target: %s)",
+                    rom_type, specdata_offset, specdata_offset_end, specdata_rom_slice, BULBASAUR_SPECIES_DATA_MATCH));
         }
 
         // ensure that masterball data is found at offset
