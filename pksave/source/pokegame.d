@@ -31,6 +31,7 @@ enum PkmnROMSpeciesDataInfo : uint {
     OFFSET_BULBASAUR_FR_U = 0x2547A0, // fire red en-us
     OFFSET_BULBASAUR_LG_U = 0x25477C, // leaf green en-us
     OFFSET_BULBASAUR_SGS_138 = 0xA6BCEC,
+    OFFSET_BULBASAUR_EMERALD_U = 0x3203E8,
 }
 
 enum ubyte[] MASTERBALL_ITEM_DATA_FR = [
@@ -41,8 +42,7 @@ enum ubyte[] MASTERBALL_ITEM_DATA_FR = [
     ];
 
 enum ubyte[] MASTERBALL_ITEM_DATA_MATCH = [
-        0xFF, 0x00, 0x00, 0x01, 0x00, 0x00, 0x00, 0x00, 0x00, 0xCC, 0x4E, 0x3D,
-        0x08, 0x00, 0x00, 0x03, 0x00
+        0xFF, 0x00, 0x00, 0x01, 0x00, 0x00
     ];
 
 enum int ITEMTBL_ENTRY_LENGTH = 44;
@@ -56,11 +56,12 @@ enum PkmnROMItemTblInfo : uint {
         C7 D5 E7 E8 D9 E6 00 BC D5 E0 E0 FF 00 00 01 00 00 00 00 00 CC 4E 3D 08 00 00 03 00 68 05 46 08 02 00 00 00 1D 1E 0A 08 00 00 00 00
 
         a good place to match: (+11)
-        FF 00 00 01 00 00 00 00 00 CC 4E 3D 08 00 00 03 00
+        FF 00 00 01 00 00 00
     */
     OFFSET_MASTERBALL_FR_U = 0x3DB054, // fire red en-us
     // OFFSET_MASTERBALL_LG_U = 0x3DAE64, // leaf green en-us THIS IS WRONG
     OFFSET_MASTERBALL_SGS_138 = 0x3DB054,
+    OFFSET_MASTERBALL_EMERALD_U = 0x5839CC,
 }
 
 enum PkmnROMDetect : uint {
@@ -68,6 +69,7 @@ enum PkmnROMDetect : uint {
     FIRE_RED_U,
     LEAF_GREEN_U,
     SGS_138,
+    EMERALD_U
 }
 
 class PkmnROMTables {
@@ -98,11 +100,13 @@ class PkmnROM {
             PkmnROMDetect.FIRE_RED_U: PkmnROMSpeciesDataInfo.OFFSET_BULBASAUR_FR_U,
             PkmnROMDetect.LEAF_GREEN_U: PkmnROMSpeciesDataInfo.OFFSET_BULBASAUR_LG_U,
             PkmnROMDetect.SGS_138: PkmnROMSpeciesDataInfo.OFFSET_BULBASAUR_SGS_138,
+            PkmnROMDetect.EMERALD_U: PkmnROMSpeciesDataInfo.OFFSET_BULBASAUR_EMERALD_U,
         ];
         PkmnROMTables.OFFSET_MASTERBALL = [
             PkmnROMDetect.UNKNOWN: 0,
             PkmnROMDetect.FIRE_RED_U: PkmnROMItemTblInfo.OFFSET_MASTERBALL_FR_U,
             PkmnROMDetect.SGS_138: PkmnROMItemTblInfo.OFFSET_MASTERBALL_SGS_138,
+            PkmnROMDetect.EMERALD_U: PkmnROMItemTblInfo.OFFSET_MASTERBALL_EMERALD_U,
         ];
     }
 
@@ -126,6 +130,10 @@ class PkmnROM {
         }
         if (rom_buf[PkmnROMSpeciesDataInfo.OFFSET_BULBASAUR_LG_U + 2] == 0x31) {
             rom_type = PkmnROMDetect.LEAF_GREEN_U;
+            return true;
+        }
+        if (rom_buf[PkmnROMSpeciesDataInfo.OFFSET_BULBASAUR_EMERALD_U + 2] == 0x31) {
+            rom_type = PkmnROMDetect.EMERALD_U;
             return true;
         }
         if (rom_buf[PkmnROMSpeciesDataInfo.OFFSET_BULBASAUR_SGS_138 + 2] == 0x31) {
