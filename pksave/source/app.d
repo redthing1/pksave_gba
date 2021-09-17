@@ -43,6 +43,12 @@ void main(string[] raw_args) {
 		.add(new Command("dumpcube")
 			.add(new Argument("in_pkmn", "input pkmn file"))
 			)
+		.add(new Command("melt")
+			.add(new Argument("in_sav", "input save file"))
+			.add(new Argument("slot", "party slot"))
+			.add(new Argument("in_pkmn", "input pkmn file"))
+			.add(new Argument("out_sav", "output save file"))
+			)
 		.add(new Command("transfer")
 			.add(new Argument("source_sav", "source save file"))
 			.add(new Argument("source_slot", "pokemon party slot"))
@@ -82,6 +88,9 @@ void main(string[] raw_args) {
 		})
 		.on("dumpcube", (args) {
 			cmd_dumpcube(args);
+		})
+		.on("melt", (args) {
+			cmd_melt(args);
 		})
 		.on("transfer", (args) {
 			cmd_transfer(args);
@@ -332,6 +341,37 @@ void cmd_dumpcube(ProgramArgs args) {
 
 	writefln("inside the pkmn cube was: %s (L. %s)",
 			decode_gba_text(pkmn_pk3.box.nickname), pkmn_pk3.party.level);
+}
+
+void cmd_melt(ProgramArgs args) {
+	auto in_sav = args.arg("in_sav");
+	auto slot = args.arg("slot").to!uint;
+	auto out_sav = args.arg("out_sav");
+	auto in_pkmn_file = args.arg("in_pkmn");
+
+	writefln("loading save: %s", in_sav);
+	auto save = new PokeSave();
+	save.read_from(in_sav);
+	save.verify();
+
+	auto pkmn_buf = std.file.read(in_pkmn_file);
+	writefln("melting frozen and crushed pkmn (%s bytes) from: %s", pkmn_buf.length, in_pkmn_file);
+	auto pkmn_pk3 = cast(pk3_t*)(cast(void*) pkmn_buf);
+
+	writefln("decrypting box with checksum: 0x%04x", pkmn_pk3.box.checksum);
+	pk3_decrypt(&(*pkmn_pk3).box);
+
+	writefln("inside the pkmn cube was: %s (L. %s)",
+			decode_gba_text(pkmn_pk3.box.nickname), pkmn_pk3.party.level);
+
+	auto slot_pkmn = &save.party.pokemon[slot];
+	writefln("placing: %s into slot %s", decode_gba_text(pkmn_pk3.box.nickname), slot);
+	slot_pkmn.box = pkmn_pk3.box;
+	slot_pkmn.party = pkmn_pk3.party;
+	pk3_encrypt(&slot_pkmn.box);
+
+	writefln("writing save: %s", out_sav);
+	save.write_to(out_sav);
 }
 
 void cmd_transfer(ProgramArgs args) {
