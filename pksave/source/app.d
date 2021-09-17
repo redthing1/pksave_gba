@@ -40,6 +40,9 @@ void main(string[] raw_args) {
 			.add(new Argument("slot", "party slot"))
 			.add(new Argument("out", "output file"))
 			)
+		.add(new Command("dumpcube")
+			.add(new Argument("in_pkmn", "input pkmn file"))
+			)
 		.add(new Command("transfer")
 			.add(new Argument("source_sav", "source save file"))
 			.add(new Argument("source_slot", "pokemon party slot"))
@@ -76,6 +79,9 @@ void main(string[] raw_args) {
 		})
 		.on("freeze", (args) {
 			cmd_freeze(args);
+		})
+		.on("dumpcube", (args) {
+			cmd_dumpcube(args);
 		})
 		.on("transfer", (args) {
 			cmd_transfer(args);
@@ -291,8 +297,6 @@ void cmd_freeze(ProgramArgs args) {
 	auto slot = args.arg("slot").to!uint;
 	auto out_file = args.arg("out");
 
-	import std.random : choice;
-
 	writefln("loading save: %s", in_sav);
 	auto save = new PokeSave();
 	save.read_from(in_sav);
@@ -302,10 +306,11 @@ void cmd_freeze(ProgramArgs args) {
 	auto pkmn = &save.party.pokemon[slot];
 	pk3_decrypt(&pkmn.box);
 
-	writefln("crushing %s (L. %s) into bytes.", decode_gba_text(pkmn.box.nickname), pkmn.party.level);
+	writefln("crushing %s (L. %s) (checksum: 0x%04x) into bytes.",
+			decode_gba_text(pkmn.box.nickname), pkmn.party.level, pkmn.box.checksum);
 	pk3_encrypt(&pkmn.box); // re-encrypt
 	auto pkmn_pk3_copy = *pkmn;
-	auto pkmn_buf_raw = cast(ubyte*) (cast(void*) (&pkmn_pk3_copy));
+	auto pkmn_buf_raw = cast(ubyte*)(cast(void*)(&pkmn_pk3_copy));
 	ubyte[100] out_pkmn_buf;
 	for (int i = 0; i < out_pkmn_buf.length; i++) {
 		out_pkmn_buf[i] = pkmn_buf_raw[i];
@@ -313,6 +318,20 @@ void cmd_freeze(ProgramArgs args) {
 
 	writefln("writing compacted pkmn to %s", out_file);
 	std.file.write(out_file, out_pkmn_buf);
+}
+
+void cmd_dumpcube(ProgramArgs args) {
+	auto in_pkmn_file = args.arg("in_pkmn");
+
+	auto pkmn_buf = std.file.read(in_pkmn_file);
+	writefln("read crushed pkmn (%s bytes) from: %s", pkmn_buf.length, in_pkmn_file);
+	auto pkmn_pk3 = cast(pk3_t*)(cast(void*) pkmn_buf);
+
+	writefln("decrypting box with checksum: 0x%04x", pkmn_pk3.box.checksum);
+	pk3_decrypt(&(*pkmn_pk3).box);
+
+	writefln("inside the pkmn cube was: %s (L. %s)",
+			decode_gba_text(pkmn_pk3.box.nickname), pkmn_pk3.party.level);
 }
 
 void cmd_transfer(ProgramArgs args) {
@@ -366,8 +385,10 @@ void cmd_trade(ProgramArgs args) {
 	auto sav2_slot = args.arg("sav2_slot").to!uint;
 	auto sav2_out = args.arg("sav2_out");
 
-	if (sav1_out == "") sav1_out = sav1_in;
-	if (sav2_out == "") sav2_out = sav2_in;
+	if (sav1_out == "")
+		sav1_out = sav1_in;
+	if (sav2_out == "")
+		sav2_out = sav2_in;
 
 	writefln("loading save 1: %s", sav1_in);
 	auto save1 = new PokeSave();
@@ -387,7 +408,7 @@ void cmd_trade(ProgramArgs args) {
 	// dereference and store copy of pkmn data
 	auto pkmn1_copy = *pkmn1;
 	auto pkmn2_copy = *pkmn2;
-	
+
 	writeln("CHECK");
 	// ensure neither slot is empty
 	if (pkmn1.party.level == 0 || pkmn1.box.nickname[0] == 0 || sav1_slot >= save1.party.size) {
