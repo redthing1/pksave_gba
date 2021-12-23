@@ -49,6 +49,23 @@ static const uint16_t GBA_TO_CODEPAGE[] = {
 	0xffff, 0xffff, 0xffff, 0x2192, 0xffff, 0xffff, 0x000a, 0x0000
 };
 
+static const uint16_t GBA_SECTION_CHECKSUM_AMOUNT[] = {
+	3884, // 0
+	3968, // 1
+	3968, // 2
+	3968, // 3
+	3848, // 4
+	3968, // 5
+	3968, // 6
+	3968, // 7
+	3968, // 8
+	3968, // 9
+	3968, // 10
+	3968, // 11
+	3968, // 12
+	2000, // 13
+};
+
 /**
  * @brief Converts GBA encoded text into UCS2 encoded text.
  * @param dst Pointer to destination.
@@ -100,8 +117,9 @@ static inline gba_footer_t *get_block_footer(const uint8_t *ptr) {
 	return (gba_footer_t *)(ptr + GBA_BLOCK_LENGTH - GBA_BLOCK_FOOTER_LENGTH);
 }
 
-static inline uint16_t get_block_checksum(const uint8_t *ptr) {
+static inline uint16_t get_block_checksum(const uint8_t *ptr, uint16_t section_id) {
 	return gba_block_checksum(ptr, GBA_BLOCK_DATA_LENGTH);
+	// return gba_block_checksum(ptr, GBA_SECTION_CHECKSUM_AMOUNT[section_id]);
 }
 
 uint8_t gba_is_gba_save(const uint8_t *ptr) {
@@ -235,11 +253,12 @@ void gba_write_save_internal(uint8_t *ptr, const gba_save_t *save) {
 		memcpy(dest_ptr, src_ptr, GBA_BLOCK_DATA_LENGTH);
 		//write footer
 		gba_footer_t *footer = get_block_footer(dest_ptr);
-		footer->section_id = internal->order[i];
+		uint16_t section_id = internal->order[i];
+		footer->section_id = section_id;
 		footer->mark = GBA_BLOCK_FOOTER_MARK;
 		footer->save_index = internal->save_index;
 		//calculate checksum
-		footer->checksum = get_block_checksum(dest_ptr);
+		footer->checksum = get_block_checksum(dest_ptr, section_id);
 	}
 	//Decrypt the data again! Since they might make more edits and such.
 	gba_crypt_secure((gba_save_t *)save);
