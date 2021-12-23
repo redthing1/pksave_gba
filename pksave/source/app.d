@@ -278,25 +278,25 @@ void cmd_shine(ProgramArgs args) {
 	save.read_from(in_sav);
 	save.verify();
 
-	writefln("selecting pkmn: %s", slot);
-	auto pkmn = &save.party.pokemon[slot];
-	pk3_decrypt(&pkmn.box);
+	// writefln("selecting pkmn: %s", slot);
+	// auto pkmn = &save.party.pokemon[slot];
+	// pk3_decrypt(&pkmn.box);
 
-	// make it shine
-	auto shine1 = (pkmn.box.ot_id ^ pkmn.box.ot_sid);
-	auto shine3 = pkmn.box.pid_low;
-	// pick target
-	ushort shiny_target = cast(ushort)(0b0000_0000_0000_0000) + cast(ubyte)([
-			0, 1, 2, 3, 4, 5, 6, 7
-			].choice());
-	auto shine_high_solve = (shine1 ^ shine3) ^ shiny_target;
-	writefln("solved shiny equation: (%016b)", shine_high_solve);
-	pkmn.box.pid_high = cast(ushort) shine_high_solve;
+	// // // make it shine
+	// // auto shine1 = (pkmn.box.ot_id ^ pkmn.box.ot_sid);
+	// // auto shine3 = pkmn.box.pid_low;
+	// // // pick target
+	// // ushort shiny_target = cast(ushort)(0b0000_0000_0000_0000) + cast(ubyte)([
+	// // 		0, 1, 2, 3, 4, 5, 6, 7
+	// // 		].choice());
+	// // auto shine_high_solve = (shine1 ^ shine3) ^ shiny_target;
+	// // writefln("solved shiny equation: (%016b)", shine_high_solve);
+	// // pkmn.box.pid_high = cast(ushort) shine_high_solve;
 
-	auto per = save.parse_personality(pkmn.box);
-	writefln("shiny: %s", per.shiny);
+	// auto per = save.parse_personality(pkmn.box);
+	// writefln("shiny: %s", per.shiny);
 
-	pk3_encrypt(&pkmn.box);
+	// pk3_encrypt(&pkmn.box);
 	writefln("writing save: %s", out_sav);
 	save.write_to(out_sav);
 }
