@@ -258,7 +258,9 @@ void gba_write_save_internal(uint8_t *ptr, const gba_save_t *save) {
 		footer->mark = GBA_BLOCK_FOOTER_MARK;
 		footer->save_index = internal->save_index;
 		//calculate checksum
-		footer->checksum = get_block_checksum(dest_ptr, section_id);
+		uint16_t checksum = get_block_checksum(dest_ptr, section_id);
+		if (section_id == 0x0000) { checksum -= 0x0100; }
+		footer->checksum = checksum;
 	}
 	//Decrypt the data again! Since they might make more edits and such.
 	gba_crypt_secure((gba_save_t *)save);
