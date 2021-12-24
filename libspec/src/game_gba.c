@@ -49,21 +49,60 @@ static const uint16_t GBA_TO_CODEPAGE[] = {
 	0xffff, 0xffff, 0xffff, 0x2192, 0xffff, 0xffff, 0x000a, 0x0000
 };
 
-static const uint16_t GBA_SECTION_CHECKSUM_AMOUNT[] = {
-	3884, // 0
-	3968, // 1
-	3968, // 2
-	3968, // 3
-	3848, // 4
-	3968, // 5
-	3968, // 6
-	3968, // 7
-	3968, // 8
-	3968, // 9
-	3968, // 10
-	3968, // 11
-	3968, // 12
-	2000, // 13
+static const uint16_t GBA_SECTION_CHECKSUM_SIZES[4][14] = {
+	// GBA_TYPE_UNKNOWN
+	{0,0,0,0,0,0,0,0,0,0,0,0,0,0},
+	// GBA_TYPE_RS
+	{
+		0xff4, // 0 
+		0xff4, // 1
+		0xff4, // 2
+		0xff4, // 3
+		0xff4, // 4
+		0xff4, // 5
+		0xff4, // 6
+		0xff4, // 7
+		0xff4, // 8
+		0xff4, // 9
+		0xff4, // 10
+		0xff4, // 11
+		0xff4, // 12
+		0xff4, // 13
+	},
+	// GBA_TYPE_E
+	{
+		0xf2c, // 0 
+		0xff4, // 1
+		0xff4, // 2
+		0xff4, // 3
+		0xff4, // 4
+		0xff4, // 5
+		0xff4, // 6
+		0xff4, // 7
+		0xff4, // 8
+		0xff4, // 9
+		0xff4, // 10
+		0xff4, // 11
+		0xff4, // 12
+		0xff4, // 13
+	},
+	// GBA_TYPE_FRLG
+	{
+		0xf24, // 0 
+		0xff4, // 1
+		0xff4, // 2
+		0xff4, // 3
+		0xff4, // 4
+		0xff4, // 5
+		0xff4, // 6
+		0xff4, // 7
+		0xff4, // 8
+		0xff4, // 9
+		0xff4, // 10
+		0xff4, // 11
+		0xff4, // 12
+		0xff4, // 13
+	}
 };
 
 /**
@@ -117,9 +156,8 @@ static inline gba_footer_t *get_block_footer(const uint8_t *ptr) {
 	return (gba_footer_t *)(ptr + GBA_BLOCK_LENGTH - GBA_BLOCK_FOOTER_LENGTH);
 }
 
-static inline uint16_t get_block_checksum(const uint8_t *ptr, uint16_t section_id) {
-	return gba_block_checksum(ptr, GBA_BLOCK_DATA_LENGTH);
-	// return gba_block_checksum(ptr, GBA_SECTION_CHECKSUM_AMOUNT[section_id]);
+static inline uint16_t get_block_checksum(const uint8_t *ptr, uint16_t section_id, gba_savetype_t save_type) {
+	return gba_block_checksum(ptr, GBA_SECTION_CHECKSUM_SIZES[save_type][section_id]);
 }
 
 uint8_t gba_is_gba_save(const uint8_t *ptr) {
@@ -258,8 +296,7 @@ void gba_write_save_internal(uint8_t *ptr, const gba_save_t *save) {
 		footer->mark = GBA_BLOCK_FOOTER_MARK;
 		footer->save_index = internal->save_index;
 		//calculate checksum
-		uint16_t checksum = get_block_checksum(dest_ptr, section_id);
-		if (section_id == 0x0000) { checksum -= 0x0100; }
+		uint16_t checksum = get_block_checksum(dest_ptr, section_id, save->type);
 		footer->checksum = checksum;
 	}
 	//Decrypt the data again! Since they might make more edits and such.

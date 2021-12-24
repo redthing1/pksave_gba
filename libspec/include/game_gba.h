@@ -21,13 +21,13 @@ extern "C" {
  */
 typedef enum {
 	/** An unknown GBA game, no functions will work on this save type. */
-	GBA_TYPE_UNKNOWN,
+	GBA_TYPE_UNKNOWN = 0,
 	/** Pokemon Ruby and Pokemon Sapphire */
-	GBA_TYPE_RS,
+	GBA_TYPE_RS = 1,
 	/** Pokemon Emerald */
-	GBA_TYPE_E,
+	GBA_TYPE_E = 2,
 	/** Pokemon Fire Red and Pokemon Leaf Green */
-	GBA_TYPE_FRLG
+	GBA_TYPE_FRLG = 3,
 } gba_savetype_t;
 
 
