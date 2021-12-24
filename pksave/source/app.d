@@ -30,6 +30,10 @@ void main(string[] raw_args) {
 		.add(new Command("verify", "verify checksum validity in your party (prevent bad eggs)")
 			.add(new Argument("sav", "save file"))
 			)
+		.add(new Command("touch", "read and write a save to verify correct processing")
+			.add(new Argument("in_sav", "input save file"))
+			.add(new Argument("out_sav", "output save file"))
+			)
 		.add(new Command("shine", "make a pokemon in your party shiny")
 			.add(new Argument("in_sav", "input save file"))
 			.add(new Argument("slot", "party slot"))
@@ -79,6 +83,9 @@ void main(string[] raw_args) {
 		})
 		.on("addmoney", (args) {
 			cmd_addmoney(args);
+		})
+		.on("touch", (args) {
+			cmd_touch(args);
 		})
 		.on("shine", (args) {
 			cmd_shine(args);
@@ -262,6 +269,21 @@ void cmd_addmoney(ProgramArgs args) {
 	writefln("adding money: %s", add_money);
 	save.money = save.money + add_money;
 	writefln("total money: %s", save.money);
+	writefln("writing save: %s", out_sav);
+	save.write_to(out_sav);
+}
+
+void cmd_touch(ProgramArgs args) {
+	auto in_sav = args.arg("in_sav");
+	auto out_sav = args.arg("out_sav");
+
+	import std.random : choice;
+
+	writefln("loading save: %s", in_sav);
+	auto save = new PokeSave();
+	save.read_from(in_sav);
+	save.verify();
+
 	writefln("writing save: %s", out_sav);
 	save.write_to(out_sav);
 }
