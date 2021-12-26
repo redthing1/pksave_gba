@@ -32,7 +32,7 @@ enum PkmnROMSpeciesDataInfo : uint {
     OFFSET_BULBASAUR_LG_U = 0x25477C, // leaf green en-us
     OFFSET_BULBASAUR_SGS_138 = 0xA6BCEC,
     OFFSET_BULBASAUR_EMERALD_U = 0x3203E8,
-    OFFSET_BULBASAUR_EMERALD_MOD = 0x3717C4,
+    OFFSET_BULBASAUR_EMERALD_SALT = 0x371C10,
 }
 
 enum ubyte[] MASTERBALL_ITEM_DATA_MATCH = [
@@ -58,7 +58,7 @@ enum PkmnROMItemTblInfo : uint {
     // OFFSET_MASTERBALL_LG_U = 0x3DAE64, // leaf green en-us THIS IS WRONG
     OFFSET_MASTERBALL_SGS_138 = 0x3DB054,
     OFFSET_MASTERBALL_EMERALD_U = 0x5839CC,
-    OFFSET_MASTERBALL_EMERALD_MOD = 0x6293F0,
+    OFFSET_MASTERBALL_EMERALD_SALT = 0x62994C,
 }
 
 enum PkmnROMDetect : uint {
@@ -67,7 +67,7 @@ enum PkmnROMDetect : uint {
     LEAF_GREEN_U,
     SGS_138,
     EMERALD_U,
-    EMERALD_MOD,
+    EMERALD_SALT,
 }
 
 class PkmnROMTables {
@@ -99,14 +99,14 @@ class PkmnROM {
             PkmnROMDetect.LEAF_GREEN_U: PkmnROMSpeciesDataInfo.OFFSET_BULBASAUR_LG_U,
             PkmnROMDetect.SGS_138: PkmnROMSpeciesDataInfo.OFFSET_BULBASAUR_SGS_138,
             PkmnROMDetect.EMERALD_U: PkmnROMSpeciesDataInfo.OFFSET_BULBASAUR_EMERALD_U,
-            PkmnROMDetect.EMERALD_MOD: PkmnROMSpeciesDataInfo.OFFSET_BULBASAUR_EMERALD_MOD,
+            PkmnROMDetect.EMERALD_SALT: PkmnROMSpeciesDataInfo.OFFSET_BULBASAUR_EMERALD_SALT,
         ];
         PkmnROMTables.OFFSET_MASTERBALL = [
             PkmnROMDetect.UNKNOWN: 0,
             PkmnROMDetect.FIRE_RED_U: PkmnROMItemTblInfo.OFFSET_MASTERBALL_FR_U,
             PkmnROMDetect.SGS_138: PkmnROMItemTblInfo.OFFSET_MASTERBALL_SGS_138,
             PkmnROMDetect.EMERALD_U: PkmnROMItemTblInfo.OFFSET_MASTERBALL_EMERALD_U,
-            PkmnROMDetect.EMERALD_MOD: PkmnROMItemTblInfo.OFFSET_MASTERBALL_EMERALD_MOD,
+            PkmnROMDetect.EMERALD_SALT: PkmnROMItemTblInfo.OFFSET_MASTERBALL_EMERALD_SALT,
         ];
     }
 
@@ -136,8 +136,8 @@ class PkmnROM {
             rom_type = PkmnROMDetect.EMERALD_U;
             return true;
         }
-        if (rom_buf[PkmnROMSpeciesDataInfo.OFFSET_BULBASAUR_EMERALD_MOD + 2] == 0x31) {
-            rom_type = PkmnROMDetect.EMERALD_MOD;
+        if (rom_buf[PkmnROMSpeciesDataInfo.OFFSET_BULBASAUR_EMERALD_SALT + 2] == 0x31) {
+            rom_type = PkmnROMDetect.EMERALD_SALT;
             return true;
         }
         if (rom_buf[PkmnROMSpeciesDataInfo.OFFSET_BULBASAUR_SGS_138 + 2] == 0x31) {
