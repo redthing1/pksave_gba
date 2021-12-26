@@ -32,7 +32,7 @@ enum PkmnROMSpeciesDataInfo : uint {
     OFFSET_BULBASAUR_LG_U = 0x25477C, // leaf green en-us
     OFFSET_BULBASAUR_SGS_138 = 0xA6BCEC,
     OFFSET_BULBASAUR_EMERALD_U = 0x3203E8,
-    OFFSET_BULBASAUR_EMERALD_SALT = 0x371C10,
+    OFFSET_BULBASAUR_EMERALD_SALT = 0x371C10 + 0x24, // gBaseStats points to pkmn 0 not 1
 }
 
 enum ubyte[] MASTERBALL_ITEM_DATA_MATCH = [
@@ -50,6 +50,8 @@ enum PkmnROMItemTblInfo : uint {
         C7 BB CD CE BF CC 00 BC BB C6 C6 FF 00 00 01 00 00 00 00 00 CC 4E 3D 08 00 00 03 00 00 00 00 00 02 00 00 00 1D 1E 0A 08 00 00 00 00
         in SGS, data looks like:
         C7 D5 E7 E8 D9 E6 00 BC D5 E0 E0 FF 00 00 01 00 00 00 00 00 CC 4E 3D 08 00 00 03 00 68 05 46 08 02 00 00 00 1D 1E 0A 08 00 00 00 00
+        in Emerald Salt, data looks like:
+        C7 D5 E7 E8 D9 E6 00 ...
 
         a good place to match: (+11)
         FF 00 00 01 00 00 00
@@ -58,7 +60,7 @@ enum PkmnROMItemTblInfo : uint {
     // OFFSET_MASTERBALL_LG_U = 0x3DAE64, // leaf green en-us THIS IS WRONG
     OFFSET_MASTERBALL_SGS_138 = 0x3DB054,
     OFFSET_MASTERBALL_EMERALD_U = 0x5839CC,
-    OFFSET_MASTERBALL_EMERALD_SALT = 0x62994C,
+    OFFSET_MASTERBALL_EMERALD_SALT = 0x62994C + 0x2C, // gItems points to 0 not 1
 }
 
 enum PkmnROMDetect : uint {
