@@ -134,12 +134,13 @@ void cmd_info(ProgramArgs args) {
 			save.loaded_save.data + gba_game_detect.GBA_FRLG_SECURITY_KEY2_OFFSET).key;
 	auto key_match = key1 == key2 ? "VALID" : "INVALID";
 	writefln("  KEYS: %s (%s, %s)", key_match, key1, key2);
-	writefln("  POKEBLOCK: %s", pk3_t.sizeof);
-	writefln("    TRAIN: %s", gba_trainer_t.sizeof);
-	writefln("    PARTY: %s", pk3_party_t.sizeof);
-	writefln("    BOX: %s", pk3_box_t.sizeof);
-	writefln("    SPECIES: %s", PkmnROMSpecies.sizeof);
-	writefln("    ITEM: %s", PkmnROMItem.sizeof);
+
+	assert(pk3_t.sizeof == 100);
+	assert(gba_trainer_t.sizeof == 22);
+	assert(pk3_party_t.sizeof == 20);
+	assert(pk3_box_t.sizeof == 80);
+	assert(PkmnROMSpecies.sizeof == 28);
+	assert(PkmnROMItem.sizeof == 44);
 
 	auto trainer = save.trainer;
 	writeln("TRAINER");
