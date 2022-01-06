@@ -177,8 +177,8 @@ void cmd_info(ProgramArgs args) {
 
 		if (save.rom) {
 			// species info
-			auto species_info = save.rom.get_species_info(box.species);
-			writefln("    SPECIES: (%s)", species_info.toString());
+			auto species_basestats = save.rom.get_species_basestats(box.species);
+			writefln("    SPECIES: (%s)", species_basestats.toString());
 		}
 
 		// personality info
@@ -238,7 +238,7 @@ void cmd_dumprom(ProgramArgs args) {
 		auto item = &item_tbl[i];
 		writefln(" [%03d] ITEM: %s", i, decode_gba_text(item.name).strip());
 	}
-	auto spec_tbl = rom.get_species_info_table();
+	auto spec_tbl = rom.get_species_basestats_table();
 	for (int i = 0; i < spec_tbl.length; i++) {
 		auto species = spec_tbl[i];
 		writefln(" [%03d] SPECIES: %s", i, species);

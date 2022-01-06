@@ -31,8 +31,8 @@ class PkmnROM {
         // utility function to check if the first entry is bulbasaur, as expected
         bool check_first_species(T)(int species) {
             auto rom_type = cast(PkmnRomType) T();
-            auto spec_0_off = rom_type.species_data_offset;
-            if (rom_buf[spec_0_off + (rom_type.species_data_entry_length * 1) + 2] == species)
+            auto spec_0_off = rom_type.species_basestats_offset;
+            if (rom_buf[spec_0_off + (rom_type.species_basestats_entry_length * 1) + 2] == species)
                 return true;
 
             return false;
@@ -66,7 +66,7 @@ class PkmnROM {
     }
 
     bool verify_species_table() {
-        uint tbl_offset = rom_type.species_data_offset;
+        uint tbl_offset = rom_type.species_basestats_offset;
         uint tbl_size = rom_type.species_table_size;
 
         return true;
@@ -79,9 +79,9 @@ class PkmnROM {
         return true;
     }
 
-    PkmnROMSpecies* get_species_info(uint species) {
-        auto offset = rom_type.species_data_offset
-            + (rom_type.species_data_entry_length * species);
+    PkmnROMSpecies* get_species_basestats(uint species) {
+        auto offset = rom_type.species_basestats_offset
+            + (rom_type.species_basestats_entry_length * species);
 
         return cast(PkmnROMSpecies*)&rom_buf[offset];
     }
@@ -95,12 +95,12 @@ class PkmnROM {
         return cast(PkmnROMItem*)&rom_buf[offset];
     }
 
-    PkmnROMSpecies[] get_species_info_table() {
+    PkmnROMSpecies[] get_species_basestats_table() {
         PkmnROMSpecies[] list;
 
         for (int i = 0; i < rom_type.species_table_size; i++) {
             // dereference and copy
-            PkmnROMSpecies item = *get_species_info(i);
+            PkmnROMSpecies item = *get_species_basestats(i);
             list ~= item;
         }
 

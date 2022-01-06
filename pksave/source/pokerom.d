@@ -47,18 +47,18 @@ alias PkmnRomType = SumType!(
 /** 
  * size of BaseStats struct in bytes
  */
-uint species_data_entry_length(PkmnRomType rom_type) {
-    enum int FRLG_SPECIES_DATA_ENTRY_LENGTH = 0x1C; // 28
-    enum int RSE_SPECIES_DATA_ENTRY_LENGTH = 0x1C; // 28
-    enum int HALCYON_SPECIES_DATA_ENTRY_LENGTH = 0x24;
+uint species_basestats_entry_length(PkmnRomType rom_type) {
+    enum int FRLG_SPECIES_BASESTATS_ENTRY_LENGTH = 0x1C; // 28
+    enum int RSE_SPECIES_BASESTATS_ENTRY_LENGTH = 0x1C; // 28
+    enum int HALCYON_SPECIES_BASESTATS_ENTRY_LENGTH = 0x24;
 
     return rom_type.match!(
         (UnknownGen3Rom _) => 0,
-        (FireRedURom _) => FRLG_SPECIES_DATA_ENTRY_LENGTH,
-        (LeafGreanURom _) => FRLG_SPECIES_DATA_ENTRY_LENGTH,
-        (ShinyGoldSigma138Rom _) => FRLG_SPECIES_DATA_ENTRY_LENGTH,
-        (EmeraldURom _) => RSE_SPECIES_DATA_ENTRY_LENGTH,
-        (EmeraldHalcyonRom _) => HALCYON_SPECIES_DATA_ENTRY_LENGTH,
+        (FireRedURom _) => FRLG_SPECIES_BASESTATS_ENTRY_LENGTH,
+        (LeafGreanURom _) => FRLG_SPECIES_BASESTATS_ENTRY_LENGTH,
+        (ShinyGoldSigma138Rom _) => FRLG_SPECIES_BASESTATS_ENTRY_LENGTH,
+        (EmeraldURom _) => RSE_SPECIES_BASESTATS_ENTRY_LENGTH,
+        (EmeraldHalcyonRom _) => HALCYON_SPECIES_BASESTATS_ENTRY_LENGTH,
     );
 }
 
@@ -83,13 +83,13 @@ uint item_table_entry_length(PkmnRomType rom_type) {
 /** 
  * address of "gBaseStats" symbol
  */
-uint species_data_offset(PkmnRomType rom_type) {
+uint species_basestats_offset(PkmnRomType rom_type) {
     return rom_type.match!(
         (UnknownGen3Rom _) => 0,
-        (FireRedURom _) => 0x2547A0 - rom_type.species_data_entry_length,
-        (LeafGreanURom _) => 0x25477C - rom_type.species_data_entry_length,
-        (ShinyGoldSigma138Rom _) => 0xA6BCEC - rom_type.species_data_entry_length,
-        (EmeraldURom _) => 0x3203E8 - rom_type.species_data_entry_length,
+        (FireRedURom _) => 0x2547A0 - rom_type.species_basestats_entry_length,
+        (LeafGreanURom _) => 0x25477C - rom_type.species_basestats_entry_length,
+        (ShinyGoldSigma138Rom _) => 0xA6BCEC - rom_type.species_basestats_entry_length,
+        (EmeraldURom _) => 0x3203E8 - rom_type.species_basestats_entry_length,
         (EmeraldHalcyonRom _) => 0x380A10,
     );
 }
