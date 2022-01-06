@@ -30,7 +30,9 @@ class PkmnROM {
     PkmnRomType detect_rom_type() {
         // utility function to check if the first entry is bulbasaur, as expected
         bool check_first_species(T)(int species) {
-            if (rom_buf[((cast(PkmnRomType) T()).species_data_offset) + 2] == species)
+            auto rom_type = cast(PkmnRomType) T();
+            auto spec_0_off = rom_type.species_data_offset;
+            if (rom_buf[spec_0_off + (rom_type.species_data_entry_length * 1) + 2] == species)
                 return true;
 
             return false;

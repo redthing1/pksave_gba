@@ -79,11 +79,11 @@ uint species_data_offset(PkmnRomType rom_type) {
 
     return rom_type.match!(
         (UnknownGen3Rom _) => 0,
-        (FireRedURom _) => 0x2547A0,
-        (LeafGreanURom _) => 0x25477C,
-        (ShinyGoldSigma138Rom _) => 0xA6BCEC,
-        (EmeraldURom _) => 0x3203E8,
-        (EmeraldHalcyonRom _) => 0x380A10 + 0x24, // A34, then A58
+        (FireRedURom _) => 0x2547A0 - rom_type.species_data_entry_length,
+        (LeafGreanURom _) => 0x25477C - rom_type.species_data_entry_length,
+        (ShinyGoldSigma138Rom _) => 0xA6BCEC - rom_type.species_data_entry_length,
+        (EmeraldURom _) => 0x3203E8 - rom_type.species_data_entry_length,
+        (EmeraldHalcyonRom _) => 0x380A10,
     );
 }
 
