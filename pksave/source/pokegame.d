@@ -78,14 +78,15 @@ class PkmnROM {
     }
 
     PkmnROMSpecies* get_species_info(uint species) {
-        auto offset = rom_type.species_data_offset + (
-            SPECIES_DATA_ENTRY_LENGTH * (species - 0x01));
+        auto offset = rom_type.species_data_offset
+            + (rom_type.species_data_entry_length * species);
 
         return cast(PkmnROMSpecies*)&rom_buf[offset];
     }
 
     PkmnROMItem* get_item_info(uint item) {
-        auto offset = rom_type.item_table_offset + (ITEM_TABLE_ENTRY_LENGTH * (item - 0x01));
+        auto offset = rom_type.item_table_offset
+            + (rom_type.item_table_entry_length * item);
 
         // writefln("data (0x%06x): %s", offset, rom_buf[offset .. (offset + 44)]);
 
