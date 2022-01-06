@@ -115,6 +115,7 @@ uint species_basestats_offset(PkmnRomType rom_type) {
  */
 uint species_names_offset(PkmnRomType rom_type) {
     return rom_type.match!(
+        (FireRedURom _) => 0x245EE0,
         (EmeraldHalcyonRom _) => 0x36BF04,
         _ => 0,
     );
