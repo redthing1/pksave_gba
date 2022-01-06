@@ -44,6 +44,9 @@ alias PkmnRomType = SumType!(
     EmeraldHalcyonRom
 );
 
+/** 
+ * size of BaseStats struct in bytes
+ */
 uint species_data_entry_length(PkmnRomType rom_type) {
     enum int FRLG_SPECIES_DATA_ENTRY_LENGTH = 0x1C; // 28
     enum int RSE_SPECIES_DATA_ENTRY_LENGTH = 0x1C; // 28
@@ -59,6 +62,9 @@ uint species_data_entry_length(PkmnRomType rom_type) {
     );
 }
 
+/** 
+ * size of Item struct in bytes
+ */
 uint item_table_entry_length(PkmnRomType rom_type) {
     enum int FRLG_ITEM_TABLE_ENTRY_LENGTH = 0x2C; // 44
     enum int RSE_ITEM_TABLE_ENTRY_LENGTH = 0x2C; // 44
@@ -74,9 +80,10 @@ uint item_table_entry_length(PkmnRomType rom_type) {
     );
 }
 
+/** 
+ * address of "gBaseStats" symbol
+ */
 uint species_data_offset(PkmnRomType rom_type) {
-    // this refers to the location of the "gBaseStats" symbol
-
     return rom_type.match!(
         (UnknownGen3Rom _) => 0,
         (FireRedURom _) => 0x2547A0 - rom_type.species_data_entry_length,
@@ -87,9 +94,10 @@ uint species_data_offset(PkmnRomType rom_type) {
     );
 }
 
+/** 
+ * address of "gItems" symbol
+ */
 uint item_table_offset(PkmnRomType rom_type) {
-    // this refers to the location of the "gItems" symbol
-
     return rom_type.match!(
         (UnknownGen3Rom _) => 0,
         (FireRedURom _) => 0x3DB054 - rom_type.item_table_entry_length,
