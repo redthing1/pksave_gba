@@ -86,6 +86,14 @@ class PkmnROM {
         return cast(PkmnROMSpecies*)&rom_buf[offset];
     }
 
+    ubyte[] get_species_name(uint species) {
+        auto offset = rom_type.species_names_offset
+            + (rom_type.species_names_entry_length * species);
+
+        ubyte* data_ptr = &rom_buf[offset];
+        return data_ptr[0..rom_type.species_names_entry_length];
+    }
+
     PkmnROMItem* get_item_info(uint item) {
         auto offset = rom_type.item_table_offset
             + (rom_type.item_table_entry_length * item);

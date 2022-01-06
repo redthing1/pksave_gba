@@ -175,10 +175,11 @@ void cmd_info(ProgramArgs args) {
 		writefln("    EVS: %s", box.ev);
 		writefln("    FRIENDSHIP: %.0f%%", (box.friendship / 255.0) * 100.0);
 
-		if (save.rom) {
+		if (save.rom_loaded) {
 			// species info
 			auto species_basestats = save.rom.get_species_basestats(box.species);
-			writefln("    SPECIES: (%s)", species_basestats.toString());
+			auto species_name = decode_gba_text(save.rom.get_species_name(box.species)).strip();
+			writefln("    SPECIES: %s (%s)", species_name, species_basestats.toString());
 		}
 
 		// personality info

@@ -81,6 +81,22 @@ uint item_table_entry_length(PkmnRomType rom_type) {
 }
 
 /** 
+ * size of species name string in bytes
+ */
+uint species_names_entry_length(PkmnRomType rom_type) {
+    enum int FRLG_SPECIES_NAME_ENTRY_LENGTH = 10 + 1;
+
+    return rom_type.match!(
+        (UnknownGen3Rom _) => 0,
+        (FireRedURom _) => FRLG_SPECIES_NAME_ENTRY_LENGTH,
+        (LeafGreanURom _) => FRLG_SPECIES_NAME_ENTRY_LENGTH,
+        (ShinyGoldSigma138Rom _) => FRLG_SPECIES_NAME_ENTRY_LENGTH,
+        (EmeraldURom _) => FRLG_SPECIES_NAME_ENTRY_LENGTH,
+        (EmeraldHalcyonRom _) => FRLG_SPECIES_NAME_ENTRY_LENGTH,
+    );
+}
+
+/** 
  * address of "gBaseStats" symbol
  */
 uint species_basestats_offset(PkmnRomType rom_type) {
@@ -91,6 +107,16 @@ uint species_basestats_offset(PkmnRomType rom_type) {
         (ShinyGoldSigma138Rom _) => 0xA6BCEC - rom_type.species_basestats_entry_length,
         (EmeraldURom _) => 0x3203E8 - rom_type.species_basestats_entry_length,
         (EmeraldHalcyonRom _) => 0x380A10,
+    );
+}
+
+/** 
+ * address of "gSpeciesNames" symbol
+ */
+uint species_names_offset(PkmnRomType rom_type) {
+    return rom_type.match!(
+        (EmeraldHalcyonRom _) => 0x36BF04,
+        _ => 0,
     );
 }
 
