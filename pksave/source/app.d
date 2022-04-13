@@ -168,7 +168,7 @@ void cmd_info(ProgramArgs args) {
 		// main info
 		writefln("  NAME: %s (raw:%s)", decode_gba_text(box.nickname), format_hex(box.nickname));
 		writefln("    SPECIES: 0x%04X", box.species);
-		// writefln("    TRAINER: %s", decode_gba_text(box.ot_name));
+		writefln("    TRAINER: %s", decode_gba_text(box.ot_name));
 		writefln("    LEVEL: %s", pkmn.party.level);
 		writefln("    STATS: %s", pkmn.party.stats);
 		writefln("    IVS: %s", box.iv);
@@ -180,6 +180,13 @@ void cmd_info(ProgramArgs args) {
 			auto species_basestats = save.rom.get_species_basestats(box.species);
 			auto species_name = decode_gba_text(save.rom.get_species_name(box.species)).strip();
 			writefln("    SPECIES: %s (%s)", species_name, species_basestats.toString());
+
+			auto held_item_id = box.held_item;
+			if (held_item_id) {
+				auto held_item_info = *save.rom.get_item_info(held_item_id);
+				writefln("    ITEM: %s (0x%04x)",
+					decode_gba_text(held_item_info.name.dup).strip(), held_item_id);
+			}
 		}
 
 		// personality info
