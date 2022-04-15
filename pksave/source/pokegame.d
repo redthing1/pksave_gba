@@ -43,16 +43,18 @@ class PkmnROM {
             return check_first_species!T(SPECIES_BULBASAUR);
         }
 
+        if (check_bulbasaur!ShinyGoldSigma138Rom())
+            return cast(PkmnRomType) ShinyGoldSigma138Rom();
+        if (check_bulbasaur!EmeraldHalcyonRom())
+            return cast(PkmnRomType) EmeraldHalcyonRom();
+        if (check_bulbasaur!Glazed90Rom())
+            return cast(PkmnRomType) Glazed90Rom();
+        if (check_bulbasaur!EmeraldURom())
+            return cast(PkmnRomType) EmeraldURom();
         if (check_bulbasaur!FireRedURom())
             return cast(PkmnRomType) FireRedURom();
         if (check_bulbasaur!LeafGreanURom())
             return cast(PkmnRomType) LeafGreanURom();
-        if (check_bulbasaur!ShinyGoldSigma138Rom())
-            return cast(PkmnRomType) ShinyGoldSigma138Rom();
-        if (check_bulbasaur!EmeraldURom())
-            return cast(PkmnRomType) EmeraldURom();
-        if (check_bulbasaur!EmeraldHalcyonRom())
-            return cast(PkmnRomType) EmeraldHalcyonRom();
 
         return cast(PkmnRomType) UnknownGen3Rom();
     }
