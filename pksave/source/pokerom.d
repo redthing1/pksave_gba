@@ -125,6 +125,12 @@ uint species_names_offset(PkmnRomType rom_type) {
 
 /** 
  * address of "gItems" symbol
+ * in RS looks like:
+ *      AC AC AC AC AC AC AC AC FF 00 00 00 00 00 00 00 00 00 00 00 DA 55 3C 08 00 00 01 04 11 A7 0C 08 00 00 00 00 00 00 00 00 00 00 00 00  // ????????
+ *      C7 BB CD CE BF CC 00 BC BB C6 C6 FF 00 00 01 00 00 00 00 00 A0 20 3C 08 00 00 02 00 00 00 00 00 02 00 00 00 65 A2 0C 08 00 00 00 00  // MASTER BALL
+ * in ? looks like:
+ * decapitalized? look for
+ *      C7 D5 E7 E8 D9 ...
  */
 uint item_table_offset(PkmnRomType rom_type) {
     return rom_type.match!(
@@ -134,7 +140,7 @@ uint item_table_offset(PkmnRomType rom_type) {
         (ShinyGoldSigma139Rom _) => 0x3DB054- rom_type.item_table_entry_length,
         (EmeraldURom _) => 0x5839CC- rom_type.item_table_entry_length,
         (EmeraldHalcyonRom _) => 0x63CACC,
-        (Glazed90Rom _) => 0x031B6DB,
+        (Glazed90Rom _) => 0x5839CC- rom_type.item_table_entry_length,
     );
 }
 
