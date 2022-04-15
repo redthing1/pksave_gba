@@ -31,6 +31,10 @@ struct EmeraldHalcyonRom {
 
 }
 
+struct Glazed90Rom {
+
+}
+
 struct UnknownGen3Rom {
 
 }
@@ -41,7 +45,8 @@ alias PkmnRomType = SumType!(
     LeafGreanURom,
     ShinyGoldSigma138Rom,
     EmeraldURom,
-    EmeraldHalcyonRom
+    EmeraldHalcyonRom,
+    Glazed90Rom
 );
 
 /** 
@@ -59,6 +64,7 @@ uint species_basestats_entry_length(PkmnRomType rom_type) {
         (ShinyGoldSigma138Rom _) => FRLG_SPECIES_BASESTATS_ENTRY_LENGTH,
         (EmeraldURom _) => RSE_SPECIES_BASESTATS_ENTRY_LENGTH,
         (EmeraldHalcyonRom _) => HALCYON_SPECIES_BASESTATS_ENTRY_LENGTH,
+        (Glazed90Rom _) => HALCYON_SPECIES_BASESTATS_ENTRY_LENGTH,
     );
 }
 
@@ -77,6 +83,7 @@ uint item_table_entry_length(PkmnRomType rom_type) {
         (ShinyGoldSigma138Rom _) => FRLG_ITEM_TABLE_ENTRY_LENGTH,
         (EmeraldURom _) => RSE_ITEM_TABLE_ENTRY_LENGTH,
         (EmeraldHalcyonRom _) => HALCYON_ITEM_TABLE_ENTRY_LENGTH,
+        (Glazed90Rom _) => HALCYON_ITEM_TABLE_ENTRY_LENGTH,
     );
 }
 
@@ -93,11 +100,16 @@ uint species_names_entry_length(PkmnRomType rom_type) {
         (ShinyGoldSigma138Rom _) => FRLG_SPECIES_NAME_ENTRY_LENGTH,
         (EmeraldURom _) => FRLG_SPECIES_NAME_ENTRY_LENGTH,
         (EmeraldHalcyonRom _) => FRLG_SPECIES_NAME_ENTRY_LENGTH,
+        (Glazed90Rom _) => FRLG_SPECIES_NAME_ENTRY_LENGTH,
     );
 }
 
 /** 
  * address of "gBaseStats" symbol
+ * how to find:
+ * search in binary for something resembling
+ * 2D 31 31 2D 41 41 0C 03 2D 40 00 01 00 00 00 00 1F 14 46 03 01 07 41 00 00 03 00 00  // BULBASAUR
+ * then, subtract the species_basestats_entry_length to get the offset
  */
 uint species_basestats_offset(PkmnRomType rom_type) {
     return rom_type.match!(
@@ -107,6 +119,7 @@ uint species_basestats_offset(PkmnRomType rom_type) {
         (ShinyGoldSigma138Rom _) => 0xA6BCEC - rom_type.species_basestats_entry_length,
         (EmeraldURom _) => 0x3203E8 - rom_type.species_basestats_entry_length,
         (EmeraldHalcyonRom _) => 0x380A10,
+        (Glazed90Rom _) => 0x03203E8 - rom_type.species_basestats_entry_length,
     );
 }
 
@@ -118,6 +131,7 @@ uint species_names_offset(PkmnRomType rom_type) {
         (FireRedURom _) => 0x245EE0,
         (ShinyGoldSigma138Rom _) => 0xA68340,
         (EmeraldHalcyonRom _) => 0x36BF04,
+        (Glazed90Rom _) => 0x03185C8,
         _ => 0,
     );
 }
@@ -133,6 +147,7 @@ uint item_table_offset(PkmnRomType rom_type) {
         (ShinyGoldSigma138Rom _) => 0x3DB054- rom_type.item_table_entry_length,
         (EmeraldURom _) => 0x5839CC- rom_type.item_table_entry_length,
         (EmeraldHalcyonRom _) => 0x63CACC,
+        (Glazed90Rom _) => 0x031B6DB,
     );
 }
 
@@ -146,6 +161,7 @@ uint species_table_size(PkmnRomType rom_type) {
         (ShinyGoldSigma138Rom _) => 923,
         (EmeraldURom _) => 412,
         (EmeraldHalcyonRom _) => 1024,
+        (Glazed90Rom _) => 1024,
     );
 }
 
@@ -159,5 +175,6 @@ uint item_table_size(PkmnRomType rom_type) {
         (ShinyGoldSigma138Rom _) => 375,
         (EmeraldURom _) => 375,
         (EmeraldHalcyonRom _) => 960,
+        (Glazed90Rom _) => 960,
     );
 }
