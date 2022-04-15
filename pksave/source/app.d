@@ -39,6 +39,11 @@ void main(string[] raw_args) {
 			.add(new Argument("slot", "party slot"))
 			.add(new Argument("out_sav", "output save file"))
 			)
+		.add(new Command("maxiv", "set pokemon iv to max")
+			.add(new Argument("in_sav", "input save file"))
+			.add(new Argument("slot", "party slot"))
+			.add(new Argument("out_sav", "output save file"))
+			)
 		.add(new Command("freeze", "freeze a pokemon in your party")
 			.add(new Argument("in_sav", "input save file"))
 			.add(new Argument("slot", "party slot"))
@@ -89,6 +94,9 @@ void main(string[] raw_args) {
 		})
 		.on("shine", (args) {
 			cmd_shine(args);
+		})
+		.on("maxiv", (args) {
+			cmd_maxiv(args);
 		})
 		.on("freeze", (args) {
 			cmd_freeze(args);
@@ -326,6 +334,38 @@ void cmd_shine(ProgramArgs args) {
 
 	auto per = save.parse_personality(pkmn.box);
 	writefln("shiny: %s", per.shiny);
+
+	pk3_encrypt(&pkmn.box);
+	writefln("writing save: %s", out_sav);
+	save.write_to(out_sav);
+}
+
+void cmd_maxiv(ProgramArgs args) {
+	auto in_sav = args.arg("in_sav");
+	auto slot = args.arg("slot").to!uint;
+	auto out_sav = args.arg("out_sav");
+
+	import std.random : choice;
+
+	writefln("loading save: %s", in_sav);
+	auto save = new PokeSave();
+	save.read_from(in_sav);
+	save.verify();
+
+	writefln("selecting pkmn: %s", slot);
+	auto pkmn = &save.party.pokemon[slot];
+	pk3_decrypt(&pkmn.box);
+
+	// make its ivs max
+	pkmn.box.iv.hp = 31;
+	pkmn.box.iv.atk = 31;
+	pkmn.box.iv.def = 31;
+	pkmn.box.iv.spd = 31;
+	pkmn.box.iv.satk = 31;
+	pkmn.box.iv.sdef = 31;
+
+	// print new IVs
+	writefln("new IVs: %s", pkmn.box.iv);
 
 	pk3_encrypt(&pkmn.box);
 	writefln("writing save: %s", out_sav);
