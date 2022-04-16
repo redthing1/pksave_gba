@@ -24,6 +24,10 @@
 
 <br>
 
+---
+
+<br>
+
 ## Features
 
 Provides a modified version of **[LibSpec]** <br>
@@ -31,6 +35,10 @@ and a command line tool - `pksave` - for <br>
 advanced editing of Gen 3 save files.
 
 *Yes, this is the first save editor for ultra shiny gold sigma!*
+
+<br>
+
+---
 
 <br>
 
@@ -58,6 +66,9 @@ advanced editing of Gen 3 save files.
 ***PKSave*** *is an advanced tool, and is thus command line only.* <br> 
 *There are no plans nor will there ever be for a GUI.*
 
+<br>
+
+---
 
 <br>
 
@@ -84,6 +95,10 @@ advanced editing of Gen 3 save files.
 <br> 
 
 *Enjoy! there is built in cli help, just pass `-h`*
+
+<br>
+
+---
 
 <br>
 
