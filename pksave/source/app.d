@@ -169,7 +169,7 @@ void cmd_info(ProgramArgs args) {
 	// print party members
 	for (int i = 0; i < party.size; i++) {
 		auto pkmn = party.pokemon[i];
-		auto dump_str = dump_party_mon(save, pkmn);
+		auto dump_str = dump_prettyprint_pkmn(save, pkmn);
 		writefln("%s", dump_str);
 	}
 	writeln("ITEMS");
