@@ -45,8 +45,8 @@ class PkmnROM {
 
         if (check_bulbasaur!ShinyGoldSigma139Rom())
             return cast(PkmnRomType) ShinyGoldSigma139Rom();
-        if (check_bulbasaur!EmeraldHalcyonRom())
-            return cast(PkmnRomType) EmeraldHalcyonRom();
+        if (check_bulbasaur!EmeraldHalcyon021Rom())
+            return cast(PkmnRomType) EmeraldHalcyon021Rom();
         if (check_bulbasaur!Glazed90Rom())
             return cast(PkmnRomType) Glazed90Rom();
         if (check_bulbasaur!EmeraldURom())
