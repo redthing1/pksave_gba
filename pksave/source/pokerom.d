@@ -22,8 +22,14 @@ mixin(gen_rom_types!("Glazed90")); // Pokemon Glazed v0.9
 template gen_rom_types(string rom_name) {
     import std.string: format;
     const char[] gen_rom_types = format(`
-        struct %sRom { }
-    `, rom_name);
+        struct %sRom {
+            enum NAME = "%s";
+
+            string toString() const {
+                return NAME;
+            }
+        }
+    `, rom_name, rom_name);
 }
 
 alias PkmnRomType = SumType!(
