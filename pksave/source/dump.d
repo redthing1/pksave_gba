@@ -67,13 +67,13 @@ string dump_prettyprint_pkmn(T)(PokeSave save, T pkmn) {
 
     // personality info
     auto personality = save.parse_personality(box);
-    sb ~= format("    PERSONALITY: (%s)", personality);
+    sb ~= format("    PERSONALITY: (%s)\n", personality);
 
     // verify checksum (by recomputing)
     ushort local_checksum = pk3_checksum(cast(const(ubyte*)) box.block,
             pk3_encryption.PK3_DATA_SIZE);
     auto cksum_validity = (box_cksum == local_checksum) ? "VALID" : "INVALID";
-    sb ~= format("    CKSUM: 0x%04X (%s) (orig: 0x%04X)", local_checksum,
+    sb ~= format("    CKSUM: 0x%04X (%s) (orig: 0x%04X)\n", local_checksum,
             cksum_validity, box_cksum);
     
     return sb.array;
