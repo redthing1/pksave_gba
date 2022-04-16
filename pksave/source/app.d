@@ -10,6 +10,7 @@ import libspec;
 import util;
 import pokesave;
 import pokegame;
+import dump;
 
 void main(string[] raw_args) {
 	// dfmt off
@@ -168,45 +169,8 @@ void cmd_info(ProgramArgs args) {
 	// print party members
 	for (int i = 0; i < party.size; i++) {
 		auto pkmn = party.pokemon[i];
-		// decrypt local copy of box
-		auto box = pkmn.box;
-		auto box_cksum = box.checksum;
-		pk3_decrypt(&box);
-
-		// main info
-		writefln("  NAME: %s (raw:%s)", decode_gba_text(box.nickname), format_hex(box.nickname));
-		writefln("    SPECIES: 0x%04X", box.species);
-		writefln("    TRAINER: %s", decode_gba_text(box.ot_name));
-		writefln("    LEVEL: %s", pkmn.party.level);
-		writefln("    STATS: %s", pkmn.party.stats);
-		writefln("    IVS: %s", box.iv);
-		writefln("    EVS: %s", box.ev);
-		writefln("    FRIENDSHIP: %.0f%%", (box.friendship / 255.0) * 100.0);
-
-		if (save.rom_loaded) {
-			// species info
-			auto species_basestats = save.rom.get_species_basestats(box.species);
-			auto species_name = decode_gba_text(save.rom.get_species_name(box.species)).strip();
-			writefln("    SPECIES: %s (%s)", species_name, species_basestats.toString());
-
-			auto held_item_id = box.held_item;
-			if (held_item_id) {
-				auto held_item_info = *save.rom.get_item_info(held_item_id);
-				writefln("    ITEM: %s (0x%04x)",
-					decode_gba_text(held_item_info.name.dup).strip(), held_item_id);
-			}
-		}
-
-		// personality info
-		auto personality = save.parse_personality(box);
-		writefln("    PERSONALITY: (%s)", personality);
-
-		// verify checksum (by recomputing)
-		ushort local_checksum = pk3_checksum(cast(const(ubyte*)) box.block,
-				pk3_encryption.PK3_DATA_SIZE);
-		auto cksum_validity = (box_cksum == local_checksum) ? "VALID" : "INVALID";
-		writefln("    CKSUM: 0x%04X (%s) (orig: 0x%04X)", local_checksum,
-				cksum_validity, box_cksum);
+		auto dump_str = dump_party_mon(save, pkmn);
+		writefln("%s", dump_str);
 	}
 	writeln("ITEMS");
 	auto num_pockets = EnumMembers!gba_item_pocket_t.length;

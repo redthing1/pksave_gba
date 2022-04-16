@@ -91,6 +91,10 @@ class PokeSave {
         return gba_get_party(loaded_save);
     }
 
+    @property pc() {
+        return gba_get_pc(loaded_save);
+    }
+
     @property money() {
         return gba_get_money(loaded_save);
     }
