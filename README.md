@@ -26,20 +26,37 @@
 
 ## Features
 
-provides a modified version of [libspec](https://github.com/Chase-san/libspec) and a command line tool, `pksave`, for advanced editing of Gen 3 save files.
+Provides a modified version of **[LibSpec]** <br>
+and a command line tool - `pksave` - for <br>
+advanced editing of Gen 3 save files.
 
-yes, this is the first save editor for ultra shiny gold sigma!
+*Yes, this is the first save editor for ultra shiny gold sigma!*
 
-pksave features:
-+ dump save info
-+ modify money
-+ verify save files (protect against corruption, specific the dreaded **BAD EGG**
-+ trade pokemon across save files (you can even trade from FRLG to SGS)
-+ edit IVs
-+ make pokemon shiny
-+ save and restore pokemon and items to files
+<br>
 
-pksave is an advanced tool, and is thus command line only. there are no plans nor will there ever be for a gui.
+### PKSave Features
+
++ Save / Restore Pokemon / Items to Files
+
++ Trade Pokemon Across Save Files 
+
+  *You can even trade from **FRLG** to* ***SGS***
+
++ Make Pokemon Shiny
+
++ Verify Save Files 
+
+  *Protect against corruption,* <br>
+  *specific the dreaded* ***BAD EGG***
+
++ Dump Save Info
+
++ Modify Money
+
++ Edit IVs
+
+***PKSave*** *is an advanced tool, and is thus command line only.* <br> 
+*There are no plans nor will there ever be for a GUI.*
 
 
 <br>
@@ -66,7 +83,7 @@ pksave is an advanced tool, and is thus command line only. there are no plans no
 
 <br> 
 
-*enjoy! there is built in cli help, just pass `-h`*
+*Enjoy! there is built in cli help, just pass `-h`*
 
 <br>
 
@@ -74,3 +91,7 @@ pksave is an advanced tool, and is thus command line only. there are no plans no
 
 + **Chase** for `libspec`
 + **Alex Sanchez** for `Shiny Gold Sigma`
+
+<!----------------------------------------------------------------------------->
+
+[LibSpec]: https://github.com/Chase-san/libspec
