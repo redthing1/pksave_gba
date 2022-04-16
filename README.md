@@ -41,11 +41,34 @@ pksave features:
 
 pksave is an advanced tool, and is thus command line only. there are no plans nor will there ever be for a gui.
 
-## usage
-+ install D compiler and DUB
-+ go to `libspec`, run `make`, then copy/link the output static library to `pksave`
-+ build `pksave` with `dub build`
-+ enjoy! there is built in cli help, just pass `-h`
+
+<br>
+
+## Usage
+
+1. Install the **D compiler** and **DUB**
+
+2. Navigate to `libspec`
+
+3. Run 
+
+  ```sh
+  make
+  ```
+  
+4. Copy / link the output - the static library - to `pksave`
+
+5. Build `pksave` with:
+
+  ```sh
+  dub build
+  ```
+
+<br> 
+
+*enjoy! there is built in cli help, just pass `-h`*
+
+<br>
 
 ## credits
 + chase for libspec
