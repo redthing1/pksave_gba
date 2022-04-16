@@ -43,12 +43,19 @@ class PkmnROM {
             return check_first_species!T(SPECIES_BULBASAUR);
         }
 
+        bool check_sig_byte(uint offset, ubyte expect) {
+            return rom_buf[offset] == expect;
+        }
+
+        // hack roms
         if (check_bulbasaur!ShinyGoldSigma139Rom())
             return cast(PkmnRomType) ShinyGoldSigma139Rom();
         if (check_bulbasaur!EmeraldHalcyon021Rom())
             return cast(PkmnRomType) EmeraldHalcyon021Rom();
-        if (check_bulbasaur!Glazed90Rom())
+        if (check_bulbasaur!Glazed90Rom() && check_sig_byte(0x430, 0x18))
             return cast(PkmnRomType) Glazed90Rom();
+        
+        // base gen 3 game roms
         if (check_bulbasaur!EmeraldURom())
             return cast(PkmnRomType) EmeraldURom();
         if (check_bulbasaur!FireRedURom())
