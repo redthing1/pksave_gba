@@ -461,6 +461,7 @@ enum gba_box_data {
  * @return Pointer to the saves pc data.
  */
 gba_pc_t *gba_get_pc(gba_save_t *save) {
+	// note: PC data is a superblock spanning sections 5-13 - PC buffer
 	return (gba_pc_t *)(save->data + GBA_BOX_DATA_OFFSET);
 }
 
