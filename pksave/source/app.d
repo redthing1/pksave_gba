@@ -266,8 +266,9 @@ void cmd_pkmn(ProgramArgs args) {
 
 	// all pokemon in pc boxes
 	for (auto i = 0; i < GBA_BOX_COUNT; i++) {
-		writefln("PC BOX #%s", i + 1);
 		auto pc_box = &pc.box[i];
+		auto pc_box_name = decode_gba_text(pc.name[i].dup).strip();
+		writefln("PC BOX #%s (%s)", i + 1, pc_box_name);
 		for (auto j = 0; j < GBA_POKEMON_IN_BOX; j++) {
 			auto box_pkmn = pc_box.pokemon[j];
 
