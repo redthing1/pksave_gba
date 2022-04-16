@@ -1,6 +1,7 @@
-# pksave_gba
 
-advanced gen iii save editing research tools. specifically, fire red/leaf green and ultra shiny gold sigma.
+# PKSave GBA
+
+*Advanced Gen 3 Save / Editing / Research Tools.*
 
 ## features
 
