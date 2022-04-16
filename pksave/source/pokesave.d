@@ -6,6 +6,7 @@ import std.stdio;
 import std.string;
 import std.conv;
 import pokegame;
+import std.exception;
 
 class PokeSave {
     public ubyte[] savfile_buf;
@@ -33,11 +34,13 @@ class PokeSave {
     }
 
     bool verify(bool forgive = false) {
+        // ensure save was actually loaded
+        enforce(loaded_save != null, "no save was available to load");
         // verify main save validity
         // check savtype
         if (loaded_save.type == gba_savetype_t.GBA_TYPE_UNKNOWN) {
             if (!forgive)
-                assert(0, "save was not detected as a valid gen iii rom!");
+                enforce(0, "save was not detected as a valid gen iii rom!");
             return false;
         }
         // check keys
@@ -47,7 +50,7 @@ class PokeSave {
                 loaded_save.data + gba_game_detect.GBA_FRLG_SECURITY_KEY2_OFFSET).key;
         if (key1 != key2) {
             if (!forgive)
-                assert(0, "FRLG keys did not match!");
+                enforce(0, "FRLG keys did not match!");
             return false;
         }
 
