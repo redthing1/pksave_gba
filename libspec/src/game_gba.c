@@ -224,22 +224,35 @@ gba_savetype_t gba_detect_save_type(gba_save_t *save) {
  */
 gba_save_t *gba_read_save_internal(const uint8_t *ptr) {
 	//check first footer ID
+	// allocate a mem block for the save struct
 	gba_save_t *save = malloc(sizeof(gba_save_t));
+	// allocate block of internal data
 	gba_internal_save_t *internal = save->internal = malloc(sizeof(gba_internal_save_t));
+	// allocate block of unpacked gba save size
 	save->data = malloc(GBA_UNPACKED_SIZE);
+	// get the save index (how many times saved) from the first block's footer
 	internal->save_index = get_block_footer(ptr)->save_index;
+	// clear the unpacked save data
 	memset(save->data, 0, GBA_UNPACKED_SIZE); //not sure if it is 0 or 0xFF
+
+	// for each save block (they may be out of order)
 	for(size_t i = 0; i < GBA_SAVE_BLOCK_COUNT; ++i) {
+		// calculate the pointer to this block (in raw save data)
 		const uint8_t *block_ptr = ptr + i * GBA_BLOCK_LENGTH; // sector/block start address
-		//get footer
+		// get the footer of this block
 		gba_footer_t *footer = get_block_footer(block_ptr);
+		// keep track of what order this section was (so we can write saves with section sin same order)
 		internal->order[i] = footer->section_id;
-		//get ptr to unpack too
+		// calculate where in unpacked data we are writing to
 		uint8_t *unpack_ptr = save->data + footer->section_id * GBA_BLOCK_DATA_LENGTH;
+
+		// copy data from the position in the raw save to the unpacked struct
 		memcpy(unpack_ptr, block_ptr, GBA_BLOCK_DATA_LENGTH);
 	}
+	// detect type of this save
 	save->type = gba_detect_save_type(save);
-	//Decrypt data that needs to be
+
+	// decrypt data in the save that needs to be decrypted
 	gba_crypt_secure(save);
 	return save;
 }
