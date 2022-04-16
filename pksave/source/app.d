@@ -16,20 +16,24 @@ void main(string[] raw_args) {
 	// dfmt off
 	auto args = new Program("pksave", "1.0")
 		.add(new Flag("v", null, "turns on more verbose output").name("verbose").repeating)
-		.add(new Command("info", "show detailed info on a savee file. pass rom as well for more details")
+		.add(new Command("info", "show detailed info on a save file. pass rom as well for more details")
 			.add(new Argument("sav", "save file"))
 			.add(new Argument("rom", "rom file").optional.defaultValue(""))
 			)
 		.add(new Command("dumprom", "dump info tables from a rom")
 			.add(new Argument("rom", "rom file"))
 			)
+		.add(new Command("pkmn", "dump all pokemon in save file")
+			.add(new Argument("sav", "save file"))
+			.add(new Argument("rom", "rom file").optional.defaultValue(""))
+			)
+		.add(new Command("verify", "verify checksum validity in your party (prevent bad eggs)")
+			.add(new Argument("sav", "save file"))
+			)
 		.add(new Command("addmoney", "add money to your save")
 			.add(new Argument("in_sav", "input save file"))
 			.add(new Argument("money", "money to add"))
 			.add(new Argument("out_sav", "output save file"))
-			)
-		.add(new Command("verify", "verify checksum validity in your party (prevent bad eggs)")
-			.add(new Argument("sav", "save file"))
 			)
 		.add(new Command("touch", "read and write a save to verify correct processing")
 			.add(new Argument("in_sav", "input save file"))
@@ -83,6 +87,9 @@ void main(string[] raw_args) {
 		})
 		.on("dumprom", (args) {
 			cmd_dumprom(args);
+		})
+		.on("pkmn", (args) {
+			cmd_pkmn(args);
 		})
 		.on("verify", (args) {
 			cmd_verify(args);
@@ -138,9 +145,9 @@ void cmd_info(ProgramArgs args) {
 		writefln("  ROM: %s", save.rom.rom_type);
 	}
 	auto key1 = gba_get_security_key(
-			save.loaded_save.data + gba_game_detect.GBA_FRLG_SECURITY_KEY_OFFSET).key;
+		save.loaded_save.data + gba_game_detect.GBA_FRLG_SECURITY_KEY_OFFSET).key;
 	auto key2 = gba_get_security_key(
-			save.loaded_save.data + gba_game_detect.GBA_FRLG_SECURITY_KEY2_OFFSET).key;
+		save.loaded_save.data + gba_game_detect.GBA_FRLG_SECURITY_KEY2_OFFSET).key;
 	auto key_match = key1 == key2 ? "VALID" : "INVALID";
 	writefln("  KEYS: %s (%s, %s)", key_match, key1, key2);
 
@@ -192,8 +199,8 @@ void cmd_info(ProgramArgs args) {
 				// assert(item.index == item_info.index,
 				// 		"item index in save did not match item index in rom item table");
 				writefln("    [%02d] NAME: %s, ID: %s (%s), COUNT: %s", j + 1,
-						decode_gba_text(item_info.name.dup).strip(),
-						item.index, item_info.index, item.amount);
+					decode_gba_text(item_info.name.dup).strip(),
+					item.index, item_info.index, item.amount);
 			} else {
 				writefln("    [%s] ID: %s, COUNT: %s", j + 1, item.index, item.amount);
 			}
@@ -223,6 +230,58 @@ void cmd_dumprom(ProgramArgs args) {
 		auto species = spec_tbl[i];
 		writefln(" [%03d] SPECIES: %s", i, species);
 	}
+}
+
+void cmd_pkmn(ProgramArgs args) {
+	auto sav_path = args.arg("sav");
+	auto rom_path = args.arg("rom");
+
+	auto save = new PokeSave();
+	save.read_from(sav_path);
+	save.verify();
+
+	if (rom_path != "") {
+		writefln("> ROM: %s", rom_path);
+		save.load_companion_rom(rom_path);
+	}
+
+	auto party = save.party;
+	if (party == null) {
+		writeln("failed to get party");
+	}
+	auto pc = save.pc;
+	if (pc == null) {
+		writeln("failed to get pc");
+	}
+
+	// all pokemon in party
+	writeln("PARTY");
+	writefln("  MEMBERS: %s", party.size);
+	// print party members
+	for (int i = 0; i < party.size; i++) {
+		auto pkmn = party.pokemon[i];
+		auto dump_str = dump_prettyprint_pkmn(save, pkmn.box);
+		writefln("%s", dump_str);
+	}
+
+	// all pokemon in pc boxes
+	for (auto i = 0; i < GBA_BOX_COUNT; i++) {
+		writefln("PC BOX #%s", i);
+		auto pc_box = &pc.box[i];
+		for (auto j = 0; j < GBA_POKEMON_IN_BOX; j++) {
+			auto box_pkmn = pc_box.pokemon[j];
+
+			if (box_pkmn.species == 0) {
+				// no pokemon in this slot
+				continue;
+			}
+
+			auto dump_str = dump_prettyprint_pkmn(save, box_pkmn);
+			writefln("%s", dump_str);
+		}
+	}
+	// writeln("PC");
+	// writefln("  MEMBERS: %s", pc.size);
 }
 
 void cmd_verify(ProgramArgs args) {
@@ -290,8 +349,8 @@ void cmd_shine(ProgramArgs args) {
 	auto shine3 = pkmn.box.pid_low;
 	// pick target
 	ushort shiny_target = cast(ushort)(0b0000_0000_0000_0000) + cast(ubyte)([
-			0, 1, 2, 3, 4, 5, 6, 7
-			].choice());
+		0, 1, 2, 3, 4, 5, 6, 7
+	].choice());
 	auto shine_high_solve = (shine1 ^ shine3) ^ shiny_target;
 	writefln("solved shiny equation: (%016b)", shine_high_solve);
 	pkmn.box.pid_high = cast(ushort) shine_high_solve;
@@ -351,7 +410,7 @@ void cmd_freeze(ProgramArgs args) {
 	pk3_decrypt(&pkmn.box);
 
 	writefln("crushing %s (L. %s) (checksum: 0x%04x) into bytes.",
-			decode_gba_text(pkmn.box.nickname), pkmn.party.level, pkmn.box.checksum);
+		decode_gba_text(pkmn.box.nickname), pkmn.party.level, pkmn.box.checksum);
 	pk3_encrypt(&pkmn.box); // re-encrypt
 	auto pkmn_pk3_copy = *pkmn;
 	auto pkmn_buf_raw = cast(ubyte*)(cast(void*)(&pkmn_pk3_copy));
@@ -375,7 +434,7 @@ void cmd_dumpcube(ProgramArgs args) {
 	pk3_decrypt(&(*pkmn_pk3).box);
 
 	writefln("inside the pkmn cube was: %s (L. %s)",
-			decode_gba_text(pkmn_pk3.box.nickname), pkmn_pk3.party.level);
+		decode_gba_text(pkmn_pk3.box.nickname), pkmn_pk3.party.level);
 }
 
 void cmd_melt(ProgramArgs args) {
@@ -397,7 +456,7 @@ void cmd_melt(ProgramArgs args) {
 	pk3_decrypt(&(*pkmn_pk3).box);
 
 	writefln("inside the pkmn cube was: %s (L. %s)",
-			decode_gba_text(pkmn_pk3.box.nickname), pkmn_pk3.party.level);
+		decode_gba_text(pkmn_pk3.box.nickname), pkmn_pk3.party.level);
 
 	auto slot_pkmn = &save.party.pokemon[slot];
 	writefln("placing: %s into slot %s", decode_gba_text(pkmn_pk3.box.nickname), slot);
@@ -435,11 +494,11 @@ void cmd_transfer(ProgramArgs args) {
 	auto recv_pkmn = &recv_save.party.pokemon[recv_slot];
 	pk3_decrypt(&recv_pkmn.box);
 	writefln("%s (L. %s) is being transformed into data and uploaded!",
-			decode_gba_text(source_box_copy.nickname), source_pkmn.party.level);
+		decode_gba_text(source_box_copy.nickname), source_pkmn.party.level);
 	recv_pkmn.party = source_pkmn.party;
 	recv_pkmn.box = source_box_copy;
 	writefln("On the other end, it's %s (L. %s)!",
-			decode_gba_text(recv_pkmn.box.nickname), recv_pkmn.party.level);
+		decode_gba_text(recv_pkmn.box.nickname), recv_pkmn.party.level);
 	pk3_encrypt(&recv_pkmn.box);
 
 	// verify party integrity
@@ -501,26 +560,26 @@ void cmd_trade(ProgramArgs args) {
 	writeln("TRANSACTION");
 	writeln("  UPLOAD 1->2:");
 	writefln("    %s (L. %s) (from save 1) is being transformed into data and uploaded!",
-			decode_gba_text(pkmn1_copy.box.nickname), pkmn1_copy.party.level);
+		decode_gba_text(pkmn1_copy.box.nickname), pkmn1_copy.party.level);
 	pkmn2.box = pkmn1_copy.box;
 	pkmn2.party = pkmn1_copy.party;
 	writefln("    On the other end (save 2), it's %s (L. %s)!",
-			decode_gba_text(pkmn2.box.nickname), pkmn2.party.level);
+		decode_gba_text(pkmn2.box.nickname), pkmn2.party.level);
 	writeln("  UPLOAD 2->1:");
 	writefln("    %s (L. %s) (from save 2) is being transformed into data and uploaded!",
-			decode_gba_text(pkmn2_copy.box.nickname), pkmn2_copy.party.level);
+		decode_gba_text(pkmn2_copy.box.nickname), pkmn2_copy.party.level);
 	pkmn1.box = pkmn2_copy.box;
 	pkmn1.party = pkmn2_copy.party;
 	writefln("    On the other end (save 1), it's %s (L. %s)!",
-			decode_gba_text(pkmn1.box.nickname), pkmn1.party.level);
+		decode_gba_text(pkmn1.box.nickname), pkmn1.party.level);
 	pk3_encrypt(&pkmn2.box);
 	pk3_encrypt(&pkmn1.box);
 
 	writeln("TRADE SUMMARY:");
 	writefln("  Traded %s's '%s' (L. %s) for %s's '%s' (L. %s)! Take care of them!",
-			decode_gba_text(save1.trainer.name),
-			decode_gba_text(pkmn1_copy.box.nickname), pkmn1_copy.party.level, decode_gba_text(save2.trainer.name),
-			decode_gba_text(pkmn2_copy.box.nickname), pkmn2_copy.party.level);
+		decode_gba_text(save1.trainer.name),
+		decode_gba_text(pkmn1_copy.box.nickname), pkmn1_copy.party.level, decode_gba_text(save2.trainer.name),
+		decode_gba_text(pkmn2_copy.box.nickname), pkmn2_copy.party.level);
 
 	// verify party integrity
 	writeln("VERIFY:");
