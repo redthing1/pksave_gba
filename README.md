@@ -3,15 +3,28 @@
 
 *Advanced Gen 3 Save / Editing / Research Tools.*
 
-## features
+<br>
 
-supports games:
-+ fire red/leaf green (FRLG)
-+ emerald (E)
-+ ultra shiny gold sigma (SGS) (`v1.3.9`)
-+ halcyon emerald (`v0.2b0`)
-+ glazed (`v9.0`)
 
+## Supports Games
+
++ **Fire Red** / **Leaf Green** ( FRLG )
++ **Emerald** ( E )
++ **Ultra Shiny Gold Sigma** ( SGS ) 
+
+  `v1.3.9`
+  
++ **Halcyon Emerald** 
+
+   `v0.2b0`
+   
++ **Glazed**
+ 
+  `v9.0`
+
+<br>
+
+## Features
 
 provides a modified version of [libspec](https://github.com/Chase-san/libspec) and a command line tool, `pksave`, for advanced editing of Gen 3 save files.
 
