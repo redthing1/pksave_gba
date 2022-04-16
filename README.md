@@ -70,6 +70,7 @@ pksave is an advanced tool, and is thus command line only. there are no plans no
 
 <br>
 
-## credits
-+ chase for libspec
-+ alex sanchez for shiny gold sigma
+## Credits
+
++ **Chase** for `libspec`
++ **Alex Sanchez** for `Shiny Gold Sigma`
