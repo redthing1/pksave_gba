@@ -30,6 +30,10 @@ void main(string[] raw_args) {
 		.add(new Command("verify", "verify checksum validity in your party (prevent bad eggs)")
 			.add(new Argument("sav", "save file"))
 			)
+		.add(new Command("dumpsav", "dump raw save data struct")
+			.add(new Argument("sav", "save file"))
+			.add(new Argument("out", "output file"))
+			)
 		.add(new Command("addmoney", "add money to your save")
 			.add(new Argument("in_sav", "input save file"))
 			.add(new Argument("money", "money to add"))
@@ -93,6 +97,9 @@ void main(string[] raw_args) {
 		})
 		.on("verify", (args) {
 			cmd_verify(args);
+		})
+		.on("dumpsav", (args) {
+			cmd_dumpsav(args);
 		})
 		.on("addmoney", (args) {
 			cmd_addmoney(args);
@@ -265,11 +272,13 @@ void cmd_pkmn(ProgramArgs args) {
 	}
 
 	// all pokemon in pc boxes
+	writefln("PC BOXES (current: %s)", pc.current_box);
 	for (auto i = 0; i < GBA_BOX_COUNT; i++) {
 		auto pc_box = &pc.box[i];
 		auto pc_box_name = decode_gba_text(pc.name[i].dup).strip();
 		writefln("PC BOX #%s (%s)", i + 1, pc_box_name);
 		for (auto j = 0; j < GBA_POKEMON_IN_BOX; j++) {
+			auto box_pkmn_ptr = &pc_box.pokemon[j];
 			auto box_pkmn = pc_box.pokemon[j];
 
 			if (box_pkmn.species == 0) {
@@ -277,6 +286,19 @@ void cmd_pkmn(ProgramArgs args) {
 				continue;
 			}
 
+			// dump raw bytes
+			// auto raw_pokeblock_d = box_pkmn.block[3];
+			writefln("pk3_box raw offset: 0x%04x", (cast(ulong) (box_pkmn_ptr) - cast(ulong) (save.loaded_save.data)));
+			for (auto l = 0; l < 4; l++) {
+				auto pkblk = box_pkmn.block[l];
+				writef("block: #%s: ", l);
+				for (auto k = 0; k < pkblk.length; k++) {
+					writef("%02x ", pkblk[k]);
+				}
+				writeln();
+			}
+			
+			writefln(" SLOT: #%s", j + 1);
 			auto dump_str = dump_prettyprint_pkmn(save, box_pkmn);
 			writefln("%s", dump_str);
 		}
@@ -296,6 +318,19 @@ void cmd_verify(ProgramArgs args) {
 	writefln("verifying pkmn in party");
 	save.verify_party();
 	writefln("save is VALID!");
+}
+
+void cmd_dumpsav(ProgramArgs args) {
+	auto in_sav = args.arg("sav");
+	auto out_bin = args.arg("out");
+
+	writefln("loading save: %s", in_sav);
+	auto save = new PokeSave();
+	save.read_from(in_sav);
+	save.verify();
+
+	writefln("dumping raw save data");
+	save.write_raw_dump_to(out_bin);
 }
 
 void cmd_addmoney(ProgramArgs args) {

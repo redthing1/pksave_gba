@@ -27,6 +27,12 @@ class PokeSave {
         std.file.write(path, output_sav_buf);
     }
 
+    void write_raw_dump_to(string path) {
+        ubyte[] raw_save_data =
+            (cast(ubyte*) loaded_save.data)[0 .. GBA_UNPACKED_SIZE];
+        std.file.write(path, raw_save_data);
+    }
+
     void load_companion_rom(string path) {
         rom = new PkmnROM();
         rom.read_from(path);
@@ -45,9 +51,9 @@ class PokeSave {
         }
         // check keys
         auto key1 = gba_get_security_key(
-                loaded_save.data + gba_game_detect.GBA_FRLG_SECURITY_KEY_OFFSET).key;
+            loaded_save.data + gba_game_detect.GBA_FRLG_SECURITY_KEY_OFFSET).key;
         auto key2 = gba_get_security_key(
-                loaded_save.data + gba_game_detect.GBA_FRLG_SECURITY_KEY2_OFFSET).key;
+            loaded_save.data + gba_game_detect.GBA_FRLG_SECURITY_KEY2_OFFSET).key;
         if (key1 != key2) {
             if (!forgive)
                 enforce(0, "FRLG keys did not match!");
@@ -68,7 +74,7 @@ class PokeSave {
             pk3_decrypt(&box);
             // verify checksum (by recomputing)
             ushort local_checksum = pk3_checksum(cast(const(ubyte*)) box.block,
-                    pk3_encryption.PK3_DATA_SIZE);
+                pk3_encryption.PK3_DATA_SIZE);
             auto is_valid = original_cksum == local_checksum;
             if (!is_valid) {
                 all_valid = false;
