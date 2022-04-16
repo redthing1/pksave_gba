@@ -38,10 +38,6 @@ advanced editing of Gen 3 save files.
 
 <br>
 
----
-
-<br>
-
 ### PKSave Features
 
 + Save / Restore Pokemon / Items to Files
