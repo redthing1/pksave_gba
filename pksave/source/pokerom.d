@@ -324,6 +324,18 @@ uint bulbasaur_learnset_offset(PkmnRomType rom_type) {
 
 enum BULBASAUR_LEARNSET_VARIANT_16 = 0x01;
 enum BULBASAUR_LEARNSET_VARIANT_32 = 0x02;
+uint bulbasaur_learnset_variant(PkmnRomType rom_type) {
+    return rom_type.match!(
+        (FireRedURom _) => BULBASAUR_LEARNSET_VARIANT_16,
+        (LeafGreenURom _) => BULBASAUR_LEARNSET_VARIANT_16,
+        (ShinyGoldSigma139Rom _) => BULBASAUR_LEARNSET_VARIANT_16,
+        (EmeraldURom _) => BULBASAUR_LEARNSET_VARIANT_16,
+        (EmeraldHalcyon021Rom _) => BULBASAUR_LEARNSET_VARIANT_32,
+        (Glazed90Rom _) => BULBASAUR_LEARNSET_VARIANT_16,
+        _ => 16,
+    );
+}
+
 enum OffsetFinder[] BULBASAUR_LEARNSET_FINDERS = [
     OffsetFinder("Bulbasaur Gen 3 Base FR", 0, mixin(hex_array!("21 02 2D 08 49 0E")), BULBASAUR_LEARNSET_VARIANT_16),
     OffsetFinder("Bulbasaur Glazed", 0, mixin(hex_array!("21 02 2D 02 16 06 4A 0C")), BULBASAUR_LEARNSET_VARIANT_16),

@@ -257,6 +257,10 @@ void cmd_dumprom(ProgramArgs args) {
 		auto move_name = decode_gba_text(rom.get_move_name(i)).strip();
 		writefln(" [%03d] (0x%04x) MOVE: %s", i, i, move_name);
 	}
+	
+	// dump all learnsets
+	// TODO
+	rom.get_learnsets_16();
 }
 
 void cmd_pkmn(ProgramArgs args) {

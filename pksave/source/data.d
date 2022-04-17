@@ -194,18 +194,43 @@ align(1) {
     align(1):
         import std.bitmanip : bitfields;
 
-        // 7 bits for level, 9 bits for move
-        mixin(bitfields!(ushort, "level", 7, ushort, "move", 9));
+        union {
+            struct {
+                // 9 bits for move, 7 bits for level
+                mixin(bitfields!(ushort, "move", 9, ushort, "level", 7));
+            }
+            ushort[1] raw;
+        }
     }
 
     struct PkmnROMLevelUpMove32 {
     align(1):
-        ushort move;
-        ushort level;
+        union {
+            struct {
+                ushort move;
+                ushort level;
+            }
+            ushort[2] raw;
+        }
     }
 
-    alias PkmnROMLevelUpMove = SumType!(
-        PkmnROMLevelUpMove16,
-        PkmnROMLevelUpMove32
+    // alias PkmnROMLevelUpMove = SumType!(
+    //     PkmnROMLevelUpMove16,
+    //     PkmnROMLevelUpMove32
+    // );
+
+    struct PkmnROMLearnset16 {
+    align(1):
+        PkmnROMLevelUpMove16[] moves;
+    }
+
+    struct PkmnROMLearnset32 {
+    align(1):
+        PkmnROMLevelUpMove32[] moves;
+    }
+
+    alias PkmnROMLearnset = SumType!(
+        PkmnROMLearnset16,
+        PkmnROMLearnset32
     );
 }

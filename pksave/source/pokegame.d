@@ -54,7 +54,7 @@ class PkmnROM {
             return cast(PkmnRomType) EmeraldHalcyon021Rom();
         if (check_bulbasaur!Glazed90Rom() && check_sig_byte(0x430, 0x18))
             return cast(PkmnRomType) Glazed90Rom();
-        
+
         // base gen 3 game roms
         if (check_bulbasaur!EmeraldURom())
             return cast(PkmnRomType) EmeraldURom();
@@ -102,7 +102,8 @@ class PkmnROM {
 
     PkmnROMSpecies* get_species_basestats(uint species) {
         auto offset = rom_type.species_basestats_offset
-            + (rom_type.species_basestats_entry_length * species);
+            + (
+                rom_type.species_basestats_entry_length * species);
 
         return cast(PkmnROMSpecies*)&rom_buf[offset];
     }
@@ -112,15 +113,15 @@ class PkmnROM {
             + (rom_type.species_names_entry_length * species);
 
         ubyte* data_ptr = &rom_buf[offset];
-        return data_ptr[0..rom_type.species_names_entry_length];
+        return data_ptr[0 .. rom_type.species_names_entry_length];
     }
 
     ubyte[] get_move_name(uint move) {
         auto offset = rom_type.move_names_offset
             + (rom_type.move_names_entry_length * move);
-        
+
         ubyte* data_ptr = &rom_buf[offset];
-        return data_ptr[0..rom_type.move_names_entry_length];
+        return data_ptr[0 .. rom_type.move_names_entry_length];
     }
 
     ubyte[] get_item_name(uint item) {
@@ -160,4 +161,61 @@ class PkmnROM {
 
         return list;
     }
+
+    // PkmnROMLevelUpMove[] get_learnsets() {
+    //     // detect learnset type
+    //     if (rom_type.bulbasaur_learnset_variant == BULBASAUR_LEARNSET_VARIANT_16) {
+    //         return get_learnsets_16();
+    //     } else if (rom_type.bulbasaur_learnset_variant == BULBASAUR_LEARNSET_VARIANT_32) {
+    //         return get_learnsets_32();
+    //     } else {
+    //         throw new Exception("unknown learnset variant");
+    //     }
+    // }
+
+    PkmnROMLevelUpMove16[][] get_learnsets_16() {
+        PkmnROMLevelUpMove16[][] learnsets_list;
+
+        uint seen_learnsets = 0;
+        for (int i = 0; i < num_species; i++) {
+            // get the pointer to this species' learnset
+            auto learnset_ptr_offset = rom_type.level_up_learnsets_offset +
+                (32 * seen_learnsets); // 32 bit address
+            auto learnset_ptr_bin = rom_buf[learnset_ptr_offset .. (learnset_ptr_offset + 4)];
+            auto learnset_ptr =
+                // (learnset_ptr_bin[3] << 24) // should be 0x08
+                (0x00 << 24)
+                | (learnset_ptr_bin[2] << 16)
+                | (learnset_ptr_bin[1] << 8)
+                | learnset_ptr_bin[0];
+
+            auto learnset_scan_limit = 64; // max learned moves to scan
+            PkmnROMLevelUpMove16[] learnset_list;
+            for (int j = 0; j < learnset_scan_limit; j++) {
+                seen_learnsets++;
+
+                auto lvlup_move_offset = learnset_ptr + (j * 2);
+                auto move = cast(PkmnROMLevelUpMove16*)&rom_buf[lvlup_move_offset];
+
+                // check if this is a LEVEL_UP_END, meaning the last move for this species
+                if (move.raw[0] == 0xFFFF) {
+                    break;
+                }
+
+                // seems to be a real move!
+                writefln("move16: lvl: %s, moveid: %s", move.level, move.move);
+
+                learnset_list ~= *move;
+            }
+
+            // done with all moves for this species
+            // add learnset to list
+            learnsets_list ~= learnset_list;
+        }
+
+        return learnsets_list;
+    }
+
+    // PkmnROMLevelUpMove32[][] get_learnsets_32() {
+    // }
 }
