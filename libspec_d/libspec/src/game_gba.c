@@ -465,6 +465,18 @@ gba_pc_t *gba_get_pc(gba_save_t *save) {
 	return (gba_pc_t *)(save->data + GBA_BOX_DATA_OFFSET);
 }
 
+gba_pc_t gba_unpack_pc_data(gba_save_t *save) {
+	// read PC data in chunks, then lay it out in slices into the gba_pc_t struct
+	gba_pc_t ret;
+	memset(&ret, 0, sizeof(ret));
+
+	return ret;
+}
+
+void gba_pack_pc_data(gba_save_t *save, gba_pc_t *pc) {
+	// take a gba_pc_t struct, and lay it out in slices to fit within the save data
+}
+
 enum {
 	GBA_RSE_STORAGE_OFFSET = GBA_BLOCK_DATA_LENGTH + 0x490,
 	GBA_FRLG_STORAGE_OFFSET = GBA_BLOCK_DATA_LENGTH + 0x290, // second block, money offset
