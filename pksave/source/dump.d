@@ -63,6 +63,17 @@ string dump_prettyprint_pkmn(T)(PokeSave save, T pkmn) {
             sb ~= format("    ITEM: %s (0x%04x)\n",
                 decode_gba_text(held_item_info.name.dup).strip(), held_item_id);
         }
+
+        // move info
+        auto moves = box.move;
+        for (auto i = 0; i < 4; i++) {
+            auto move_id = moves[i];
+            if (move_id) {
+                // auto move_info = *save.rom.get_move_info(move_id);
+                auto move_name = decode_gba_text(save.rom.get_move_name(move_id)).strip();
+                sb ~= format("    MOVE #%d: %s (0x%04x)\n", i + 1, move_name, move_id);
+            }
+        }
     }
 
     // personality info
