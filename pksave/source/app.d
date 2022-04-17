@@ -395,6 +395,7 @@ void cmd_symbolscan(ProgramArgs args) {
 			"gTypeNames": TYPE_NAME_FINDERS,
 			"gBattleMoves": MOVE_TABLE_FINDERS,
 			"gMoveNames": MOVE_NAME_FINDERS,
+			"sBulbasaurLevelUpLearnset": BULBASAUR_LEARNSET_FINDERS,
 		];
 
 	struct GoodResult {
@@ -408,6 +409,7 @@ void cmd_symbolscan(ProgramArgs args) {
 
 	GoodResult[] good_results;
 
+	// auto searches
 	static foreach (sym_name, sym_finders; search_queue) {
 		// auto sym_name = key;
 		// auto sym_finders = search_queue[key];
@@ -422,6 +424,9 @@ void cmd_symbolscan(ProgramArgs args) {
 			}
 		}
 	}
+
+	// // manual searches
+	// writefln("search: gLevelUpLearnsets");
 
 	writefln("summary:");
 	writefln(" good results: %s", good_results.length);

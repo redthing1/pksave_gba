@@ -304,10 +304,25 @@ enum OffsetFinder[] TYPE_NAME_FINDERS = [
 
 // /** symbol: gLevelUpLearnsets */
 // enum OffsetFinder[] LEVEL_UP_LEARNSET_FINDERS = [
-//     OffsetFinder("Gen 3 Base", 0, mixin(hex_array!("94 74 25 08 94 74 25 08 AC 74"))),
+//     OffsetFinder("Gen 3 Base", 0, mixin(hex_array!(""))),
 // ];
 
-// /** symbol: sBulbasaurLevelUpLearnset */
-// enum OffsetFinder[] BULBASAUR_LEARNSET_FINDERS = [
-//     OffsetFinder("Gen 3 Base", 0, mixin(hex_array!("94 74 25 08 94 74 25 08 AC 74"))),
-// ];
+/** symbol: sBulbasaurLevelUpLearnset */
+uint bulbasaur_learnset_offset(PkmnRomType rom_type) {
+    return rom_type.match!(
+        // (UnknownGen3Rom _) => 0,
+        (FireRedURom _) => 0x257494,
+        (LeafGreenURom _) => 0x257470,
+        (ShinyGoldSigma139Rom _) => 0x257494,
+        (EmeraldURom _) => 0x3230DC,
+        (EmeraldHalcyon021Rom _) => 0x38B354,
+        (Glazed90Rom _) => 0x36A1F4,
+        _ => 0,
+    );
+}
+
+enum OffsetFinder[] BULBASAUR_LEARNSET_FINDERS = [
+    OffsetFinder("Bulbasaur Gen 3 Base FR", 0, mixin(hex_array!("21 02 2D 08 49 0E"))),
+    OffsetFinder("Bulbasaur Glazed", 0, mixin(hex_array!("21 02 2D 02 16 06 4A 0C"))),
+    OffsetFinder("Bulbasaur Pokemon Expansion", 0, mixin(hex_array!("21 00 01 00 2D 00 03 00 49 00 07 00"))),
+];
