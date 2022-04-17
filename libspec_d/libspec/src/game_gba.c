@@ -451,10 +451,6 @@ gba_party_t *gba_get_party(gba_save_t *save) {
 	return NULL;
 };
 
-enum gba_box_data {
-	GBA_BOX_DATA_OFFSET = GBA_BLOCK_DATA_LENGTH * 5 // start of 6th block
-};
-
 /**
  * @brief Calculates the pointer to the saves pc data.
  * @param save The save to get the pc data of.
@@ -468,6 +464,7 @@ gba_pc_t *gba_get_pc(gba_save_t *save) {
 gba_pc_t gba_unpack_pc_data(gba_save_t *save) {
 	// read PC data in chunks, then lay it out in slices into the gba_pc_t struct
 	gba_pc_t ret;
+	// create zeroed struct
 	memset(&ret, 0, sizeof(ret));
 
 	return ret;

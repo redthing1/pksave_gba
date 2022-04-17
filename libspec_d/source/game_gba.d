@@ -47,6 +47,13 @@ enum pk3_encryption {
     PK3_BLOCK3_START = 0x24
 };
 
+enum gba_box_data {
+    GBA_BOX_DATA_OFFSET = gba_checksum.GBA_BLOCK_DATA_LENGTH * 5, // start of 6th block
+    GBA_BOX_DATA_LENGTH = 4 + 33600 + 126 + 14, // size of all PC data
+    GBA_BOX_DATA_SLICE1 = 3968, // size of first 8 slices (5-12)
+    GBA_BOX_DATA_SLICE2 = 2000 // size of last slice (13)
+}
+
 enum {
     /** The size in bytes of the GBA save we expect. */
     GBA_SAVE_SIZE = 0x20000,
@@ -433,13 +440,13 @@ align(1) {
  * @brief GBA PC Pokemon Storage Structure.
  */
     struct gba_pc_t {
-        align(1):
+    align(1):
         union {
             /** raw data access: Altogether, the PC buffer contains 3968 bytes from each of 8 sections and 2000 bytes from 1 section, for a total of 33744 bytes.  */
-            ubyte[33_744] raw_data;
+            ubyte[gba_box_data.GBA_BOX_DATA_LENGTH] raw_data;
 
             struct {
-                align(1):
+            align(1):
                 /**
                                  * This defines what box pokemon will go into when captured with a full party as well as the box you start on when accessing the PC.
                                  * @brief The index of the currently active box, starting at 0.
@@ -454,7 +461,8 @@ align(1) {
             }
         }
     }
-    static assert(gba_pc_t.sizeof == 33_744, "gba_pc_t is not 33744 bytes");
+
+    static assert(gba_pc_t.sizeof == gba_box_data.GBA_BOX_DATA_LENGTH, "gba_pc_t is not 33744 bytes");
 
     /**
  * @brief GBA Item Slot Structure.

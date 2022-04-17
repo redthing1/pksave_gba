@@ -19,6 +19,7 @@ unittest {
     // read pc to struct
     auto pc_struct = gba_unpack_pc_data(loaded_save_orig);
     // writefln("pc: %s", pc_struct);
+    writefln("size of pc struct: %s", pc_struct.sizeof);
 
     // pack struct to pc
     gba_pack_pc_data(loaded_save_dup, &pc_struct);

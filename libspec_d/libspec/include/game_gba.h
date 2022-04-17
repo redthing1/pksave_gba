@@ -53,6 +53,13 @@ enum pk3_encryption {
 	PK3_BLOCK3_START = 0x24
 };
 
+enum gba_box_data {
+	GBA_BOX_DATA_OFFSET = GBA_BLOCK_DATA_LENGTH * 5, // start of 6th block
+	GBA_BOX_DATA_LENGTH = 4 + 33600 + 126 + 14, // size of all PC data
+	GBA_BOX_DATA_SLICE1 = 3968, // size of first 8 slices (5-12)
+	GBA_BOX_DATA_SLICE2 = 2000, // size of last slice (13)
+};
+
 enum {
 	/** The size in bytes of the GBA save we expect. */
 	GBA_SAVE_SIZE = 0x20000,
@@ -392,7 +399,7 @@ typedef struct {
 typedef struct {
 	union {
 		/** raw data access: Altogether, the PC buffer contains 3968 bytes from each of 8 sections and 2000 bytes from 1 section, for a total of 33744 bytes.  */
-		uint8_t raw_data[33744];
+		uint8_t raw_data[GBA_BOX_DATA_LENGTH];
 
 		struct {
 			/**
