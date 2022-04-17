@@ -3,7 +3,20 @@ description "libspec"
 authors "no"
 copyright "Copyright © 2021, no"
 license "proprietary"
-targetType "library"
 
 lflags "$PACKAGE_DIR/libspec/lib/libspec.a"
-preBuildCommands "cd $PACKAGE_DIR/libspec && make"
+
+// build the C library
+preGenerateCommands "cd $PACKAGE_DIR/libspec && make"
+
+configuration "default" {
+	targetType "library"
+	versions "default"
+}
+
+configuration "unittest" {
+	dependency "silly" version="~>1.1.1"
+	targetType "library"
+	sourcePaths "test"
+	importPaths "test"
+}
