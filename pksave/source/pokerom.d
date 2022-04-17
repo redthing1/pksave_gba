@@ -230,6 +230,8 @@ uint move_names_offset(PkmnRomType rom_type) {
     return rom_type.match!(
         (UnknownGen3Rom _) => 0,
         (FireRedURom _) => 0x247094,
+        (LeafGreenURom _) => 0x247070,
+        (ShinyGoldSigma139Rom _) => 0xC61360,
         (EmeraldHalcyon021Rom _) => 0x36F1BA,
         (Glazed90Rom _) => 0x31977C,
         _ => 0,
