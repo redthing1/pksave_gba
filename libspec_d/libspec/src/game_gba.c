@@ -491,6 +491,20 @@ gba_pc_t gba_unpack_pc_data(gba_save_t *save) {
 
 void gba_pack_pc_data(gba_save_t *save, gba_pc_t *pc) {
 	// take a gba_pc_t struct, and lay it out in slices to fit within the save data
+	
+	// 1. copy the first 8 slices
+	uint8_t* save_raw_pc_base = save->data + GBA_BOX_DATA_OFFSET;
+	for(size_t i = 0; i < 8; ++i) {
+		uint8_t* save_raw_pc_slice_ptr = save_raw_pc_base + i * GBA_BLOCK_DATA_LENGTH;
+		uint8_t* slice_ptr = pc->raw_data + i * GBA_BOX_DATA_SLICE1;
+		// copy data from gba_pc_t struct to raw slice
+		memcpy(save_raw_pc_slice_ptr, slice_ptr, GBA_BOX_DATA_SLICE1);
+	}
+
+	// 2. copy the last slice
+	uint8_t* save_raw_pc_slice_ptr = save_raw_pc_base + 8 * GBA_BLOCK_DATA_LENGTH;
+	uint8_t* slice_ptr = pc->raw_data + 8 * GBA_BOX_DATA_SLICE1;
+	memcpy(save_raw_pc_slice_ptr, slice_ptr, GBA_BOX_DATA_SLICE2);
 }
 
 enum {
