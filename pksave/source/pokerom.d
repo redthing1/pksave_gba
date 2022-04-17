@@ -228,7 +228,6 @@ enum OffsetFinder[] MOVE_TABLE_FINDERS = [
  */
 uint move_names_offset(PkmnRomType rom_type) {
     return rom_type.match!(
-        (UnknownGen3Rom _) => 0,
         (FireRedURom _) => 0x247094,
         (LeafGreenURom _) => 0x247070,
         (ShinyGoldSigma139Rom _) => 0xC61360,
