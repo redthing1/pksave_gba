@@ -218,8 +218,8 @@ class PkmnROM {
                     break;
                 }
 
-                // seems to be a real move!
-                writefln("move%s: lvl: %s, moveid: %s", lvlup_move_size * 8, move.level, move.move);
+                // // seems to be a real move!
+                // writefln("move%s: lvl: %s, moveid: %s", lvlup_move_size * 8, move.level, move.move);
 
                 learnset_list ~= *move;
             }
