@@ -213,3 +213,18 @@ uint item_table_size(PkmnRomType rom_type) {
         _ => 375,
     );
 }
+
+// misc offset finders
+
+/** symbol: gTypeNames */
+enum OffsetFinder[] TYPE_NAME_FINDERS = [
+    OffsetFinder("Gen 3 Base", 0, 
+        mixin(hex_array!("C8 C9 CC C7 BB C6 FF C0 C3 C1 C2 CE FF 00 C0 C6 D3 C3 C8 C1 FF"))),
+    OffsetFinder("Pokemon Expansion", 0,
+        mixin(hex_array!("C8 E3 E6 E1 D5 E0 FF C0 DD DB DC E8 FF 00 C0 E0 ED DD E2 DB FF"))),
+];
+
+// /** symbol: sTypeEffectivenessTable */
+// enum OffsetFinder[] TYPE_EFFECTIVENESS_TABLE_FINDERS = [
+
+// ];

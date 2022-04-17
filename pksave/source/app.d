@@ -378,6 +378,7 @@ void cmd_symbolscan(ProgramArgs args) {
 		"gBaseStats": SPECIES_TABLE_FINDERS,
 		"gItems": ITEM_TABLE_FINDERS,
 		"gSpeciesNames": SPECIES_NAME_FINDERS,
+		"gTypeNames": TYPE_NAME_FINDERS,
 	];
 
 	struct GoodResult {
