@@ -149,6 +149,12 @@ uint species_names_offset(PkmnRomType rom_type) {
         _ => 0,
     );
 }
+enum OffsetFinder[] SPECIES_NAME_FINDERS = [
+    // capitalized: BULBASAUR
+    OffsetFinder("BULBASAUR", 9, mixin(hex_array!("AC AC AC AC AC AC AC AC FF BC CF C6 BC BB CD BB CF CC"))),
+    // decapitalized: Bulbasaur
+    OffsetFinder("Bulbasaur", 9, mixin(hex_array!("AC AC AC AC AC AC AC AC FF BC E9 E0 D6 D5 E7 D5 E9 E6"))),
+];
 
 /** 
  * address of "gItems" symbol
