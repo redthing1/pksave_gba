@@ -84,6 +84,9 @@ void main(string[] raw_args) {
 			.add(new Argument("sav2_slot", "save 2 party slot"))
 			.add(new Argument("sav1_out", "save 1 output").optional.defaultValue(""))
 			.add(new Argument("sav2_out", "save 2 output").optional.defaultValue(""))
+			.add(new Flag("s", "remap", "remap data using names").full("remap"))
+			.add(new Option(null, "rom1", "rom for save 1"))
+			.add(new Option(null, "rom2", "rom for save 2"))
 			)
 		.parse(raw_args);
 
@@ -636,6 +639,14 @@ void cmd_trade(ProgramArgs args) {
 	auto sav2_in = args.arg("sav2_in");
 	auto sav2_slot = args.arg("sav2_slot").to!uint;
 	auto sav2_out = args.arg("sav2_out");
+	auto should_remap = args.flag("remap");
+	auto rom1_in = args.option("rom1");
+	auto rom2_in = args.option("rom2");
+
+	if (should_remap && (!rom1_in || !rom2_in)) {
+		writefln("ERROR: --remap-species requires --rom1 and --rom2");
+		return;
+	}
 
 	if (sav1_out == "")
 		sav1_out = sav1_in;
@@ -674,6 +685,73 @@ void cmd_trade(ProgramArgs args) {
 		return;
 	}
 	writeln("  SLOTS ARE VALID");
+
+	if (should_remap) {
+		// remap species enabled
+		writefln("REMAP SPECIES");
+		
+		// load and verify both roms
+		auto rom1 = new PkmnROM();
+		rom1.read_from(rom1_in);
+		rom1.verify();
+
+		auto rom2 = new PkmnROM();
+		rom2.read_from(rom2_in);
+		rom2.verify();
+
+		string clean_species_name(ubyte[] data) {
+			import std.string;
+
+			return cast(string) decode_gba_text(data).strip.toLower;
+		}
+
+		// look up species names for the pokemon in corresponding roms
+		auto species1_name = clean_species_name(rom1.get_species_name(pkmn1_copy.box.species));
+		auto species2_name = clean_species_name(rom2.get_species_name(pkmn2_copy.box.species));
+
+		writefln(" NAMES");
+		writefln("  species 1: %s (0x%04x)", species1_name, pkmn1_copy.box.species);
+		writefln("  species 2: %s (0x%04x)", species2_name, pkmn2_copy.box.species);
+
+		long rom1_candidate_spec2 = -1;
+		long rom2_candidate_spec1 = -1;
+
+		// now search the other rom to find a matching species name
+		for (auto i = 0; i < rom1.num_species; i++) {
+			auto rom1_scan_name = clean_species_name(rom1.get_species_name(i));
+			if (rom1_scan_name == species2_name) {
+				// found a match
+				writefln("  found candidate (0x%04x) in rom 1 for species 2: %s", i, rom1_scan_name);
+				rom1_candidate_spec2 = i;
+				break;
+			}
+		}
+
+		for (auto i = 0; i < rom2.num_species; i++) {
+			auto rom2_scan_name = clean_species_name(rom2.get_species_name(i));
+			if (rom2_scan_name == species1_name) {
+				// found a match
+				writefln("  found candidate (0x%04x) in rom 2 for species 1: %s", i, rom2_scan_name);
+				rom2_candidate_spec1 = i;
+				break;
+			}
+		}
+
+		if (rom1_candidate_spec2 < 0 || rom2_candidate_spec1 < 0) {
+			// no match found
+			writefln("  could not find matching species.");
+			return;
+		}
+
+		// now we need to hack the pkmn data to remap the species
+		pkmn1_copy.box.species = cast(ushort) rom2_candidate_spec1;
+		pkmn2_copy.box.species = cast(ushort) rom1_candidate_spec2;
+		writefln("  remapped species to: %s (0x%04x) and %s (0x%04x)",
+			clean_species_name(rom2.get_species_name(pkmn1_copy.box.species)), pkmn1_copy.box.species,
+			clean_species_name(rom1.get_species_name(pkmn2_copy.box.species)), pkmn2_copy.box.species);
+
+		// return;
+	}
 
 	writeln("TRANSACTION");
 	writeln("  UPLOAD 1->2:");

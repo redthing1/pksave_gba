@@ -88,6 +88,14 @@ class PkmnROM {
         return true;
     }
 
+    @property num_species() {
+        return rom_type.species_table_size;
+    }
+
+    @property num_items() {
+        return rom_type.item_table_size;
+    }
+
     PkmnROMSpecies* get_species_basestats(uint species) {
         auto offset = rom_type.species_basestats_offset
             + (rom_type.species_basestats_entry_length * species);
