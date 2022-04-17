@@ -45,7 +45,7 @@ alias PkmnRomType = SumType!(
 /** defines known sequences that we can search for to find symbols */
 struct OffsetFinder {
     string name;
-    uint leading_offset; // how many bytes to skip before the start of the data
+    int leading_offset; // how many bytes to skip before the start of the data
     ubyte[] match_sequence; // the sequence to match
 }
 
@@ -134,7 +134,15 @@ uint species_basestats_offset(PkmnRomType rom_type) {
 }
 enum OffsetFinder[] SPECIES_TABLE_FINDERS = [
     // default: Bulbasaur (+8 lead padding)
-    OffsetFinder("Bulbasaur Gen3 Base", 8, mixin(hex_array!("00 00 00 00 00 00 00 00 2D 31 31 2D 41 41"))),
+    // OffsetFinder("Bulbasaur Gen3 Base", 8 - 0x1C, mixin(hex_array!("00 00 00 00 00 00 00 00 2D 31 31 2D 41 41"))),
+    // OffsetFinder("Bulbasaur Gen3 Base FRLG", 8 - 0x1C,
+    //     mixin(hex_array!("00 00 00 00 00 00 00 00 2D 31 31 2D 41 41 0C 03 2D 40 00 01 00 00 00 00 1F 14 46 03 01"))),
+    OffsetFinder("Bulbasaur Gen3 Base", 8 - 0x1C,
+        mixin(hex_array!("00 00 00 00 00 00 00 00 2D 31 31 2D 41 41 0C 03 2D 40 00 01 00 00 00 00 1F 14 46 03 01"))),
+    OffsetFinder("Bulbasaur Gen3 SGS", 8 - 0x1C,
+        mixin(hex_array!("02 02 00 00 00 00 00 00 2D 31 31 2D 41 41 0C 03 2D 40 00 01 00 00 00 00 1F 14 46 03 01"))),
+    OffsetFinder("Bulbasaur Pokemon Expansion", 8 - 0x24,
+        mixin(hex_array!("00 00 00 00 00 00 00 00 2D 31 31 2D 41 41 0C 03 2D 00 40 00 00 01 00 00 00 00"))),
 ];
 
 /** 
@@ -151,9 +159,9 @@ uint species_names_offset(PkmnRomType rom_type) {
 }
 enum OffsetFinder[] SPECIES_NAME_FINDERS = [
     // capitalized: BULBASAUR
-    OffsetFinder("BULBASAUR", 9, mixin(hex_array!("AC AC AC AC AC AC AC AC FF BC CF C6 BC BB CD BB CF CC"))),
+    OffsetFinder("BULBASAUR", 9 - 11, mixin(hex_array!("AC AC AC AC AC AC AC AC FF BC CF C6 BC BB CD BB CF CC"))),
     // decapitalized: Bulbasaur
-    OffsetFinder("Bulbasaur", 9, mixin(hex_array!("AC AC AC AC AC AC AC AC FF BC E9 E0 D6 D5 E7 D5 E9 E6"))),
+    OffsetFinder("Bulbasaur", 9 - 11, mixin(hex_array!("AC AC AC AC AC AC AC AC FF BC E9 E0 D6 D5 E7 D5 E9 E6"))),
 ];
 
 /** 
@@ -169,20 +177,20 @@ uint item_table_offset(PkmnRomType rom_type) {
     return rom_type.match!(
         (UnknownGen3Rom _) => 0,
         (FireRedURom _) => 0x3DB054 - rom_type.item_table_entry_length,
-        (LeafGreenURom _) => 0x3DAE64- rom_type.item_table_entry_length,
-        (ShinyGoldSigma139Rom _) => 0x3DB054- rom_type.item_table_entry_length,
+        (LeafGreenURom _) => 0x3DAE64 - rom_type.item_table_entry_length,
+        (ShinyGoldSigma139Rom _) => 0x3DB054 - rom_type.item_table_entry_length,
         (EmeraldURom _) => 0x5839CC - rom_type.item_table_entry_length,
         (EmeraldHalcyon021Rom _) => 0x63C924,
         (Glazed90Rom _) => 0x5839CC - rom_type.item_table_entry_length,
     );
 }
 enum OffsetFinder[] ITEM_TABLE_FINDERS = [
-    // capitalized: MASTER BALL (=12 lead padding)
-    OffsetFinder("MASTER BALL", 12, mixin(hex_array!("08 00 00 00 00 00 00 00 00 00 00 00 00 C7 BB CD CE BF CC"))),
-    // decapitalized: Master Ball (=12 lead padding)
-    OffsetFinder("Master Ball", 12, mixin(hex_array!("08 00 00 00 00 00 00 00 00 00 00 00 00 C7 D5 E7 E8 D9"))),
-    // item expansion: Poké Ball (=12 lead padding)
-    OffsetFinder("Poké Ball", 12, mixin(hex_array!("08 00 00 00 00 00 00 00 00 00 00 00 00 CA E3 DF 1B 00 BC D5 E0 E0"))),
+    // capitalized: MASTER BALL
+    OffsetFinder("MASTER BALL", 13 - 0x2C, mixin(hex_array!("08 00 00 00 00 00 00 00 00 00 00 00 00 C7 BB CD CE BF CC"))),
+    // decapitalized: Master Ball
+    OffsetFinder("Master Ball", 13 - 0x2C, mixin(hex_array!("08 00 00 00 00 00 00 00 00 00 00 00 00 C7 D5 E7 E8 D9"))),
+    // item expansion: Poké Ball
+    OffsetFinder("Poké Ball", 13 - 0x2C, mixin(hex_array!("08 00 00 00 00 00 00 00 00 00 00 00 00 CA E3 DF 1B 00 BC D5 E0 E0"))),
 ];
 
 uint species_table_size(PkmnRomType rom_type) {
