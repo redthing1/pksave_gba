@@ -368,7 +368,7 @@ void cmd_symbolscan(ProgramArgs args) {
 	void show_search_results(ulong[] results) {
 		writefln("  results: %s", results.length);
 		foreach (res; results) {
-			writefln("   0x%04x", res);
+			writefln("   0x%04X", res);
 		}
 		if (results.length == 0) {
 			writefln("   no results! look manually.");
@@ -383,6 +383,7 @@ void cmd_symbolscan(ProgramArgs args) {
 		"gItems": ITEM_TABLE_FINDERS,
 		"gSpeciesNames": SPECIES_NAME_FINDERS,
 		"gTypeNames": TYPE_NAME_FINDERS,
+		"gBattleMoves": MOVE_TABLE_FINDERS,
 	];
 
 	struct GoodResult {
@@ -390,7 +391,7 @@ void cmd_symbolscan(ProgramArgs args) {
 		ulong offset;
 
 		string toString() const {
-			return format("%20s: 0x%04x", symbol_name, offset);
+			return format("%20s: 0x%04X", symbol_name, offset);
 		}
 	}
 

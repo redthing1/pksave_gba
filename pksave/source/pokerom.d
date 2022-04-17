@@ -193,6 +193,33 @@ enum OffsetFinder[] ITEM_TABLE_FINDERS = [
     OffsetFinder("Poké Ball", 13 - 0x2C, mixin(hex_array!("08 00 00 00 00 00 00 00 00 00 00 00 00 CA E3 DF 1B 00 BC D5 E0 E0"))),
 ];
 
+/** symbol: gBattleMoves */
+uint move_table_offset(PkmnRomType rom_type) {
+    return rom_type.match!(
+        // (UnknownGen3Rom _) => 0,
+        _ => 0,
+    );
+}
+enum OffsetFinder[] MOVE_TABLE_FINDERS = [
+    // capitalized: FOCUS ENERGY
+    OffsetFinder("MOVE_POUND Base Gen 3", 10 - 12,
+        mixin(hex_array!("00 00 00 00 00 00 00 00 00 00 00 28 00 64 23 00 00 00 33 00 00 00"))),
+    OffsetFinder("MOVE_POUND Pokemon Expansion", 22 - 22,
+        mixin(hex_array!("00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 28 00 64 23 00 00 00 00 00 00 33"))),
+];
+
+/** 
+ * address of "gMoveNames" symbol
+ */
+uint move_names_offset(PkmnRomType rom_type) {
+    return rom_type.match!(
+        (UnknownGen3Rom _) => 0,
+        _ => 0,
+    );
+}
+enum OffsetFinder[] MOVE_NAME_FINDERS = [
+];
+
 uint species_table_size(PkmnRomType rom_type) {
     // fix syntax like one above
 
@@ -219,6 +246,21 @@ uint item_table_size(PkmnRomType rom_type) {
         (EmeraldHalcyon021Rom _) => 960,
         (Glazed90Rom _) => 960,
         _ => 375,
+    );
+}
+
+uint move_table_size(PkmnRomType rom_type) {
+    // fix syntax like one above
+
+    return rom_type.match!(
+        // (UnknownGen3Rom _) => 0,
+        (FireRedURom _) => 355,
+        (LeafGreenURom _) => 355,
+        (ShinyGoldSigma139Rom _) => 755,
+        (EmeraldURom _) => 355,
+        (EmeraldHalcyon021Rom _) => 755,
+        (Glazed90Rom _) => 755,
+        _ => 355,
     );
 }
 
