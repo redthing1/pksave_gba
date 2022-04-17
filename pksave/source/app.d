@@ -389,13 +389,13 @@ void cmd_symbolscan(ProgramArgs args) {
 	}
 
 	enum search_queue = [
-		"gBaseStats": SPECIES_TABLE_FINDERS,
-		"gItems": ITEM_TABLE_FINDERS,
-		"gSpeciesNames": SPECIES_NAME_FINDERS,
-		"gTypeNames": TYPE_NAME_FINDERS,
-		"gBattleMoves": MOVE_TABLE_FINDERS,
-		"gMoveNames": MOVE_NAME_FINDERS,
-	];
+			"gBaseStats": SPECIES_TABLE_FINDERS,
+			"gItems": ITEM_TABLE_FINDERS,
+			"gSpeciesNames": SPECIES_NAME_FINDERS,
+			"gTypeNames": TYPE_NAME_FINDERS,
+			"gBattleMoves": MOVE_TABLE_FINDERS,
+			"gMoveNames": MOVE_NAME_FINDERS,
+		];
 
 	struct GoodResult {
 		string symbol_name;
@@ -701,7 +701,7 @@ void cmd_trade(ProgramArgs args) {
 	if (should_remap) {
 		// remap species enabled
 		writefln("REMAP SPECIES");
-		
+
 		// load and verify both roms
 		auto rom1 = new PkmnROM();
 		rom1.read_from(rom1_in);
@@ -760,9 +760,92 @@ void cmd_trade(ProgramArgs args) {
 		pkmn2_copy.box.species = cast(ushort) rom1_candidate_spec2;
 		writefln("  remapped species to: %s (0x%04x) and %s (0x%04x)",
 			clean_species_name(rom2.get_species_name(pkmn1_copy.box.species)), pkmn1_copy.box.species,
-			clean_species_name(rom1.get_species_name(pkmn2_copy.box.species)), pkmn2_copy.box.species);
+			clean_species_name(rom1.get_species_name(pkmn2_copy.box.species)), pkmn2_copy
+				.box.species);
 
 		// return;
+
+		// now, we also need to remap moves
+		writefln("REMAP MOVES");
+
+		long[4] rom1_candidate_moves_spec2 = [-1, -1, -1, -1];
+		long[4] rom2_candidate_moves_spec1 = [-1, -1, -1, -1];
+
+		// for eacho move of pkmn1
+		for (auto i = 0; i < 4; i++) {
+			auto move_id = pkmn1_copy.box.move[i];
+			if (!move_id) {
+				// no move
+				continue;
+			}
+			// look up the move name
+			auto rom1_move_name = clean_species_name(rom1.get_move_name(move_id));
+			// look up the move name in rom2
+			for (auto j = 0; j < rom2.num_moves; j++) {
+				auto rom2_move_name = clean_species_name(rom2.get_move_name(j));
+				if (rom2_move_name == rom1_move_name) {
+					// found a match
+					writefln("  found candidate (0x%04x) in rom 2 for move #%d: %s", j, i, rom2_move_name);
+					rom2_candidate_moves_spec1[i] = j;
+					break;
+				}
+			}
+		}
+
+		// for eacho move of pkmn2
+		for (auto i = 0; i < 4; i++) {
+			auto move_id = pkmn2_copy.box.move[i];
+			if (!move_id) {
+				// no move
+				continue;
+			}
+			// look up the move name
+			auto rom2_move_name = clean_species_name(rom2.get_move_name(move_id));
+			// look up the move name in rom1
+			for (auto j = 0; j < rom1.num_moves; j++) {
+				auto rom1_move_name = clean_species_name(rom1.get_move_name(j));
+				if (rom1_move_name == rom2_move_name) {
+					// found a match
+					writefln("  found candidate (0x%04x) in rom 1 for move #%d: %s", j, i, rom1_move_name);
+					rom1_candidate_moves_spec2[i] = j;
+					break;
+				}
+			}
+		}
+
+		// writefln("  %s", rom2_candidate_moves_spec1);
+		// writefln("  %s", rom1_candidate_moves_spec2);
+
+		// now we need to hack the pkmn data to remap the moves
+		for (auto i = 0; i < 4; i++) {
+			if (!pkmn1_copy.box.move[i])
+				continue;
+			// if the move exists, and there is a candidate, then remap it
+			if (rom2_candidate_moves_spec1[i] >= 0) {
+				pkmn1_copy.box.move[i] = cast(ushort) rom2_candidate_moves_spec1[i];
+				writefln("  remapped move %d to: %s (0x%04x)", i, clean_species_name(
+						rom2.get_move_name(pkmn1_copy.box.move[i])), pkmn1_copy.box.move[i]);
+			} else {
+				// no match found
+				writefln("  could not find matching move #%d (%s) for pkmn 1.", i,
+					clean_species_name(rom1.get_move_name(pkmn1_copy.box.move[i])));
+			}
+		}
+
+		for (auto i = 0; i < 4; i++) {
+			if (!pkmn2_copy.box.move[i])
+				continue;
+			// if the move exists, and there is a candidate, then remap it
+			if (rom1_candidate_moves_spec2[i] >= 0) {
+				pkmn2_copy.box.move[i] = cast(ushort) rom1_candidate_moves_spec2[i];
+				writefln("  remapped move %d to: %s (0x%04x)", i, clean_species_name(
+						rom1.get_move_name(pkmn2_copy.box.move[i])), pkmn2_copy.box.move[i]);
+			} else {
+				// no match found
+				writefln("  could not find matching move #%d (%s) for pkmn 2.", i,
+					clean_species_name(rom2.get_move_name(pkmn2_copy.box.move[i])));
+			}
+		}
 	}
 
 	writeln("TRANSACTION");
