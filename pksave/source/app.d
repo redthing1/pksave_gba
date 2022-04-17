@@ -384,6 +384,7 @@ void cmd_symbolscan(ProgramArgs args) {
 		"gSpeciesNames": SPECIES_NAME_FINDERS,
 		"gTypeNames": TYPE_NAME_FINDERS,
 		"gBattleMoves": MOVE_TABLE_FINDERS,
+		"gMoveNames": MOVE_NAME_FINDERS,
 	];
 
 	struct GoodResult {

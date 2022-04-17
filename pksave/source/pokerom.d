@@ -197,6 +197,8 @@ enum OffsetFinder[] ITEM_TABLE_FINDERS = [
 uint move_table_offset(PkmnRomType rom_type) {
     return rom_type.match!(
         // (UnknownGen3Rom _) => 0,
+        (FireRedURom _) => 0x250C04,
+        (EmeraldHalcyon021Rom _) => 0x3779EC,
         _ => 0,
     );
 }
@@ -214,10 +216,19 @@ enum OffsetFinder[] MOVE_TABLE_FINDERS = [
 uint move_names_offset(PkmnRomType rom_type) {
     return rom_type.match!(
         (UnknownGen3Rom _) => 0,
+        (FireRedURom _) => 0x247094,
+        (EmeraldHalcyon021Rom _) => 0x36F1BA,
+        (Glazed90Rom _) => 0x31977C,
         _ => 0,
     );
 }
 enum OffsetFinder[] MOVE_NAME_FINDERS = [
+    OffsetFinder("POUND, KARATE CHOP", 0 - 13,
+        mixin(hex_array!("CA C9 CF C8 BE FF 00 00 00 00 00 00 00 C5 BB CC BB CE BF 00 BD C2"))),
+    OffsetFinder("Pound, Karate Chop", 0 - 13,
+        mixin(hex_array!("CA E3 E9 E2 D8 FF 00 00 00 00 00 00 00 C5 D5 E6 D5 E8 D9 00 BD DC"))),
+    OffsetFinder("POUND, EARTH POWER", 0 - 13,
+        mixin(hex_array!("CA C9 CF C8 BE FF 00 00 00 00 00 00 00 BF BB CC CE C2 00 CA C9 D1 BF CC FF 00"))),
 ];
 
 uint species_table_size(PkmnRomType rom_type) {
