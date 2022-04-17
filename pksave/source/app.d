@@ -374,18 +374,21 @@ void cmd_symbolscan(ProgramArgs args) {
 		}
 	}
 
-	writefln("search: gBaseStats");
-	foreach (i, finder; SPECIES_TABLE_FINDERS) {
-		writefln(" checking pattern #%s: %s", i, finder.name);
-		auto search_results = search_rom(finder);
-		show_search_results(search_results);		
-	}
+	enum search_queue = [
+		"gBaseStats": SPECIES_TABLE_FINDERS,
+		"gItems": ITEM_TABLE_FINDERS,
+	];
 
-	writefln("search: gItems");
-	foreach (i, finder; ITEM_TABLE_FINDERS) {
-		writefln(" checking pattern #%s: %s", i, finder.name);
-		auto search_results = search_rom(finder);
-		show_search_results(search_results);
+	static foreach (sym_name, sym_finders; search_queue) {
+		// auto sym_name = key;
+		// auto sym_finders = search_queue[key];
+
+		writefln("search: %s", sym_name);
+		foreach (i, finder; sym_finders) {
+			writefln(" checking pattern #%s: %s", i, finder.name);
+			auto search_results = search_rom(finder);
+			show_search_results(search_results);
+		}
 	}
 }
 
