@@ -51,13 +51,14 @@ uint species_basestats_entry_length(PkmnRomType rom_type) {
     enum int HALCYON_SPECIES_BASESTATS_ENTRY_LENGTH = 0x24;
 
     return rom_type.match!(
-        (UnknownGen3Rom _) => 0,
+        // (UnknownGen3Rom _) => 0,
         (FireRedURom _) => FRLG_SPECIES_BASESTATS_ENTRY_LENGTH,
         (LeafGreenURom _) => FRLG_SPECIES_BASESTATS_ENTRY_LENGTH,
         (ShinyGoldSigma139Rom _) => FRLG_SPECIES_BASESTATS_ENTRY_LENGTH,
         (EmeraldURom _) => RSE_SPECIES_BASESTATS_ENTRY_LENGTH,
         (EmeraldHalcyon021Rom _) => HALCYON_SPECIES_BASESTATS_ENTRY_LENGTH,
         (Glazed90Rom _) => HALCYON_SPECIES_BASESTATS_ENTRY_LENGTH,
+        _ => RSE_SPECIES_BASESTATS_ENTRY_LENGTH  // default to RSE
     );
 }
 
@@ -70,13 +71,14 @@ uint item_table_entry_length(PkmnRomType rom_type) {
     enum int HALCYON_ITEM_TABLE_ENTRY_LENGTH = 0x2C;
 
     return rom_type.match!(
-        (UnknownGen3Rom _) => 0,
+        // (UnknownGen3Rom _) => 0,
         (FireRedURom _) => FRLG_ITEM_TABLE_ENTRY_LENGTH,
         (LeafGreenURom _) => FRLG_ITEM_TABLE_ENTRY_LENGTH,
         (ShinyGoldSigma139Rom _) => FRLG_ITEM_TABLE_ENTRY_LENGTH,
         (EmeraldURom _) => RSE_ITEM_TABLE_ENTRY_LENGTH,
         (EmeraldHalcyon021Rom _) => HALCYON_ITEM_TABLE_ENTRY_LENGTH,
         (Glazed90Rom _) => HALCYON_ITEM_TABLE_ENTRY_LENGTH,
+        _ => RSE_ITEM_TABLE_ENTRY_LENGTH  // default to RSE
     );
 }
 
@@ -87,13 +89,14 @@ uint species_names_entry_length(PkmnRomType rom_type) {
     enum int FRLG_SPECIES_NAME_ENTRY_LENGTH = 10 + 1;
 
     return rom_type.match!(
-        (UnknownGen3Rom _) => 0,
+        // (UnknownGen3Rom _) => 0,
         (FireRedURom _) => FRLG_SPECIES_NAME_ENTRY_LENGTH,
         (LeafGreenURom _) => FRLG_SPECIES_NAME_ENTRY_LENGTH,
         (ShinyGoldSigma139Rom _) => FRLG_SPECIES_NAME_ENTRY_LENGTH,
         (EmeraldURom _) => FRLG_SPECIES_NAME_ENTRY_LENGTH,
         (EmeraldHalcyon021Rom _) => FRLG_SPECIES_NAME_ENTRY_LENGTH,
         (Glazed90Rom _) => FRLG_SPECIES_NAME_ENTRY_LENGTH,
+        _ => FRLG_SPECIES_NAME_ENTRY_LENGTH  // default to FRLG
     );
 }
 
@@ -144,9 +147,9 @@ uint item_table_offset(PkmnRomType rom_type) {
         (FireRedURom _) => 0x3DB054 - rom_type.item_table_entry_length,
         (LeafGreenURom _) => 0x3DAE64- rom_type.item_table_entry_length,
         (ShinyGoldSigma139Rom _) => 0x3DB054- rom_type.item_table_entry_length,
-        (EmeraldURom _) => 0x5839CC- rom_type.item_table_entry_length,
+        (EmeraldURom _) => 0x5839CC - rom_type.item_table_entry_length,
         (EmeraldHalcyon021Rom _) => 0x63C924,
-        (Glazed90Rom _) => 0x5839CC- rom_type.item_table_entry_length,
+        (Glazed90Rom _) => 0x5839CC - rom_type.item_table_entry_length,
     );
 }
 
@@ -168,12 +171,13 @@ uint item_table_size(PkmnRomType rom_type) {
     // fix syntax like one above
 
     return rom_type.match!(
-        (UnknownGen3Rom _) => 0,
+        // (UnknownGen3Rom _) => 0,
         (FireRedURom _) => 375,
         (LeafGreenURom _) => 375,
         (ShinyGoldSigma139Rom _) => 375,
         (EmeraldURom _) => 375,
         (EmeraldHalcyon021Rom _) => 960,
         (Glazed90Rom _) => 960,
+        _ => 375,
     );
 }
