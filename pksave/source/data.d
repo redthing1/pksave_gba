@@ -2,6 +2,7 @@ module data;
 
 import std.string;
 import std.conv;
+import std.sumtype;
 
 import util;
 
@@ -202,4 +203,9 @@ align(1) {
         ushort move;
         ushort level;
     }
+
+    alias PkmnROMLevelUpMove = SumType!(
+        PkmnROMLevelUpMove16,
+        PkmnROMLevelUpMove32
+    );
 }

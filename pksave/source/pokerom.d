@@ -47,6 +47,7 @@ struct OffsetFinder {
     string name;
     int leading_offset; // how many bytes to skip before the start of the data
     ubyte[] match_sequence; // the sequence to match
+    uint variant; // the variant of the pointed data
 }
 
 /** 
@@ -321,10 +322,13 @@ uint bulbasaur_learnset_offset(PkmnRomType rom_type) {
     );
 }
 
+enum BULBASAUR_LEARNSET_VARIANT_16 = 0x01;
+enum BULBASAUR_LEARNSET_VARIANT_32 = 0x02;
 enum OffsetFinder[] BULBASAUR_LEARNSET_FINDERS = [
-    OffsetFinder("Bulbasaur Gen 3 Base FR", 0, mixin(hex_array!("21 02 2D 08 49 0E"))),
-    OffsetFinder("Bulbasaur Glazed", 0, mixin(hex_array!("21 02 2D 02 16 06 4A 0C"))),
-    OffsetFinder("Bulbasaur Pokemon Expansion", 0, mixin(hex_array!("21 00 01 00 2D 00 03 00 49 00 07 00"))),
+    OffsetFinder("Bulbasaur Gen 3 Base FR", 0, mixin(hex_array!("21 02 2D 08 49 0E")), BULBASAUR_LEARNSET_VARIANT_16),
+    OffsetFinder("Bulbasaur Glazed", 0, mixin(hex_array!("21 02 2D 02 16 06 4A 0C")), BULBASAUR_LEARNSET_VARIANT_16),
+    OffsetFinder("Bulbasaur Pokemon Expansion", 0,
+        mixin(hex_array!("21 00 01 00 2D 00 03 00 49 00 07 00")), BULBASAUR_LEARNSET_VARIANT_32),
 ];
 
 /** symbol: gLevelUpLearnsets */
