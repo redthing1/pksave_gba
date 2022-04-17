@@ -174,7 +174,11 @@ class PkmnROM {
     // }
 
     PkmnROMLevelUpMove16[][] get_learnsets_16() {
-        PkmnROMLevelUpMove16[][] learnsets_list;
+        return get_learnsets_t!(PkmnROMLevelUpMove16)(16);
+    }
+
+    private LevelUpMoveT[][] get_learnsets_t(LevelUpMoveT)(int lvlup_move_size) {
+        LevelUpMoveT[][] learnsets_list;
 
         uint seen_learnsets = 0;
         for (int i = 0; i < num_species; i++) {
@@ -194,8 +198,8 @@ class PkmnROM {
             for (int j = 0; j < learnset_scan_limit; j++) {
                 seen_learnsets++;
 
-                auto lvlup_move_offset = learnset_ptr + (j * 2);
-                auto move = cast(PkmnROMLevelUpMove16*)&rom_buf[lvlup_move_offset];
+                auto lvlup_move_offset = learnset_ptr + (j * lvlup_move_size);
+                auto move = cast(LevelUpMoveT*)&rom_buf[lvlup_move_offset];
 
                 // check if this is a LEVEL_UP_END, meaning the last move for this species
                 if (move.raw[0] == 0xFFFF) {
@@ -203,7 +207,7 @@ class PkmnROM {
                 }
 
                 // seems to be a real move!
-                writefln("move16: lvl: %s, moveid: %s", move.level, move.move);
+                writefln("move%s: lvl: %s, moveid: %s", lvlup_move_size, move.level, move.move);
 
                 learnset_list ~= *move;
             }
