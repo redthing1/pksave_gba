@@ -236,12 +236,13 @@ void cmd_dumprom(ProgramArgs args) {
 	auto item_tbl = rom.get_item_info_table();
 	for (int i = 0; i < item_tbl.length; i++) {
 		auto item = &item_tbl[i];
-		writefln(" [%03d] ITEM: %s", i, decode_gba_text(item.name).strip());
+		writefln(" [%03d] (0x%04x) ITEM: %s", i, i, decode_gba_text(item.name).strip());
 	}
 	auto spec_tbl = rom.get_species_basestats_table();
 	for (int i = 0; i < spec_tbl.length; i++) {
 		auto species = spec_tbl[i];
-		writefln(" [%03d] SPECIES: %s", i, species);
+		auto species_name = decode_gba_text(rom.get_species_name(i)).strip();
+		writefln(" [%03d] (0x%04x) SPECIES: (%s) %s", i, i, species_name, species);
 	}
 }
 
