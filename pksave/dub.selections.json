@@ -2,6 +2,7 @@
 	"fileVersion": 1,
 	"versions": {
 		"commandr": "0.2.0",
-		"libspec_d": {"path":"../libspec_d"}
+		"libspec_d": {"path":"../libspec_d"},
+		"silly": "1.1.1"
 	}
 }
