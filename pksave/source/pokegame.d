@@ -123,6 +123,11 @@ class PkmnROM {
         return data_ptr[0..rom_type.move_names_entry_length];
     }
 
+    ubyte[] get_item_name(uint item) {
+        auto item_info = get_item_info(item);
+        return item_info.name;
+    }
+
     PkmnROMItem* get_item_info(uint item) {
         auto offset = rom_type.item_table_offset
             + (rom_type.item_table_entry_length * item);

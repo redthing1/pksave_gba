@@ -711,15 +711,15 @@ void cmd_trade(ProgramArgs args) {
 		rom2.read_from(rom2_in);
 		rom2.verify();
 
-		string clean_species_name(ubyte[] data) {
+		string clean_name(ubyte[] data) {
 			import std.string;
 
 			return cast(string) decode_gba_text(data).strip.toLower;
 		}
 
 		// look up species names for the pokemon in corresponding roms
-		auto species1_name = clean_species_name(rom1.get_species_name(pkmn1_copy.box.species));
-		auto species2_name = clean_species_name(rom2.get_species_name(pkmn2_copy.box.species));
+		auto species1_name = clean_name(rom1.get_species_name(pkmn1_copy.box.species));
+		auto species2_name = clean_name(rom2.get_species_name(pkmn2_copy.box.species));
 
 		writefln(" NAMES");
 		writefln("  species 1: %s (0x%04x)", species1_name, pkmn1_copy.box.species);
@@ -730,7 +730,7 @@ void cmd_trade(ProgramArgs args) {
 
 		// now search the other rom to find a matching species name
 		for (auto i = 0; i < rom1.num_species; i++) {
-			auto rom1_scan_name = clean_species_name(rom1.get_species_name(i));
+			auto rom1_scan_name = clean_name(rom1.get_species_name(i));
 			if (rom1_scan_name == species2_name) {
 				// found a match
 				writefln("  found candidate (0x%04x) in rom 1 for species 2: %s", i, rom1_scan_name);
@@ -740,7 +740,7 @@ void cmd_trade(ProgramArgs args) {
 		}
 
 		for (auto i = 0; i < rom2.num_species; i++) {
-			auto rom2_scan_name = clean_species_name(rom2.get_species_name(i));
+			auto rom2_scan_name = clean_name(rom2.get_species_name(i));
 			if (rom2_scan_name == species1_name) {
 				// found a match
 				writefln("  found candidate (0x%04x) in rom 2 for species 1: %s", i, rom2_scan_name);
@@ -759,8 +759,8 @@ void cmd_trade(ProgramArgs args) {
 		pkmn1_copy.box.species = cast(ushort) rom2_candidate_spec1;
 		pkmn2_copy.box.species = cast(ushort) rom1_candidate_spec2;
 		writefln("  remapped species to: %s (0x%04x) and %s (0x%04x)",
-			clean_species_name(rom2.get_species_name(pkmn1_copy.box.species)), pkmn1_copy.box.species,
-			clean_species_name(rom1.get_species_name(pkmn2_copy.box.species)), pkmn2_copy
+			clean_name(rom2.get_species_name(pkmn1_copy.box.species)), pkmn1_copy.box.species,
+			clean_name(rom1.get_species_name(pkmn2_copy.box.species)), pkmn2_copy
 				.box.species);
 
 		// return;
@@ -772,7 +772,7 @@ void cmd_trade(ProgramArgs args) {
 		for (auto i = 0; i < 4; i++) {
 			auto move = pkmn1_copy.box.move[i];
 			if (!move) continue;
-			writef("%s (0x%04x) ", clean_species_name(rom1.get_move_name(move)), move);
+			writef("%s (0x%04x) ", clean_name(rom1.get_move_name(move)), move);
 		}
 		writeln();
 
@@ -780,7 +780,7 @@ void cmd_trade(ProgramArgs args) {
 		for (auto i = 0; i < 4; i++) {
 			auto move = pkmn2_copy.box.move[i];
 			if (!move) continue;
-			writef("%s (0x%04x) ", clean_species_name(rom2.get_move_name(move)), move);
+			writef("%s (0x%04x) ", clean_name(rom2.get_move_name(move)), move);
 		}
 		writeln();
 
@@ -800,10 +800,10 @@ void cmd_trade(ProgramArgs args) {
 				continue;
 			}
 			// look up the move name
-			auto rom1_move_name = clean_species_name(rom1.get_move_name(move_id));
+			auto rom1_move_name = clean_name(rom1.get_move_name(move_id));
 			// look up the move name in rom2
 			for (auto j = 0; j < rom2.num_moves; j++) {
-				auto rom2_move_name = clean_species_name(rom2.get_move_name(j));
+				auto rom2_move_name = clean_name(rom2.get_move_name(j));
 				if (rom2_move_name == rom1_move_name) {
 					// found a match
 					writefln("  found candidate (0x%04x) in rom 2 for move #%d: %s", j, i, rom2_move_name);
@@ -824,10 +824,10 @@ void cmd_trade(ProgramArgs args) {
 				continue;
 			}
 			// look up the move name
-			auto rom2_move_name = clean_species_name(rom2.get_move_name(move_id));
+			auto rom2_move_name = clean_name(rom2.get_move_name(move_id));
 			// look up the move name in rom1
 			for (auto j = 0; j < rom1.num_moves; j++) {
-				auto rom1_move_name = clean_species_name(rom1.get_move_name(j));
+				auto rom1_move_name = clean_name(rom1.get_move_name(j));
 				if (rom1_move_name == rom2_move_name) {
 					// found a match
 					writefln("  found candidate (0x%04x) in rom 1 for move #%d: %s", j, i, rom1_move_name);
@@ -850,17 +850,17 @@ void cmd_trade(ProgramArgs args) {
 			// if the move exists, and there is a candidate, then remap it
 			if (rom2_candidate_moves_spec1[i] >= 0) {
 				pkmn1_copy.box.move[i] = cast(ushort) rom2_candidate_moves_spec1[i];
-				writefln("  remapped move %d to: %s (0x%04x)", i, clean_species_name(
+				writefln("  remapped move %d to: %s (0x%04x)", i, clean_name(
 						rom2.get_move_name(pkmn1_copy.box.move[i])), pkmn1_copy.box.move[i]);
 			} else {
 				// no match found
 				writefln("  could not find matching move #%d (%s) for pkmn 1.", i,
-					clean_species_name(rom1.get_move_name(pkmn1_copy.box.move[i])));
+					clean_name(rom1.get_move_name(pkmn1_copy.box.move[i])));
 				// // fallback?
 				// if (fallback_rom2 >= 0) {
 				// 	pkmn1_copy.box.move[i] = cast(ushort) fallback_rom2;
 				// 	writefln("  falling back to: %s (0x%04x)",
-				// 		clean_species_name(rom2.get_move_name(pkmn1_copy.box.move[i])), pkmn1_copy.box.move[i]);
+				// 		clean_name(rom2.get_move_name(pkmn1_copy.box.move[i])), pkmn1_copy.box.move[i]);
 				// } else {
 				// 	// no fallback, so just set it to 0
 				// 	pkmn1_copy.box.move[i] = 0;
@@ -875,23 +875,71 @@ void cmd_trade(ProgramArgs args) {
 			// if the move exists, and there is a candidate, then remap it
 			if (rom1_candidate_moves_spec2[i] >= 0) {
 				pkmn2_copy.box.move[i] = cast(ushort) rom1_candidate_moves_spec2[i];
-				writefln("  remapped move %d to: %s (0x%04x)", i, clean_species_name(
+				writefln("  remapped move %d to: %s (0x%04x)", i, clean_name(
 						rom1.get_move_name(pkmn2_copy.box.move[i])), pkmn2_copy.box.move[i]);
 			} else {
 				// no match found
 				writefln("  could not find matching move #%d (%s) for pkmn 2.", i,
-					clean_species_name(rom2.get_move_name(pkmn2_copy.box.move[i])));
+					clean_name(rom2.get_move_name(pkmn2_copy.box.move[i])));
 				// // fallback?
 				// if (fallback_rom1 >= 0) {
 				// 	pkmn1_copy.box.move[i] = cast(ushort) fallback_rom1;
 				// 	writefln("  falling back to: %s (0x%04x)",
-				// 		clean_species_name(rom1.get_move_name(pkmn2_copy.box.move[i])), pkmn2_copy.box.move[i]);
+				// 		clean_name(rom1.get_move_name(pkmn2_copy.box.move[i])), pkmn2_copy.box.move[i]);
 				// } else {
 				// 	// no fallback, so just set it to 0
 				// 	pkmn2_copy.box.move[i] = 0;
 				// }
 				pkmn2_copy.box.move[i] = 0;
 			}
+		}
+
+		// remap held item
+		writefln("REMAP ITEM");
+		writefln(" ITEMS");
+		auto item1_name = clean_name(rom1.get_item_name(pkmn1_copy.box.held_item));
+		auto item2_name = clean_name(rom2.get_item_name(pkmn2_copy.box.held_item));
+
+		writefln("  pkmn 1 item: %s (0x%04x)",
+			item1_name, pkmn1_copy.box.held_item);
+		writefln("  pkmn 2 item: %s (0x%04x)",
+			item2_name, pkmn2_copy.box.held_item);
+		
+		long rom1_candidate_item2 = -1;
+		long rom2_candidate_item1 = -1;
+
+		// now search the other rom to find a matching item name
+		if (pkmn2_copy.box.held_item) {
+			for (auto i = 0; i < rom1.num_items; i++) {
+				auto rom1_scan_item = clean_name(rom1.get_item_name(i));
+				if (rom1_scan_item == item2_name) {
+					// found a match
+					writefln("  found candidate (0x%04x) in rom 1 for item 0x%04x", i, pkmn2_copy.box.held_item);
+					rom1_candidate_item2 = i;
+					break;
+				}
+			}
+		}
+		if (pkmn1_copy.box.held_item) {
+			for (auto i = 0; i < rom2.num_items; i++) {
+				auto rom2_scan_item = clean_name(rom2.get_item_name(i));
+				if (rom2_scan_item == item1_name) {
+					// found a match
+					writefln("  found candidate (0x%04x) in rom 2 for item 0x%04x", i, pkmn1_copy.box.held_item);
+					rom2_candidate_item1 = i;
+					break;
+				}
+			}
+		}
+
+		if (rom1_candidate_item2 >= 0) {
+			pkmn2_copy.box.held_item = cast(ushort) rom1_candidate_item2;
+			writefln("  remapped pkmn2 item to rom1: %s (0x%04x)", item2_name, pkmn2_copy.box.held_item);
+		}
+
+		if (rom2_candidate_item1 >= 0) {
+			pkmn1_copy.box.held_item = cast(ushort) rom2_candidate_item1;
+			writefln("  remapped pkmn1 item to rom2: %s (0x%04x)", item1_name, pkmn1_copy.box.held_item);
 		}
 	}
 
