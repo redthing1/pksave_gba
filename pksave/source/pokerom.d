@@ -232,6 +232,7 @@ uint move_names_offset(PkmnRomType rom_type) {
         (FireRedURom _) => 0x247094,
         (LeafGreenURom _) => 0x247070,
         (ShinyGoldSigma139Rom _) => 0xC61360,
+        (EmeraldURom _) => 0x31977C,
         (EmeraldHalcyon021Rom _) => 0x36F1BA,
         (Glazed90Rom _) => 0x31977C,
         _ => 0,
