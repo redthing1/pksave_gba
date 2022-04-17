@@ -115,7 +115,7 @@ uint species_basestats_offset(PkmnRomType rom_type) {
         (ShinyGoldSigma139Rom _) => 0xA6BCEC - rom_type.species_basestats_entry_length,
         (EmeraldURom _) => 0x3203E8 - rom_type.species_basestats_entry_length,
         (EmeraldHalcyon021Rom _) => 0x38089C,
-        (Glazed90Rom _) => 0x03203E8 - rom_type.species_basestats_entry_length,
+        (Glazed90Rom _) => 0x3203E8 - rom_type.species_basestats_entry_length,
     );
 }
 
@@ -127,7 +127,7 @@ uint species_names_offset(PkmnRomType rom_type) {
         (FireRedURom _) => 0x245EE0,
         (ShinyGoldSigma139Rom _) => 0xA68340,
         (EmeraldHalcyon021Rom _) => 0x36BD90,
-        (Glazed90Rom _) => 0x03185C8,
+        (Glazed90Rom _) => 0x3185C8,
         _ => 0,
     );
 }
