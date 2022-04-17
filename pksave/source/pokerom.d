@@ -326,3 +326,16 @@ enum OffsetFinder[] BULBASAUR_LEARNSET_FINDERS = [
     OffsetFinder("Bulbasaur Glazed", 0, mixin(hex_array!("21 02 2D 02 16 06 4A 0C"))),
     OffsetFinder("Bulbasaur Pokemon Expansion", 0, mixin(hex_array!("21 00 01 00 2D 00 03 00 49 00 07 00"))),
 ];
+
+/** symbol: gLevelUpLearnsets */
+uint level_up_learnsets_offset(PkmnRomType rom_type) {
+    return rom_type.match!(
+        (FireRedURom _) => 0x25D7B4,
+        (LeafGreenURom _) => 0x25D794,
+        (ShinyGoldSigma139Rom _) => 0xA74F64, // unsure about this one
+        (EmeraldURom _) => 0x32937C,
+        (EmeraldHalcyon021Rom _) => 0x3B29D8,
+        (Glazed90Rom _) => 0x32937C,
+        _ => 0,
+    );
+}
