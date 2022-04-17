@@ -768,8 +768,29 @@ void cmd_trade(ProgramArgs args) {
 		// now, we also need to remap moves
 		writefln("REMAP MOVES");
 
+		writef("  species 1 moves: ");
+		for (auto i = 0; i < 4; i++) {
+			auto move = pkmn1_copy.box.move[i];
+			if (!move) continue;
+			writef("%s (0x%04x) ", clean_species_name(rom1.get_move_name(move)), move);
+		}
+		writeln();
+
+		writef("  species 2 moves: ");
+		for (auto i = 0; i < 4; i++) {
+			auto move = pkmn2_copy.box.move[i];
+			if (!move) continue;
+			writef("%s (0x%04x) ", clean_species_name(rom2.get_move_name(move)), move);
+		}
+		writeln();
+
+
 		long[4] rom1_candidate_moves_spec2 = [-1, -1, -1, -1];
 		long[4] rom2_candidate_moves_spec1 = [-1, -1, -1, -1];
+
+		// auto fallback_rom1 = -1;
+		// auto fallback_rom2 = -1;
+		// enum fallback_move_name = "tackle";
 
 		// for eacho move of pkmn1
 		for (auto i = 0; i < 4; i++) {
@@ -789,6 +810,9 @@ void cmd_trade(ProgramArgs args) {
 					rom2_candidate_moves_spec1[i] = j;
 					break;
 				}
+				// if (rom2_move_name == fallback_move_name) {
+				// 	fallback_rom2 = j;
+				// }
 			}
 		}
 
@@ -810,6 +834,9 @@ void cmd_trade(ProgramArgs args) {
 					rom1_candidate_moves_spec2[i] = j;
 					break;
 				}
+				// if (rom1_move_name == fallback_move_name) {
+				// 	fallback_rom1 = j;
+				// }
 			}
 		}
 
@@ -829,6 +856,16 @@ void cmd_trade(ProgramArgs args) {
 				// no match found
 				writefln("  could not find matching move #%d (%s) for pkmn 1.", i,
 					clean_species_name(rom1.get_move_name(pkmn1_copy.box.move[i])));
+				// // fallback?
+				// if (fallback_rom2 >= 0) {
+				// 	pkmn1_copy.box.move[i] = cast(ushort) fallback_rom2;
+				// 	writefln("  falling back to: %s (0x%04x)",
+				// 		clean_species_name(rom2.get_move_name(pkmn1_copy.box.move[i])), pkmn1_copy.box.move[i]);
+				// } else {
+				// 	// no fallback, so just set it to 0
+				// 	pkmn1_copy.box.move[i] = 0;
+				// }
+				pkmn1_copy.box.move[i] = 0;
 			}
 		}
 
@@ -844,6 +881,16 @@ void cmd_trade(ProgramArgs args) {
 				// no match found
 				writefln("  could not find matching move #%d (%s) for pkmn 2.", i,
 					clean_species_name(rom2.get_move_name(pkmn2_copy.box.move[i])));
+				// // fallback?
+				// if (fallback_rom1 >= 0) {
+				// 	pkmn1_copy.box.move[i] = cast(ushort) fallback_rom1;
+				// 	writefln("  falling back to: %s (0x%04x)",
+				// 		clean_species_name(rom1.get_move_name(pkmn2_copy.box.move[i])), pkmn2_copy.box.move[i]);
+				// } else {
+				// 	// no fallback, so just set it to 0
+				// 	pkmn2_copy.box.move[i] = 0;
+				// }
+				pkmn2_copy.box.move[i] = 0;
 			}
 		}
 	}
@@ -871,6 +918,10 @@ void cmd_trade(ProgramArgs args) {
 		decode_gba_text(save1.trainer.name),
 		decode_gba_text(pkmn1_copy.box.nickname), pkmn1_copy.party.level, decode_gba_text(save2.trainer.name),
 		decode_gba_text(pkmn2_copy.box.nickname), pkmn2_copy.party.level);
+	
+	// // dump both pokemon
+	// writeln(dump_prettyprint_pkmn(save1, pkmn1_copy));
+	// writeln(dump_prettyprint_pkmn(save2, pkmn2_copy));
 
 	// verify party integrity
 	writeln("VERIFY:");
