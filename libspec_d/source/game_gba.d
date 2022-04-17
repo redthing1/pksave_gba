@@ -30,8 +30,8 @@ enum gba_checksum {
     GBA_SAVE_BLOCK_COUNT = 14,
     GBA_BLOCK_LENGTH = 0x1000,
     GBA_BLOCK_MAIN_DATA_LENGTH = 0xF80,
-	GBA_BLOCK_EXTRA_DATA_LENGTH = 0x74,
-	GBA_BLOCK_DATA_LENGTH = 0xFF4, // main data + extra data
+    GBA_BLOCK_EXTRA_DATA_LENGTH = 0x74,
+    GBA_BLOCK_DATA_LENGTH = 0xFF4, // main data + extra data
     GBA_BLOCK_FOOTER_LENGTH = 0xC,
     GBA_BLOCK_FOOTER_MARK = 0x08012025,
     GBA_CODEPAGE_SIZE = 0x100
@@ -433,18 +433,28 @@ align(1) {
  * @brief GBA PC Pokemon Storage Structure.
  */
     struct gba_pc_t {
-        /**
-    	 * This defines what box pokemon will go into when captured with a full party as well as the box you start on when accessing the PC.
-    	 * @brief The index of the currently active box, starting at 0.
-    	 */
-        uint current_box;
-        /** @brief The individual boxes in the PC. */
-        gba_pc_box_t[GBA_BOX_COUNT] box;
-        /** @brief The names of each box in the PC. */
-        ubyte[GBA_BOX_NAME_LENGTH][GBA_BOX_COUNT] name;
-        /** @brief The wallpaper index for each box of the PC. */
-        ubyte[GBA_BOX_COUNT] wallpaper;
+        align(1):
+        union {
+            /** raw data access: Altogether, the PC buffer contains 3968 bytes from each of 8 sections and 2000 bytes from 1 section, for a total of 33744 bytes.  */
+            ubyte[33_744] raw_data;
+
+            struct {
+                align(1):
+                /**
+                                 * This defines what box pokemon will go into when captured with a full party as well as the box you start on when accessing the PC.
+                                 * @brief The index of the currently active box, starting at 0.
+                                 */
+                uint current_box;
+                /** @brief The individual boxes in the PC. */
+                gba_pc_box_t[GBA_BOX_COUNT] box;
+                /** @brief The names of each box in the PC. */
+                ubyte[GBA_BOX_NAME_LENGTH][GBA_BOX_COUNT] name;
+                /** @brief The wallpaper index for each box of the PC. */
+                ubyte[GBA_BOX_COUNT] wallpaper;
+            }
+        }
     }
+    static assert(gba_pc_t.sizeof == 33_744, "gba_pc_t is not 33744 bytes");
 
     /**
  * @brief GBA Item Slot Structure.
@@ -537,8 +547,8 @@ gba_trainer_t* gba_get_trainer(gba_save_t*);
 gba_party_t* gba_get_party(gba_save_t*);
 gba_pc_t* gba_get_pc(gba_save_t*);
 
-gba_pc_t gba_unpack_pc_data(gba_save_t *);
-void gba_pack_pc_data(gba_save_t *, gba_pc_t *);
+gba_pc_t gba_unpack_pc_data(gba_save_t*);
+void gba_pack_pc_data(gba_save_t*, gba_pc_t*);
 
 ubyte gba_pokedex_get_national(gba_save_t*);
 void gba_pokedex_set_national(gba_save_t*, ubyte);

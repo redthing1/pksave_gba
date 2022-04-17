@@ -390,17 +390,24 @@ typedef struct {
  * @brief GBA PC Pokemon Storage Structure.
  */
 typedef struct {
-	/**
-	 * This defines what box pokemon will go into when captured with a full party as well as the box you start on when accessing the PC.
-	 * @brief The index of the currently active box, starting at 0.
-	 */
-	uint32_t current_box;
-	/** @brief The individual boxes in the PC. */
-	gba_pc_box_t box[GBA_BOX_COUNT];
-	/** @brief The names of each box in the PC. */
-	char8_t name[GBA_BOX_COUNT][GBA_BOX_NAME_LENGTH];
-	/** @brief The wallpaper index for each box of the PC. */
-	uint8_t wallpaper[GBA_BOX_COUNT];
+	union {
+		/** raw data access: Altogether, the PC buffer contains 3968 bytes from each of 8 sections and 2000 bytes from 1 section, for a total of 33744 bytes.  */
+		uint8_t raw_data[33744];
+
+		struct {
+			/**
+			 * This defines what box pokemon will go into when captured with a full party as well as the box you start on when accessing the PC.
+			 * @brief The index of the currently active box, starting at 0.
+			 */
+			uint32_t current_box;
+			/** @brief The individual boxes in the PC. */
+			gba_pc_box_t box[GBA_BOX_COUNT];
+			/** @brief The names of each box in the PC. */
+			char8_t name[GBA_BOX_COUNT][GBA_BOX_NAME_LENGTH];
+			/** @brief The wallpaper index for each box of the PC. */
+			uint8_t wallpaper[GBA_BOX_COUNT];
+		};
+	};
 } gba_pc_t;
 
 /**
