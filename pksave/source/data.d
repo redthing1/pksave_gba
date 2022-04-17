@@ -188,4 +188,18 @@ align(1) {
                     decode_gba_text(name.dup).strip(), price);
         }
     }
+
+    struct PkmnROMLevelUpMove16 {
+    align(1):
+        import std.bitmanip : bitfields;
+
+        // 7 bits for level, 9 bits for move
+        mixin(bitfields!(ushort, "level", 7, ushort, "move", 9));
+    }
+
+    struct PkmnROMLevelUpMove32 {
+    align(1):
+        ushort move;
+        ushort level;
+    }
 }
