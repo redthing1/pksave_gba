@@ -108,6 +108,18 @@ uint species_names_entry_length(PkmnRomType rom_type) {
 }
 
 /** 
+ * size of smove name string in bytes
+ */
+uint move_names_entry_length(PkmnRomType rom_type) {
+    enum int GEN3_MOVE_NAME_ENTRY_LENGTH = 12 + 1;
+
+    return rom_type.match!(
+        // (UnknownGen3Rom _) => 0,
+        _ => GEN3_MOVE_NAME_ENTRY_LENGTH  // default to FRLG
+    );
+}
+
+/** 
  * address of "gBaseStats" symbol
  * how to find:
  * search in binary for something resembling
@@ -270,7 +282,7 @@ uint move_table_size(PkmnRomType rom_type) {
         (ShinyGoldSigma139Rom _) => 755,
         (EmeraldURom _) => 355,
         (EmeraldHalcyon021Rom _) => 755,
-        (Glazed90Rom _) => 755,
+        (Glazed90Rom _) => 355,
         _ => 355,
     );
 }

@@ -96,6 +96,10 @@ class PkmnROM {
         return rom_type.item_table_size;
     }
 
+    @property num_moves() {
+        return rom_type.move_table_size;
+    }
+
     PkmnROMSpecies* get_species_basestats(uint species) {
         auto offset = rom_type.species_basestats_offset
             + (rom_type.species_basestats_entry_length * species);
@@ -109,6 +113,14 @@ class PkmnROM {
 
         ubyte* data_ptr = &rom_buf[offset];
         return data_ptr[0..rom_type.species_names_entry_length];
+    }
+
+    ubyte[] get_move_name(uint move) {
+        auto offset = rom_type.move_names_offset
+            + (rom_type.move_names_entry_length * move);
+        
+        ubyte* data_ptr = &rom_buf[offset];
+        return data_ptr[0..rom_type.move_names_entry_length];
     }
 
     PkmnROMItem* get_item_info(uint item) {
