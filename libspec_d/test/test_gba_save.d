@@ -23,12 +23,12 @@ unittest {
     // writefln("pc: %s", pc_struct);
     // writefln("size of pc struct: %s", pc_struct.sizeof);
 
-    // // do something evil
-    // auto raw_fake_pc = gba_get_pc(loaded_save_dup);
-    // memset(raw_fake_pc, 0xff, gba_pc_t.sizeof);
+    // do something evil
+    auto raw_fake_pc = gba_get_pc(loaded_save_dup);
+    memset(raw_fake_pc, 0xAA, gba_box_data.GBA_BOX_DATA_SLICE1);
 
     // pack struct to pc
-    // gba_pack_pc_data(loaded_save_dup, &pc_struct);
+    gba_pack_pc_data(loaded_save_dup, &pc_struct);
 
     // ensure that they're the same
     auto loaded_save_orig_bin = loaded_save_orig.data[0..GBA_UNPACKED_SIZE];
