@@ -354,6 +354,11 @@ void cmd_dumpsav(ProgramArgs args) {
 }
 
 void cmd_symbolscan(ProgramArgs args) {
+	import std.algorithm.searching;
+	import std.algorithm.iteration;
+	import std.range;
+	import std.array;
+
 	auto in_rom = args.arg("rom");
 
 	writefln("loading rom: %s", in_rom);
@@ -364,11 +369,6 @@ void cmd_symbolscan(ProgramArgs args) {
 	writefln("scanning rom for symbols");
 
 	ulong[] search_rom(OffsetFinder finder) {
-		import std.algorithm.searching;
-		import std.algorithm.iteration;
-		import std.range;
-		import std.array;
-
 		auto raw_matches = KMP!(ubyte[], ubyte[])(rom.rom_buf, finder.match_sequence).array;
 		ulong[] match_offsets = raw_matches.map!(x => x + finder.leading_offset).array;
 
@@ -425,8 +425,38 @@ void cmd_symbolscan(ProgramArgs args) {
 		}
 	}
 
-	// // manual searches
-	// writefln("search: gLevelUpLearnsets");
+	// manual searches
+	writefln("search: gLevelUpLearnsets");
+	OffsetFinder[] learnset_finders;
+	enum bulbasaur_learnset_symbol = "sBulbasaurLevelUpLearnset";
+	if (good_results.canFind!(x => x.symbol_name == bulbasaur_learnset_symbol)) {
+		// we know where the bulbasaur learnset is
+
+		// build search patterns
+
+		// consecutive pointers
+		auto bulbasaur_addr = good_results.find!(
+			x => x.symbol_name == bulbasaur_learnset_symbol).front.offset;
+		ubyte[] bulbasaur_gba_ptr = [
+			((bulbasaur_addr >> 0) & 0xff), // least significant byte
+			((bulbasaur_addr >> 8) & 0xff), // byte 2
+			((bulbasaur_addr >> 16) & 0xff), // byte 3
+			// ((bulbasaur_addr >> 24) > 0) ? 0x08 : 0x00, // byte 4 (msb)
+			0x08, // gba memory map makes address most significant byte 0x08
+		];
+		learnset_finders ~= OffsetFinder("Consecutive Bulbasaur Pointers", 0, bulbasaur_gba_ptr ~ bulbasaur_gba_ptr);
+
+		foreach (i, finder; learnset_finders) {
+			writefln(" checking pattern #%s: %s", i, finder.name);
+			auto search_results = search_rom(finder);
+			show_search_results(search_results);
+			if (search_results.length == 1) {
+				good_results ~= GoodResult("gLevelUpLearnsets", search_results[0]);
+			}
+		}
+	} else {
+		writefln(" no bulbasaur learnset availble. can't search for gLevelUpLearnsets");
+	}
 
 	writefln("summary:");
 	writefln(" good results: %s", good_results.length);
@@ -776,7 +806,8 @@ void cmd_trade(ProgramArgs args) {
 		writef("  species 1 moves: ");
 		for (auto i = 0; i < 4; i++) {
 			auto move = pkmn1_copy.box.move[i];
-			if (!move) continue;
+			if (!move)
+				continue;
 			writef("%s (0x%04x) ", clean_name(rom1.get_move_name(move)), move);
 		}
 		writeln();
@@ -784,11 +815,11 @@ void cmd_trade(ProgramArgs args) {
 		writef("  species 2 moves: ");
 		for (auto i = 0; i < 4; i++) {
 			auto move = pkmn2_copy.box.move[i];
-			if (!move) continue;
+			if (!move)
+				continue;
 			writef("%s (0x%04x) ", clean_name(rom2.get_move_name(move)), move);
 		}
 		writeln();
-
 
 		long[4] rom1_candidate_moves_spec2 = [-1, -1, -1, -1];
 		long[4] rom2_candidate_moves_spec1 = [-1, -1, -1, -1];
@@ -909,7 +940,7 @@ void cmd_trade(ProgramArgs args) {
 			item1_name, pkmn1_copy.box.held_item);
 		writefln("  pkmn 2 item: %s (0x%04x)",
 			item2_name, pkmn2_copy.box.held_item);
-		
+
 		long rom1_candidate_item2 = -1;
 		long rom2_candidate_item1 = -1;
 
@@ -919,7 +950,8 @@ void cmd_trade(ProgramArgs args) {
 				auto rom1_scan_item = clean_name(rom1.get_item_name(i));
 				if (rom1_scan_item == item2_name) {
 					// found a match
-					writefln("  found candidate (0x%04x) in rom 1 for item 0x%04x", i, pkmn2_copy.box.held_item);
+					writefln("  found candidate (0x%04x) in rom 1 for item 0x%04x", i, pkmn2_copy
+							.box.held_item);
 					rom1_candidate_item2 = i;
 					break;
 				}
@@ -930,7 +962,8 @@ void cmd_trade(ProgramArgs args) {
 				auto rom2_scan_item = clean_name(rom2.get_item_name(i));
 				if (rom2_scan_item == item1_name) {
 					// found a match
-					writefln("  found candidate (0x%04x) in rom 2 for item 0x%04x", i, pkmn1_copy.box.held_item);
+					writefln("  found candidate (0x%04x) in rom 2 for item 0x%04x", i, pkmn1_copy
+							.box.held_item);
 					rom2_candidate_item1 = i;
 					break;
 				}
@@ -939,12 +972,14 @@ void cmd_trade(ProgramArgs args) {
 
 		if (rom1_candidate_item2 >= 0) {
 			pkmn2_copy.box.held_item = cast(ushort) rom1_candidate_item2;
-			writefln("  remapped pkmn2 item to rom1: %s (0x%04x)", item2_name, pkmn2_copy.box.held_item);
+			writefln("  remapped pkmn2 item to rom1: %s (0x%04x)", item2_name, pkmn2_copy
+					.box.held_item);
 		}
 
 		if (rom2_candidate_item1 >= 0) {
 			pkmn1_copy.box.held_item = cast(ushort) rom2_candidate_item1;
-			writefln("  remapped pkmn1 item to rom2: %s (0x%04x)", item1_name, pkmn1_copy.box.held_item);
+			writefln("  remapped pkmn1 item to rom2: %s (0x%04x)", item1_name, pkmn1_copy
+					.box.held_item);
 		}
 	}
 
@@ -971,7 +1006,7 @@ void cmd_trade(ProgramArgs args) {
 		decode_gba_text(save1.trainer.name),
 		decode_gba_text(pkmn1_copy.box.nickname), pkmn1_copy.party.level, decode_gba_text(save2.trainer.name),
 		decode_gba_text(pkmn2_copy.box.nickname), pkmn2_copy.party.level);
-	
+
 	// // dump both pokemon
 	// writeln(dump_prettyprint_pkmn(save1, pkmn1_copy));
 	// writeln(dump_prettyprint_pkmn(save2, pkmn2_copy));
