@@ -162,42 +162,54 @@ class PkmnROM {
         return list;
     }
 
-    // PkmnROMLevelUpMove[] get_learnsets() {
-    //     // detect learnset type
-    //     if (rom_type.bulbasaur_learnset_variant == BULBASAUR_LEARNSET_VARIANT_16) {
-    //         return get_learnsets_16();
-    //     } else if (rom_type.bulbasaur_learnset_variant == BULBASAUR_LEARNSET_VARIANT_32) {
-    //         return get_learnsets_32();
-    //     } else {
-    //         throw new Exception("unknown learnset variant");
-    //     }
-    // }
+    PkmnROMLearnsets get_learnsets() {
+        // detect learnset type
+        if (rom_type.bulbasaur_learnset_variant == BULBASAUR_LEARNSET_VARIANT_16) {
+            return cast(PkmnROMLearnsets) get_learnsets_16();
+        } else if (rom_type.bulbasaur_learnset_variant == BULBASAUR_LEARNSET_VARIANT_32) {
+            return cast(PkmnROMLearnsets) get_learnsets_32();
+        } else {
+            throw new Exception("unknown learnset variant");
+        }
+    }
 
-    PkmnROMLevelUpMove16[][] get_learnsets_16() {
-        return get_learnsets_t!(PkmnROMLevelUpMove16)(16);
+    PkmnROMLearnsets16 get_learnsets_16() {
+        PkmnROMLearnset16[] learnsets;
+        auto moves_arr_arr = get_learnsets_t!(PkmnROMLevelUpMove16)(2);
+        foreach (i, moves_arr; moves_arr_arr) {
+            learnsets ~= PkmnROMLearnset16(moves_arr_arr[i]);
+        }
+        return learnsets;
+    }
+
+    PkmnROMLearnsets32 get_learnsets_32() {
+        PkmnROMLearnset32[] learnsets;
+        auto moves_arr_arr = get_learnsets_t!(PkmnROMLevelUpMove32)(4);
+        foreach (i, moves_arr; moves_arr_arr) {
+            learnsets ~= PkmnROMLearnset32(moves_arr_arr[i]);
+        }
+        return learnsets;
     }
 
     private LevelUpMoveT[][] get_learnsets_t(LevelUpMoveT)(int lvlup_move_size) {
         LevelUpMoveT[][] learnsets_list;
 
-        uint seen_learnsets = 0;
         for (int i = 0; i < num_species; i++) {
             // get the pointer to this species' learnset
             auto learnset_ptr_offset = rom_type.level_up_learnsets_offset +
-                (32 * seen_learnsets); // 32 bit address
+                (4 * i); // 32 bit address
             auto learnset_ptr_bin = rom_buf[learnset_ptr_offset .. (learnset_ptr_offset + 4)];
             auto learnset_ptr =
-                // (learnset_ptr_bin[3] << 24) // should be 0x08
+                 // (learnset_ptr_bin[3] << 24) // should be 0x08
                 (0x00 << 24)
                 | (learnset_ptr_bin[2] << 16)
-                | (learnset_ptr_bin[1] << 8)
+                | (
+                    learnset_ptr_bin[1] << 8)
                 | learnset_ptr_bin[0];
 
             auto learnset_scan_limit = 64; // max learned moves to scan
-            PkmnROMLevelUpMove16[] learnset_list;
+            LevelUpMoveT[] learnset_list;
             for (int j = 0; j < learnset_scan_limit; j++) {
-                seen_learnsets++;
-
                 auto lvlup_move_offset = learnset_ptr + (j * lvlup_move_size);
                 auto move = cast(LevelUpMoveT*)&rom_buf[lvlup_move_offset];
 
@@ -207,7 +219,7 @@ class PkmnROM {
                 }
 
                 // seems to be a real move!
-                writefln("move%s: lvl: %s, moveid: %s", lvlup_move_size, move.level, move.move);
+                writefln("move%s: lvl: %s, moveid: %s", lvlup_move_size * 8, move.level, move.move);
 
                 learnset_list ~= *move;
             }
@@ -219,7 +231,4 @@ class PkmnROM {
 
         return learnsets_list;
     }
-
-    // PkmnROMLevelUpMove32[][] get_learnsets_32() {
-    // }
 }

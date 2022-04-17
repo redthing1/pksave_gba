@@ -229,8 +229,11 @@ align(1) {
         PkmnROMLevelUpMove32[] moves;
     }
 
-    alias PkmnROMLearnset = SumType!(
-        PkmnROMLearnset16,
-        PkmnROMLearnset32
+    alias PkmnROMLearnsets16 = PkmnROMLearnset16[];
+    alias PkmnROMLearnsets32 = PkmnROMLearnset32[];
+
+    alias PkmnROMLearnsets = SumType!(
+        PkmnROMLearnsets16,
+        PkmnROMLearnsets32
     );
 }

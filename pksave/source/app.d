@@ -259,8 +259,30 @@ void cmd_dumprom(ProgramArgs args) {
 	}
 	
 	// dump all learnsets
-	// TODO
-	rom.get_learnsets_16();
+	void dump_learnsets(T)(T[] learnsets_tbl) {
+		writefln("LEARNSETS");
+		for (auto i = 0; i < learnsets_tbl.length; i++) {
+			auto species_learnset = learnsets_tbl[i];
+
+			auto species_id = i;
+			auto species_name = decode_gba_text(rom.get_species_name(species_id)).strip();
+
+			writefln(" LEARNSET: %s (0x%04x)", species_name, species_id);
+			for (auto j = 0; j < species_learnset.moves.length; j++) {
+				auto lvlup_move = species_learnset.moves[j];
+				auto move_name = decode_gba_text(rom.get_move_name(lvlup_move.move)).strip();
+
+				writefln("  LEVEL: %s, MOVE: %s", lvlup_move.level, move_name);
+			}
+		}
+	}
+	auto learnsets_tbl_st = rom.get_learnsets();
+	import std.sumtype: match;
+
+	learnsets_tbl_st.match!(
+		(PkmnROMLearnsets16 ls) => dump_learnsets(ls),
+		(PkmnROMLearnsets32 ls) => dump_learnsets(ls),
+	);
 }
 
 void cmd_pkmn(ProgramArgs args) {
