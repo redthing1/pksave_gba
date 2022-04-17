@@ -42,6 +42,12 @@ alias PkmnRomType = SumType!(
     Glazed90Rom
 );
 
+/** defines known sequences that we can search for to find symbols */
+struct OffsetFinder {
+    uint leading_offset; // how many bytes to skip before the start of the data
+    ubyte[] match_sequence; // the sequence to match
+}
+
 /** 
  * size of BaseStats struct in bytes
  */
@@ -106,6 +112,13 @@ uint species_names_entry_length(PkmnRomType rom_type) {
  * search in binary for something resembling
  * 2D 31 31 2D 41 41 0C 03 2D 40 00 01 00 00 00 00 1F 14 46 03 01 07 41 00 00 03 00 00  // BULBASAUR
  * then, subtract the species_basestats_entry_length to get the offset
+ * by the way, this means
+    .baseHP        = 45,
+    .baseAttack    = 49,
+    .baseDefense   = 49,
+    .baseSpeed     = 45,
+    .baseSpAttack  = 65,
+    .baseSpDefense = 65,
  */
 uint species_basestats_offset(PkmnRomType rom_type) {
     return rom_type.match!(
@@ -118,6 +131,10 @@ uint species_basestats_offset(PkmnRomType rom_type) {
         (Glazed90Rom _) => 0x3203E8 - rom_type.species_basestats_entry_length,
     );
 }
+enum OffsetFinder[] SPECIES_TABLE_FINDERS = [
+    // default: Bulbasaur (+8 lead padding)
+    OffsetFinder(8, mixin(hex_array!("00 00 00 00 00 00 00 00 2D 31 31 2D 41 41"))),
+];
 
 /** 
  * address of "gSpeciesNames" symbol
@@ -152,6 +169,14 @@ uint item_table_offset(PkmnRomType rom_type) {
         (Glazed90Rom _) => 0x5839CC - rom_type.item_table_entry_length,
     );
 }
+enum OffsetFinder[] ITEM_TABLE_FINDERS = [
+    // capitalized: MASTER BALL (=12 lead padding)
+    OffsetFinder(12, mixin(hex_array!("08 00 00 00 00 00 00 00 00 00 00 00 00 C7 BB CD CE BF CC"))),
+    // decapitalized: Master Ball (=12 lead padding)
+    OffsetFinder(12, mixin(hex_array!("08 00 00 00 00 00 00 00 00 00 00 00 00 C7 D5 E7 E8 D9"))),
+    // item expansion: Poké Ball (=12 lead padding)
+    OffsetFinder(12, mixin(hex_array!("08 00 00 00 00 00 00 00 00 00 00 00 00 CA E3 DF 1B 00 BC D5 E0 E0"))),
+];
 
 uint species_table_size(PkmnRomType rom_type) {
     // fix syntax like one above

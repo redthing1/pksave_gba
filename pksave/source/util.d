@@ -25,3 +25,21 @@ string format_hex(ubyte[] data) {
     }
     return sb[];
 }
+
+template hex_array(string byte_dump) {
+    import std.string : format;
+    import std.array : join;
+
+    string pack_byte_dump_impl() {
+        string[] pieces = byte_dump.split(" ");
+        string[] byte_strs;
+
+        foreach (piece; pieces) {
+            byte_strs ~= format("0x%s", piece);
+        }
+
+        return byte_strs.join(", ");
+    }
+
+    const char[] hex_array = format("[ %s ]", pack_byte_dump_impl());
+}
