@@ -537,6 +537,9 @@ gba_trainer_t* gba_get_trainer(gba_save_t*);
 gba_party_t* gba_get_party(gba_save_t*);
 gba_pc_t* gba_get_pc(gba_save_t*);
 
+gba_pc_t gba_unpack_pc_data(gba_save_t *);
+void gba_pack_pc_data(gba_save_t *, gba_pc_t *);
+
 ubyte gba_pokedex_get_national(gba_save_t*);
 void gba_pokedex_set_national(gba_save_t*, ubyte);
 ubyte gba_pokedex_get_owned(gba_save_t*, size_t);
