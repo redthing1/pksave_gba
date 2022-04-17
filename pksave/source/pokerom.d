@@ -59,7 +59,6 @@ uint species_basestats_entry_length(PkmnRomType rom_type) {
     enum int HALCYON_SPECIES_BASESTATS_ENTRY_LENGTH = 0x24;
 
     return rom_type.match!(
-        // (UnknownGen3Rom _) => 0,
         (FireRedURom _) => FRLG_SPECIES_BASESTATS_ENTRY_LENGTH,
         (LeafGreenURom _) => FRLG_SPECIES_BASESTATS_ENTRY_LENGTH,
         (ShinyGoldSigma139Rom _) => FRLG_SPECIES_BASESTATS_ENTRY_LENGTH,
@@ -79,7 +78,6 @@ uint item_table_entry_length(PkmnRomType rom_type) {
     enum int HALCYON_ITEM_TABLE_ENTRY_LENGTH = 0x2C;
 
     return rom_type.match!(
-        // (UnknownGen3Rom _) => 0,
         (FireRedURom _) => FRLG_ITEM_TABLE_ENTRY_LENGTH,
         (LeafGreenURom _) => FRLG_ITEM_TABLE_ENTRY_LENGTH,
         (ShinyGoldSigma139Rom _) => FRLG_ITEM_TABLE_ENTRY_LENGTH,
@@ -97,7 +95,6 @@ uint species_names_entry_length(PkmnRomType rom_type) {
     enum int FRLG_SPECIES_NAME_ENTRY_LENGTH = 10 + 1;
 
     return rom_type.match!(
-        // (UnknownGen3Rom _) => 0,
         (FireRedURom _) => FRLG_SPECIES_NAME_ENTRY_LENGTH,
         (LeafGreenURom _) => FRLG_SPECIES_NAME_ENTRY_LENGTH,
         (ShinyGoldSigma139Rom _) => FRLG_SPECIES_NAME_ENTRY_LENGTH,
@@ -115,7 +112,6 @@ uint move_names_entry_length(PkmnRomType rom_type) {
     enum int GEN3_MOVE_NAME_ENTRY_LENGTH = 12 + 1;
 
     return rom_type.match!(
-        // (UnknownGen3Rom _) => 0,
         _ => GEN3_MOVE_NAME_ENTRY_LENGTH  // default to FRLG
     );
 }
@@ -136,13 +132,13 @@ uint move_names_entry_length(PkmnRomType rom_type) {
  */
 uint species_basestats_offset(PkmnRomType rom_type) {
     return rom_type.match!(
-        (UnknownGen3Rom _) => 0,
         (FireRedURom _) => 0x2547A0 - rom_type.species_basestats_entry_length,
         (LeafGreenURom _) => 0x25477C - rom_type.species_basestats_entry_length,
         (ShinyGoldSigma139Rom _) => 0xA6BCEC - rom_type.species_basestats_entry_length,
         (EmeraldURom _) => 0x3203E8 - rom_type.species_basestats_entry_length,
         (EmeraldHalcyon021Rom _) => 0x38089C,
         (Glazed90Rom _) => 0x3203E8 - rom_type.species_basestats_entry_length,
+        _ => 0,
     );
 }
 enum OffsetFinder[] SPECIES_TABLE_FINDERS = [
@@ -188,13 +184,13 @@ enum OffsetFinder[] SPECIES_NAME_FINDERS = [
  */
 uint item_table_offset(PkmnRomType rom_type) {
     return rom_type.match!(
-        (UnknownGen3Rom _) => 0,
         (FireRedURom _) => 0x3DB054 - rom_type.item_table_entry_length,
         (LeafGreenURom _) => 0x3DAE64 - rom_type.item_table_entry_length,
         (ShinyGoldSigma139Rom _) => 0x3DB054 - rom_type.item_table_entry_length,
         (EmeraldURom _) => 0x5839CC - rom_type.item_table_entry_length,
         (EmeraldHalcyon021Rom _) => 0x63C924,
         (Glazed90Rom _) => 0x5839CC - rom_type.item_table_entry_length,
+        _ => 0,
     );
 }
 enum OffsetFinder[] ITEM_TABLE_FINDERS = [
@@ -209,7 +205,6 @@ enum OffsetFinder[] ITEM_TABLE_FINDERS = [
 /** symbol: gBattleMoves */
 uint move_table_offset(PkmnRomType rom_type) {
     return rom_type.match!(
-        // (UnknownGen3Rom _) => 0,
         (FireRedURom _) => 0x250C04,
         (EmeraldHalcyon021Rom _) => 0x3779EC,
         _ => 0,
@@ -250,13 +245,13 @@ uint species_table_size(PkmnRomType rom_type) {
     // fix syntax like one above
 
     return rom_type.match!(
-        (UnknownGen3Rom _) => 0,
         (FireRedURom _) => 412,
         (LeafGreenURom _) => 412,
         (ShinyGoldSigma139Rom _) => 923,
         (EmeraldURom _) => 412,
         (EmeraldHalcyon021Rom _) => 1024,
         (Glazed90Rom _) => 1024,
+        _ => 412,
     );
 }
 
@@ -264,7 +259,6 @@ uint item_table_size(PkmnRomType rom_type) {
     // fix syntax like one above
 
     return rom_type.match!(
-        // (UnknownGen3Rom _) => 0,
         (FireRedURom _) => 375,
         (LeafGreenURom _) => 375,
         (ShinyGoldSigma139Rom _) => 375,
@@ -279,7 +273,6 @@ uint move_table_size(PkmnRomType rom_type) {
     // fix syntax like one above
 
     return rom_type.match!(
-        // (UnknownGen3Rom _) => 0,
         (FireRedURom _) => 355,
         (LeafGreenURom _) => 355,
         (ShinyGoldSigma139Rom _) => 755,
@@ -313,7 +306,6 @@ enum OffsetFinder[] TYPE_NAME_FINDERS = [
 /** symbol: sBulbasaurLevelUpLearnset */
 uint bulbasaur_learnset_offset(PkmnRomType rom_type) {
     return rom_type.match!(
-        // (UnknownGen3Rom _) => 0,
         (FireRedURom _) => 0x257494,
         (LeafGreenURom _) => 0x257470,
         (ShinyGoldSigma139Rom _) => 0x257494,
