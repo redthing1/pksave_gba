@@ -228,3 +228,13 @@ enum OffsetFinder[] TYPE_NAME_FINDERS = [
 // enum OffsetFinder[] TYPE_EFFECTIVENESS_TABLE_FINDERS = [
 
 // ];
+
+// /** symbol: gLevelUpLearnsets */
+// enum OffsetFinder[] LEVEL_UP_LEARNSET_FINDERS = [
+//     OffsetFinder("Gen 3 Base", 0, mixin(hex_array!("94 74 25 08 94 74 25 08 AC 74"))),
+// ];
+
+// /** symbol: sBulbasaurLevelUpLearnset */
+// enum OffsetFinder[] BULBASAUR_LEARNSET_FINDERS = [
+//     OffsetFinder("Gen 3 Base", 0, mixin(hex_array!("94 74 25 08 94 74 25 08 AC 74"))),
+// ];
