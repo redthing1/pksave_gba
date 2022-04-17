@@ -97,16 +97,21 @@ class PokeSave {
         return gba_get_party(loaded_save);
     }
 
-    @property pc() {
-        return gba_get_pc(loaded_save);
-    }
-
     @property money() {
         return gba_get_money(loaded_save);
     }
 
     @property money(uint value) {
         gba_set_money(loaded_save, value);
+    }
+
+    gba_pc_t unpack_pc_data() {
+        // return gba_get_pc(loaded_save);
+        return gba_unpack_pc_data(loaded_save);
+    }
+
+    void pack_pc_data(gba_pc_t pc_data) {
+        gba_pack_pc_data(loaded_save, &pc_data);
     }
 
     Personality parse_personality(pk3_box_t box) {

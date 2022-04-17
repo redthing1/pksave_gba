@@ -256,10 +256,10 @@ void cmd_pkmn(ProgramArgs args) {
 	if (party == null) {
 		writeln("failed to get party");
 	}
-	auto pc = save.pc;
-	if (pc == null) {
-		writeln("failed to get pc");
-	}
+	auto pc = save.unpack_pc_data();
+	// if (pc == null) {
+	// 	writeln("failed to get pc");
+	// }
 
 	// all pokemon in party
 	writeln("PARTY");

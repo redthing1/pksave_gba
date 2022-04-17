@@ -467,6 +467,25 @@ gba_pc_t gba_unpack_pc_data(gba_save_t *save) {
 	// create zeroed struct
 	memset(&ret, 0, sizeof(ret));
 
+	// for the first 8 slices, read GBA_BOX_DATA_SLICE1 bytes from each section
+	// then for the last slice, read GBA_BOX_DATA_SLICE2 bytes from one section
+
+	// read first 8 slices
+	uint8_t* save_raw_pc_base = save->data + GBA_BOX_DATA_OFFSET;
+	for(size_t i = 0; i < 8; ++i) {
+		// the raw data is actually of length GBA_BLOCK_DATA_LENGTH (which includes the block extra data)
+		uint8_t* save_raw_pc_slice_ptr = save_raw_pc_base + i * GBA_BLOCK_DATA_LENGTH;
+		// but we don't want extra data in the struct, so we only copy GBA_BOX_DATA_SLICE1 bytes
+		uint8_t* slice_ptr = ret.raw_data + i * GBA_BOX_DATA_SLICE1;
+		// copy data from raw slice to gba_pc_t struct
+		memcpy(slice_ptr, save_raw_pc_slice_ptr, GBA_BOX_DATA_SLICE1);
+	}
+
+	// read last slice
+	uint8_t* save_raw_pc_slice_ptr = save_raw_pc_base + 8 * GBA_BLOCK_DATA_LENGTH;
+	uint8_t* slice_ptr = ret.raw_data + 8 * GBA_BOX_DATA_SLICE1;
+	memcpy(slice_ptr, save_raw_pc_slice_ptr, GBA_BOX_DATA_SLICE2);
+
 	return ret;
 }
 
