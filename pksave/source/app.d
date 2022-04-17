@@ -286,17 +286,17 @@ void cmd_pkmn(ProgramArgs args) {
 				continue;
 			}
 
-			// dump raw bytes
-			// auto raw_pokeblock_d = box_pkmn.block[3];
-			writefln("pk3_box raw offset: 0x%04x", (cast(ulong) (box_pkmn_ptr) - cast(ulong) (save.loaded_save.data)));
-			for (auto l = 0; l < 4; l++) {
-				auto pkblk = box_pkmn.block[l];
-				writef("block: #%s: ", l);
-				for (auto k = 0; k < pkblk.length; k++) {
-					writef("%02x ", pkblk[k]);
-				}
-				writeln();
-			}
+			// // dump raw bytes
+			// // auto raw_pokeblock_d = box_pkmn.block[3];
+			// writefln("pk3_box raw offset: 0x%04x", (cast(ulong) (box_pkmn_ptr) - cast(ulong) (save.loaded_save.data)));
+			// for (auto l = 0; l < 4; l++) {
+			// 	auto pkblk = box_pkmn.block[l];
+			// 	writef("block: #%s: ", l);
+			// 	for (auto k = 0; k < pkblk.length; k++) {
+			// 		writef("%02x ", pkblk[k]);
+			// 	}
+			// 	writeln();
+			// }
 			
 			writefln(" SLOT: #%s", j + 1);
 			auto dump_str = dump_prettyprint_pkmn(save, box_pkmn);
