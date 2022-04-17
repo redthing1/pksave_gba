@@ -34,6 +34,9 @@ void main(string[] raw_args) {
 			.add(new Argument("sav", "save file"))
 			.add(new Argument("out", "output file"))
 			)
+		.add(new Command("symbolscan", "scan a rom to try to find symbols")
+			.add(new Argument("rom", "rom file"))
+			)
 		.add(new Command("addmoney", "add money to your save")
 			.add(new Argument("in_sav", "input save file"))
 			.add(new Argument("money", "money to add"))
@@ -100,6 +103,9 @@ void main(string[] raw_args) {
 		})
 		.on("dumpsav", (args) {
 			cmd_dumpsav(args);
+		})
+		.on("symbolscan", (args) {
+			cmd_symbolscan(args);
 		})
 		.on("addmoney", (args) {
 			cmd_addmoney(args);
@@ -297,7 +303,7 @@ void cmd_pkmn(ProgramArgs args) {
 			// 	}
 			// 	writeln();
 			// }
-			
+
 			writefln(" SLOT: #%s", j + 1);
 			auto dump_str = dump_prettyprint_pkmn(save, box_pkmn);
 			writefln("%s", dump_str);
@@ -331,6 +337,56 @@ void cmd_dumpsav(ProgramArgs args) {
 
 	writefln("dumping raw save data");
 	save.write_raw_dump_to(out_bin);
+}
+
+void cmd_symbolscan(ProgramArgs args) {
+	auto in_rom = args.arg("rom");
+
+	writefln("loading rom: %s", in_rom);
+	auto rom = new PkmnROM();
+	rom.read_from(in_rom);
+	// rom.verify(); // do not verify!
+
+	writefln("scanning rom for symbols");
+
+	ulong[] search_rom(OffsetFinder finder) {
+		import std.algorithm.searching;
+		import std.algorithm.iteration;
+		import std.range;
+		import std.array;
+
+		auto raw_matches = KMP!(ubyte[], ubyte[])(rom.rom_buf, finder.match_sequence).array;
+		ulong[] match_offsets = raw_matches.map!(x => x + finder.leading_offset).array;
+
+		return match_offsets;
+	}
+
+	void show_search_results(ulong[] results) {
+		writefln("  results: %s", results.length);
+		foreach (res; results) {
+			writefln("   0x%04x", res);
+		}
+		if (results.length == 0) {
+			writefln("   no results! look manually.");
+		}
+		if (results.length == 1) {
+			writefln("   exactly one result! good candidate.");
+		}
+	}
+
+	writefln("search: gBaseStats");
+	foreach (i, finder; SPECIES_TABLE_FINDERS) {
+		writefln(" checking pattern #%s: %s", i, finder.name);
+		auto search_results = search_rom(finder);
+		show_search_results(search_results);		
+	}
+
+	writefln("search: gItems");
+	foreach (i, finder; ITEM_TABLE_FINDERS) {
+		writefln(" checking pattern #%s: %s", i, finder.name);
+		auto search_results = search_rom(finder);
+		show_search_results(search_results);
+	}
 }
 
 void cmd_addmoney(ProgramArgs args) {

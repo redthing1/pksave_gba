@@ -44,6 +44,7 @@ alias PkmnRomType = SumType!(
 
 /** defines known sequences that we can search for to find symbols */
 struct OffsetFinder {
+    string name;
     uint leading_offset; // how many bytes to skip before the start of the data
     ubyte[] match_sequence; // the sequence to match
 }
@@ -133,7 +134,7 @@ uint species_basestats_offset(PkmnRomType rom_type) {
 }
 enum OffsetFinder[] SPECIES_TABLE_FINDERS = [
     // default: Bulbasaur (+8 lead padding)
-    OffsetFinder(8, mixin(hex_array!("00 00 00 00 00 00 00 00 2D 31 31 2D 41 41"))),
+    OffsetFinder("Bulbasaur Gen3 Base", 8, mixin(hex_array!("00 00 00 00 00 00 00 00 2D 31 31 2D 41 41"))),
 ];
 
 /** 
@@ -171,11 +172,11 @@ uint item_table_offset(PkmnRomType rom_type) {
 }
 enum OffsetFinder[] ITEM_TABLE_FINDERS = [
     // capitalized: MASTER BALL (=12 lead padding)
-    OffsetFinder(12, mixin(hex_array!("08 00 00 00 00 00 00 00 00 00 00 00 00 C7 BB CD CE BF CC"))),
+    OffsetFinder("MASTER BALL", 12, mixin(hex_array!("08 00 00 00 00 00 00 00 00 00 00 00 00 C7 BB CD CE BF CC"))),
     // decapitalized: Master Ball (=12 lead padding)
-    OffsetFinder(12, mixin(hex_array!("08 00 00 00 00 00 00 00 00 00 00 00 00 C7 D5 E7 E8 D9"))),
+    OffsetFinder("Master Ball", 12, mixin(hex_array!("08 00 00 00 00 00 00 00 00 00 00 00 00 C7 D5 E7 E8 D9"))),
     // item expansion: Poké Ball (=12 lead padding)
-    OffsetFinder(12, mixin(hex_array!("08 00 00 00 00 00 00 00 00 00 00 00 00 CA E3 DF 1B 00 BC D5 E0 E0"))),
+    OffsetFinder("Poké Ball", 12, mixin(hex_array!("08 00 00 00 00 00 00 00 00 00 00 00 00 CA E3 DF 1B 00 BC D5 E0 E0"))),
 ];
 
 uint species_table_size(PkmnRomType rom_type) {
