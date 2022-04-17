@@ -21,6 +21,7 @@ pksave features:
 + modify money
 + verify save files (protect against corruption, specific the dreaded **BAD EGG**
 + trade pokemon across save files (you can even trade from FRLG to SGS)
++ trade pokemon remapping: scans rom move and species data to make pokemon + moves + items cross-rom compatible
 + edit IVs
 + make pokemon shiny
 + save and restore pokemon and items to files
