@@ -8,6 +8,7 @@ import std.algorithm.comparison;
 import std.bitmanip;
 import std.range;
 import std.sumtype;
+import std.exception;
 
 import util;
 
@@ -50,7 +51,8 @@ class PkmnROM {
         // hack roms
         if (check_bulbasaur!ShinyGoldSigma139Rom())
             return cast(PkmnRomType) ShinyGoldSigma139Rom();
-        if (check_bulbasaur!EmeraldHalcyon021Rom())
+        if (check_bulbasaur!EmeraldHalcyon021Rom()
+            && check_sig_byte(pkmn_rom_type!EmeraldHalcyon021Rom.item_table_offset, 0xCA))
             return cast(PkmnRomType) EmeraldHalcyon021Rom();
         if (check_bulbasaur!Glazed90Rom() && check_sig_byte(0x430, 0x18))
             return cast(PkmnRomType) Glazed90Rom();
@@ -78,12 +80,22 @@ class PkmnROM {
         uint tbl_offset = rom_type.species_basestats_offset;
         uint tbl_size = rom_type.species_table_size;
 
+        if (rom_type.rom_is!UnknownGen3Rom) {
+            enforce(0, "could not detect rom type, so we can't verify species table");
+            return false;
+        }
+
         return true;
     }
 
     bool verify_item_table() {
         uint tbl_offset = rom_type.item_table_offset;
         uint tbl_size = rom_type.item_table_size;
+
+        if (rom_type.rom_is!UnknownGen3Rom) {
+            enforce(0, "could not detect rom type, so we can't verify item table");
+            return false;
+        }
 
         return true;
     }

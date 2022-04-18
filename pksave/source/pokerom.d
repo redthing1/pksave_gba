@@ -42,6 +42,20 @@ alias PkmnRomType = SumType!(
     Glazed90Rom
 );
 
+PkmnRomType pkmn_rom_type(T)() {
+    return cast(PkmnRomType) T();
+}
+
+bool rom_is(TCheck)(PkmnRomType rom) {
+    enum check_type_name = TCheck.stringof;
+    mixin(format(`
+         return rom.match!(
+            (%s _) => true,
+            _ => false
+        );
+    `, check_type_name));
+}
+
 /** defines known sequences that we can search for to find symbols */
 struct OffsetFinder {
     string name;
