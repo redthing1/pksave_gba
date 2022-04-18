@@ -52,8 +52,11 @@ class PkmnROM {
         if (check_bulbasaur!ShinyGoldSigma139Rom())
             return cast(PkmnRomType) ShinyGoldSigma139Rom();
         if (check_bulbasaur!EmeraldHalcyon021Rom()
-            && check_sig_byte(pkmn_rom_type!EmeraldHalcyon021Rom.item_table_offset, 0xCA))
+            && check_sig_byte(pkmn_rom_type!EmeraldHalcyon021Rom.item_table_offset + 0x2C, 0xCA))
             return cast(PkmnRomType) EmeraldHalcyon021Rom();
+        if (check_bulbasaur!EmeraldHalcyon022Rom()
+            && check_sig_byte(pkmn_rom_type!EmeraldHalcyon022Rom.item_table_offset + 0x2C, 0xCA))
+            return cast(PkmnRomType) EmeraldHalcyon022Rom();
         if (check_bulbasaur!Glazed90Rom() && check_sig_byte(0x430, 0x18))
             return cast(PkmnRomType) Glazed90Rom();
 
