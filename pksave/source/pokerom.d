@@ -18,6 +18,7 @@ mixin(gen_rom_types!("EmeraldU")); // Pokemon Emerald (U)
 mixin(gen_rom_types!("ShinyGoldSigma139")); // Pokemon Shiny Gold Sigma v1.3.9
 mixin(gen_rom_types!("EmeraldHalcyon021")); // Pokemon Halcyon Emerald v0.2.1
 mixin(gen_rom_types!("EmeraldHalcyon022")); // Pokemon Halcyon Emerald v0.2.2
+mixin(gen_rom_types!("EmeraldHalcyon023")); // Pokemon Halcyon Emerald v0.2.3
 mixin(gen_rom_types!("Glazed90")); // Pokemon Glazed v0.9
 
 template gen_rom_types(string rom_name) {
@@ -41,6 +42,7 @@ alias PkmnRomType = SumType!(
     EmeraldURom,
     EmeraldHalcyon021Rom,
     EmeraldHalcyon022Rom,
+    EmeraldHalcyon023Rom,
     Glazed90Rom
 );
 
@@ -81,6 +83,7 @@ uint species_basestats_entry_length(PkmnRomType rom_type) {
         (EmeraldURom _) => RSE_SPECIES_BASESTATS_ENTRY_LENGTH,
         (EmeraldHalcyon021Rom _) => HALCYON_SPECIES_BASESTATS_ENTRY_LENGTH,
         (EmeraldHalcyon022Rom _) => HALCYON_SPECIES_BASESTATS_ENTRY_LENGTH,
+        (EmeraldHalcyon023Rom _) => HALCYON_SPECIES_BASESTATS_ENTRY_LENGTH,
         (Glazed90Rom _) => HALCYON_SPECIES_BASESTATS_ENTRY_LENGTH,
         _ => RSE_SPECIES_BASESTATS_ENTRY_LENGTH  // default to RSE
     );
@@ -101,6 +104,7 @@ uint item_table_entry_length(PkmnRomType rom_type) {
         (EmeraldURom _) => RSE_ITEM_TABLE_ENTRY_LENGTH,
         (EmeraldHalcyon021Rom _) => HALCYON_ITEM_TABLE_ENTRY_LENGTH,
         (EmeraldHalcyon022Rom _) => HALCYON_ITEM_TABLE_ENTRY_LENGTH,
+        (EmeraldHalcyon023Rom _) => HALCYON_ITEM_TABLE_ENTRY_LENGTH,
         (Glazed90Rom _) => HALCYON_ITEM_TABLE_ENTRY_LENGTH,
         _ => RSE_ITEM_TABLE_ENTRY_LENGTH  // default to RSE
     );
@@ -119,6 +123,7 @@ uint species_names_entry_length(PkmnRomType rom_type) {
         (EmeraldURom _) => FRLG_SPECIES_NAME_ENTRY_LENGTH,
         (EmeraldHalcyon021Rom _) => FRLG_SPECIES_NAME_ENTRY_LENGTH,
         (EmeraldHalcyon022Rom _) => FRLG_SPECIES_NAME_ENTRY_LENGTH,
+        (EmeraldHalcyon023Rom _) => FRLG_SPECIES_NAME_ENTRY_LENGTH,
         (Glazed90Rom _) => FRLG_SPECIES_NAME_ENTRY_LENGTH,
         _ => FRLG_SPECIES_NAME_ENTRY_LENGTH  // default to FRLG
     );
@@ -157,6 +162,7 @@ uint species_basestats_offset(PkmnRomType rom_type) {
         (EmeraldURom _) => 0x3203E8 - rom_type.species_basestats_entry_length,
         (EmeraldHalcyon021Rom _) => 0x38089C,
         (EmeraldHalcyon022Rom _) => 0x380858,
+        (EmeraldHalcyon023Rom _) => 0x380898,
         (Glazed90Rom _) => 0x3203E8 - rom_type.species_basestats_entry_length,
         _ => 0,
     );
@@ -183,6 +189,7 @@ uint species_names_offset(PkmnRomType rom_type) {
         (ShinyGoldSigma139Rom _) => 0xA68340,
         (EmeraldHalcyon021Rom _) => 0x36BD90,
         (EmeraldHalcyon022Rom _) => 0x36BD28,
+        (EmeraldHalcyon023Rom _) => 0x36BD68,
         (Glazed90Rom _) => 0x3185C8,
         _ => 0,
     );
@@ -211,6 +218,7 @@ uint item_table_offset(PkmnRomType rom_type) {
         (EmeraldURom _) => 0x5839CC - rom_type.item_table_entry_length,
         (EmeraldHalcyon021Rom _) => 0x63C924,
         (EmeraldHalcyon022Rom _) => 0x63C8E0,
+        (EmeraldHalcyon023Rom _) => 0x63C920,
         (Glazed90Rom _) => 0x5839CC - rom_type.item_table_entry_length,
         _ => 0,
     );
@@ -230,6 +238,7 @@ uint move_table_offset(PkmnRomType rom_type) {
         (FireRedURom _) => 0x250C04,
         (EmeraldHalcyon021Rom _) => 0x3779EC,
         (EmeraldHalcyon022Rom _) => 0x3779A8,
+        (EmeraldHalcyon023Rom _) => 0x3779E8,
         _ => 0,
     );
 }
@@ -252,6 +261,7 @@ uint move_names_offset(PkmnRomType rom_type) {
         (EmeraldURom _) => 0x31977C,
         (EmeraldHalcyon021Rom _) => 0x36F1BA,
         (EmeraldHalcyon022Rom _) => 0x36F152,
+        (EmeraldHalcyon023Rom _) => 0x36F192,
         (Glazed90Rom _) => 0x31977C,
         _ => 0,
     );
@@ -275,6 +285,7 @@ uint species_table_size(PkmnRomType rom_type) {
         (EmeraldURom _) => 412,
         (EmeraldHalcyon021Rom _) => 1024,
         (EmeraldHalcyon022Rom _) => 1024,
+        (EmeraldHalcyon023Rom _) => 1024,
         (Glazed90Rom _) => 1024,
         _ => 412,
     );
@@ -290,6 +301,7 @@ uint item_table_size(PkmnRomType rom_type) {
         (EmeraldURom _) => 375,
         (EmeraldHalcyon021Rom _) => 960,
         (EmeraldHalcyon022Rom _) => 960,
+        (EmeraldHalcyon023Rom _) => 960,
         (Glazed90Rom _) => 960,
         _ => 375,
     );
@@ -305,6 +317,7 @@ uint move_table_size(PkmnRomType rom_type) {
         (EmeraldURom _) => 355,
         (EmeraldHalcyon021Rom _) => 755,
         (EmeraldHalcyon022Rom _) => 755,
+        (EmeraldHalcyon023Rom _) => 755,
         (Glazed90Rom _) => 355,
         _ => 355,
     );
@@ -339,6 +352,7 @@ uint bulbasaur_learnset_offset(PkmnRomType rom_type) {
         (EmeraldURom _) => 0x3230DC,
         (EmeraldHalcyon021Rom _) => 0x38B354,
         (EmeraldHalcyon022Rom _) => 0x38B310,
+        (EmeraldHalcyon023Rom _) => 0x38B350,
         (Glazed90Rom _) => 0x36A1F4,
         _ => 0,
     );
@@ -354,6 +368,7 @@ uint bulbasaur_learnset_variant(PkmnRomType rom_type) {
         (EmeraldURom _) => BULBASAUR_LEARNSET_VARIANT_16,
         (EmeraldHalcyon021Rom _) => BULBASAUR_LEARNSET_VARIANT_32,
         (EmeraldHalcyon022Rom _) => BULBASAUR_LEARNSET_VARIANT_32,
+        (EmeraldHalcyon023Rom _) => BULBASAUR_LEARNSET_VARIANT_32,
         (Glazed90Rom _) => BULBASAUR_LEARNSET_VARIANT_16,
         _ => 16,
     );
@@ -375,6 +390,7 @@ uint level_up_learnsets_offset(PkmnRomType rom_type) {
         (EmeraldURom _) => 0x32937C,
         (EmeraldHalcyon021Rom _) => 0x3B29D8,
         (EmeraldHalcyon022Rom _) => 0x3B2994,
+        (EmeraldHalcyon023Rom _) => 0x3B29D4,
         (Glazed90Rom _) => 0x32937C,
         _ => 0,
     );

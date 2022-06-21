@@ -57,6 +57,9 @@ class PkmnROM {
         if (check_bulbasaur!EmeraldHalcyon022Rom()
             && check_sig_byte(pkmn_rom_type!EmeraldHalcyon022Rom.item_table_offset + 0x2C, 0xCA))
             return cast(PkmnRomType) EmeraldHalcyon022Rom();
+        if (check_bulbasaur!EmeraldHalcyon023Rom()
+            && check_sig_byte(pkmn_rom_type!EmeraldHalcyon023Rom.item_table_offset + 0x2C, 0xCA))
+            return cast(PkmnRomType) EmeraldHalcyon023Rom();
         if (check_bulbasaur!Glazed90Rom() && check_sig_byte(0x430, 0x18))
             return cast(PkmnRomType) Glazed90Rom();
 
@@ -75,8 +78,16 @@ class PkmnROM {
         // detect
         rom_type = detect_rom_type();
 
-        return verify_species_table()
-            && verify_item_table();
+        auto verify_spec = verify_species_table();
+        auto verify_item = verify_item_table();
+        auto verify_result = verify_spec && verify_item;
+
+        if (!verify_spec)
+            assert(0, "species table verification failed");
+        if (!verify_item)
+            assert(0, "item table verification failed");
+        
+        return verify_result;
     }
 
     bool verify_species_table() {
